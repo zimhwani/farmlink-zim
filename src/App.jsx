@@ -1234,7 +1234,7 @@ function InsightsTab() {
           {livestockData.length > 0 && (
             <div className="card" style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-                <div className="section-title" style={{ margin: 0 }}>🐄 Livestock by Hectares</div>
+                <div className="section-title" style={{ margin: 0 }}>🐄 Livestock by Head Count</div>
                 <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>LIVE · ALL FARMERS</div>
               </div>
               <svg viewBox={`0 0 400 ${Math.max(livestockData.length * 44 + 20, 80)}`} style={{ width: "100%", height: "auto" }}>
@@ -1249,7 +1249,7 @@ function InsightsTab() {
                       <text x="0" y={y + 24} fill="#4a7a5a" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
                       <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2218" />
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
-                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total.toFixed(1)} ha</text>
+                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{Math.round(d.total)} head</text>
                       <text x="388" y={y + 16} fill="#4a6a8f" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text>
                     </g>
                   );
@@ -1261,8 +1261,8 @@ function InsightsTab() {
           {cropData.length === 0 && livestockData.length === 0 && (
             <div className="card" style={{ textAlign: "center", padding: "32px 20px", marginBottom: 16 }}>
               <div style={{ fontSize: 36, marginBottom: 12 }}>📊</div>
-              <div style={{ fontSize: 13, color: "#5c8f6b", fontFamily: "'Space Mono', monospace", marginBottom: 8 }}>NO HECTARE DATA YET</div>
-              <div style={{ fontSize: 12, color: "#4a7a5a" }}>Open the Farmer Map and tap Edit on any crop to add hectares.</div>
+              <div style={{ fontSize: 13, color: "#5c8f6b", fontFamily: "'Space Mono', monospace", marginBottom: 8 }}>NO DATA YET</div>
+              <div style={{ fontSize: 12, color: "#4a7a5a" }}>Open the Farmer Map and tap Edit on any crop or livestock to add data.</div>
             </div>
           )}
         </>
