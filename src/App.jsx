@@ -1080,7 +1080,232 @@ function AdminTab({ farmers, listings }) {
 
 // ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
 function InsightsTab() {
+  const [cropData, setCropData] = useState([]);
+  const [livestockData, setLivestockData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const data = await db.get("farmer_crops", "?select=crop_name,type,hectares&hectares=not.is.null");
+        if (Array.isArray(data)) {
+          // Aggregate by crop
+          const agg = {};
+          data.forEach(row => {
+            const key = row.crop_name;
+            if (!agg[key]) agg[key] = { crop_name: row.crop_name, type: row.type, total_hectares: 0, farmer_count: 0 };
+            agg[key].total_hectares += parseFloat(row.hectares) || 0;
+            agg[key].farmer_count += 1;
+          });
+          const sorted = Object.values(agg).sort((a, b) => b.total_hectares - a.total_hectares);
+          setCropData(sorted.filter(d => d.type === "crop"));
+          setLivestockData(sorted.filter(d => d.type === "livestock"));
+        }
+      } catch (e) { console.error(e); }
+      setLoading(false);
+    };
+    load();
+  }, []);
+
   const yieldData = [
+    { region: "Mash Central", crop: "Maize", yield: 4.2, forecast: 3.6, change: -14 },
+    { region: "Mash East", crop: "Tobacco", yield: 1.8, forecast: 2.1, change: 17 },
+    { region: "Manicaland", crop: "Coffee", yield: 0.9, forecast: 1.0, change: 11 },
+    { region: "Midlands", crop: "Soya", yield: 2.3, forecast: 2.0, change: -13 },
+    { region: "Mat North", crop: "Cattle", yield: 820, forecast: 790, change: -4 },
+  ];
+
+  const maxCrop = Math.max(...cropData.map(d => d.total_hectares), 1);
+  const maxLive = Math.max(...livestockData.map(d => d.total_hectares), 1);
+  const totalCropHa = cropData.reduce((s, d) => s + d.total_hectares, 0);
+  const totalLiveHa = livestockData.reduce((s, d) => s + d.total_hectares, 0);
+
+  const CROP_COLORS = ["#2d7a4f", "#3a9962", "#5cd68a", "#7ec99a", "#4aad72", "#1f5a39", "#27803d", "#60c070"];
+  const LIVE_COLORS = ["#5a9fd4", "#3a7ab5", "#7abde8", "#2d6fa0", "#4a8fc4"];
+
+  return (
+    <div className="fade-in single-col">
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Market Insights</div>
+      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>AI-powered yield & price intelligence</div>
+
+      {/* ── CROP COVERAGE CHARTS ── */}
+      {loading ? (
+        <div className="skeleton" style={{ height: 200, borderRadius: 12, marginBottom: 16 }} />
+      ) : (
+        <>
+          {/* Summary cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+            <div style={{ background: "linear-gradient(135deg, #152218, #0f2218)", border: "1px solid #2d5a36", borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginBottom: 6 }}>TOTAL CROP AREA</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "#7ec99a" }}>{totalCropHa.toFixed(1)}</div>
+              <div style={{ fontSize: 11, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>HECTARES · {cropData.length} CROPS</div>
+            </div>
+            <div style={{ background: "linear-gradient(135deg, #152218, #0f1a2a)", border: "1px solid #2d4a6a", borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a6a8f", marginBottom: 6 }}>TOTAL LIVESTOCK AREA</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "#5a9fd4" }}>{totalLiveHa.toFixed(1)}</div>
+              <div style={{ fontSize: 11, color: "#4a6a8f", fontFamily: "'Space Mono', monospace" }}>HECTARES · {livestockData.length} TYPES</div>
+            </div>
+          </div>
+
+          {/* Crops bar chart */}
+          {cropData.length > 0 && (
+            <div className="card" style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <div className="section-title" style={{ margin: 0 }}>🌾 Crops by Hectares</div>
+                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>LIVE · ALL FARMERS</div>
+              </div>
+              <svg viewBox={`0 0 400 ${Math.max(cropData.length * 44 + 20, 80)}`} style={{ width: "100%", height: "auto" }}>
+                {cropData.map((d, i) => {
+                  const barW = Math.max((d.total_hectares / maxCrop) * 280, 4);
+                  const y = i * 44 + 8;
+                  const color = CROP_COLORS[i % CROP_COLORS.length];
+                  const pct = ((d.total_hectares / totalCropHa) * 100).toFixed(1);
+                  return (
+                    <g key={i}>
+                      {/* Label */}
+                      <text x="0" y={y + 12} fill="#c8e8d4" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
+                      <text x="0" y={y + 24} fill="#4a7a5a" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
+                      {/* Background track */}
+                      <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2e1e" />
+                      {/* Bar */}
+                      <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
+                      {/* Value */}
+                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total_hectares.toFixed(1)} ha</text>
+                      <text x="388" y={y + 16} fill="#5c8f6b" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text>
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {/* Donut chart */}
+              <div style={{ marginTop: 16, borderTop: "1px solid #1a2e1e", paddingTop: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                  <svg viewBox="0 0 100 100" style={{ width: 100, height: 100, flexShrink: 0 }}>
+                    {(() => {
+                      let offset = 0;
+                      const total = cropData.reduce((s, d) => s + d.total_hectares, 0);
+                      const r = 35, cx = 50, cy = 50, circ = 2 * Math.PI * r;
+                      return cropData.map((d, i) => {
+                        const pct = d.total_hectares / total;
+                        const dash = pct * circ;
+                        const gap = circ - dash;
+                        const seg = (
+                          <circle key={i} cx={cx} cy={cy} r={r}
+                            fill="none" stroke={CROP_COLORS[i % CROP_COLORS.length]} strokeWidth="18"
+                            strokeDasharray={`${dash} ${gap}`}
+                            strokeDashoffset={-offset * circ}
+                            style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%" }} />
+                        );
+                        offset += pct;
+                        return seg;
+                      });
+                    })()}
+                    <text x="50" y="47" textAnchor="middle" fill="#c8e8d4" fontSize="10" fontFamily="monospace" fontWeight="bold">{totalCropHa.toFixed(0)}</text>
+                    <text x="50" y="58" textAnchor="middle" fill="#4a7a5a" fontSize="7" fontFamily="monospace">ha total</text>
+                  </svg>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {cropData.map((d, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: 2, background: CROP_COLORS[i % CROP_COLORS.length], flexShrink: 0 }} />
+                        <span style={{ fontSize: 10, color: "#8aaa94", fontFamily: "'Space Mono', monospace" }}>{d.crop_name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Livestock bar chart */}
+          {livestockData.length > 0 && (
+            <div className="card" style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <div className="section-title" style={{ margin: 0 }}>🐄 Livestock by Hectares</div>
+                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>LIVE · ALL FARMERS</div>
+              </div>
+              <svg viewBox={`0 0 400 ${Math.max(livestockData.length * 44 + 20, 80)}`} style={{ width: "100%", height: "auto" }}>
+                {livestockData.map((d, i) => {
+                  const barW = Math.max((d.total_hectares / maxLive) * 280, 4);
+                  const y = i * 44 + 8;
+                  const color = LIVE_COLORS[i % LIVE_COLORS.length];
+                  const pct = ((d.total_hectares / totalLiveHa) * 100).toFixed(1);
+                  return (
+                    <g key={i}>
+                      <text x="0" y={y + 12} fill="#c8e8d4" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
+                      <text x="0" y={y + 24} fill="#4a7a5a" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
+                      <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2218" />
+                      <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
+                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total_hectares.toFixed(1)} ha</text>
+                      <text x="388" y={y + 16} fill="#4a6a8f" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          )}
+
+          {cropData.length === 0 && livestockData.length === 0 && (
+            <div className="card" style={{ textAlign: "center", padding: "32px 20px", marginBottom: 16 }}>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>📊</div>
+              <div style={{ fontSize: 13, color: "#5c8f6b", fontFamily: "'Space Mono', monospace", marginBottom: 8 }}>NO HECTARE DATA YET</div>
+              <div style={{ fontSize: 12, color: "#4a7a5a" }}>Open the Farmer Map and tap Edit on any crop to add hectares.</div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* AI forecast */}
+      <div style={{ background: "linear-gradient(135deg, #1a2e1e, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+          <div style={{ fontSize: 28 }}>🛰️</div>
+          <div>
+            <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5cd68a", marginBottom: 4 }}>AI SATELLITE FORECAST · 2024/25 SEASON</div>
+            <div style={{ fontSize: 15, color: "#e8dfc8", lineHeight: 1.5 }}>Mashonaland maize yield expected to drop <strong style={{ color: "#e07060" }}>12–15%</strong> due to reduced rainfall. Manicaland tobacco shows strong recovery.</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Yield table */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="section-title">Regional Yield Forecast</div>
+        {yieldData.map((d, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < yieldData.length - 1 ? "1px solid #1a2e1e" : "none" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: "#c8e8d4", marginBottom: 2 }}>{d.region}</div>
+              <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{d.crop}</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#8aaa94" }}>{d.yield} → {d.forecast} {d.crop === "Cattle" ? "kg/head" : "t/ha"}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: d.change > 0 ? "#5cd68a" : "#e07060" }}>{d.change > 0 ? "▲" : "▼"} {Math.abs(d.change)}%</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Premium upsell */}
+      <div style={{ background: "linear-gradient(135deg, #1e2d18, #152218)", border: "1px solid #d4a017", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#d4a017", marginBottom: 8 }}>PREMIUM INSIGHTS</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#c8e8d4", marginBottom: 6 }}>Unlock Full Market Intelligence</div>
+        <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.5, marginBottom: 14 }}>Daily price predictions, GMB tender alerts, buyer demand signals, and export market data.</div>
+        <button className="btn-primary" style={{ background: "linear-gradient(135deg, #b8860b, #8b6914)" }}>Subscribe — USD 12/month</button>
+      </div>
+
+      {/* Pest alerts */}
+      <div className="section-title">🚨 Current Pest & Disease Alerts</div>
+      {[{ name: "Fall Armyworm", risk: "High", regions: "Mash West, Mash Central", action: "Apply chlorpyrifos immediately" }, { name: "Stalk Borer", risk: "Medium", regions: "Midlands, Masvingo", action: "Monitor trap counts weekly" }, { name: "Tick Season", risk: "High", regions: "Matabeleland", action: "Dip cattle weekly with Triatix" }].map((p, i) => (
+        <div key={i} style={{ background: "#152218", border: `1px solid ${p.risk === "High" ? "#5a2020" : "#3a4a20"}`, borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>{p.name}</div>
+            <span style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", background: p.risk === "High" ? "rgba(224,112,96,0.2)" : "rgba(200,180,60,0.2)", color: p.risk === "High" ? "#e07060" : "#c8b43c", padding: "2px 8px", borderRadius: 8 }}>{p.risk} Risk</span>
+          </div>
+          <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 4 }}>📍 {p.regions}</div>
+          <div style={{ fontSize: 12, color: "#8aaa94" }}>💊 {p.action}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
     { region: "Mash Central", crop: "Maize", yield: 4.2, forecast: 3.6, change: -14 },
     { region: "Mash East", crop: "Tobacco", yield: 1.8, forecast: 2.1, change: 17 },
     { region: "Manicaland", crop: "Coffee", yield: 0.9, forecast: 1.0, change: 11 },
@@ -1134,5 +1359,4 @@ function InsightsTab() {
       ))}
     </div>
   );
-}
 }
