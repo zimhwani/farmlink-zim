@@ -1392,9 +1392,12 @@ function InsightsTab() {
                       <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2e1e" />
                       {/* Bar */}
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
-                      {/* Value */}
-                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total.toFixed(1)} ha</text>
-                      <text x="388" y={y + 16} fill="#5c8f6b" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text>
+                      {/* Value - inside bar if wide, outside if narrow */}
+                      {barW > 180
+                        ? <text x={110 + barW - 6} y={y + 16} fill="#0d1a0f" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="end">{d.total.toFixed(1)} ha  {pct}%</text>
+                        : <g><text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total.toFixed(1)} ha</text>
+                          <text x="388" y={y + 16} fill="#5c8f6b" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text></g>
+                      }
                     </g>
                   );
                 })}
@@ -1458,8 +1461,11 @@ function InsightsTab() {
                       <text x="0" y={y + 24} fill="#4a7a5a" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
                       <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2218" />
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
-                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{Math.round(d.total)} head</text>
-                      <text x="388" y={y + 16} fill="#4a6a8f" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text>
+                      {barW > 180
+                        ? <text x={110 + barW - 6} y={y + 16} fill="#0d1a0f" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="end">{Math.round(d.total)} head  {pct}%</text>
+                        : <g><text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{Math.round(d.total)} head</text>
+                          <text x="388" y={y + 16} fill="#4a6a8f" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text></g>
+                      }
                     </g>
                   );
                 })}
