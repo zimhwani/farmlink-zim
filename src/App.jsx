@@ -117,13 +117,15 @@ export default function FarmLinkZim() {
   const [showContactModal, setShowContactModal] = useState(null);
   const [showFarmerMap, setShowFarmerMap] = useState(false);
   const [showListingDetail, setShowListingDetail] = useState(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
   const [authUser, setAuthUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [weather, setWeather] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
-  useEffect(() => { loadListings(); loadCounts(); loadFarmers(); fetchWeather(); checkAuth(); }, []);
+  useEffect(() => { loadListings(); loadCounts(); loadFarmers(); fetchWeather(); checkAuth(); loadNotifications(); }, []);
 
   const checkAuth = async () => {
     try {
@@ -178,6 +180,29 @@ export default function FarmLinkZim() {
   };
 
   const toggleItem = (list, setList, item) => setList(list.includes(item) ? list.filter(x => x !== item) : [...list, item]);
+
+  const loadNotifications = async () => {
+    try {
+      const data = await db.get("notifications", "?order=created_at.desc&limit=20");
+      setNotifications(Array.isArray(data) ? data : []);
+    } catch (e) { console.error(e); }
+  };
+
+  const markNotificationRead = async (id) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    await db.patch("notifications", id, { read: true });
+  };
+
+  const markAllRead = async () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/notifications?read=eq.false`, {
+        method: "PATCH",
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ read: true }),
+      });
+    } catch (e) { console.error(e); }
+  };
 
   const registerFarmer = async () => {
     try {
@@ -237,6 +262,7 @@ export default function FarmLinkZim() {
     { id: "register", icon: "📍", label: "Register Farm" },
     { id: "advisory", icon: "🤖", label: "AI Advisor" },
     { id: "prices", icon: "📈", label: "Price Feeds" },
+    { id: "calendar", icon: "🗓️", label: "Planting Calendar" },
     { id: "suppliers", icon: "🏪", label: "Input Suppliers" },
     { id: "insights", icon: "📊", label: "Insights" },
     { id: "calendar", icon: "🗓️", label: "Calendar" },
@@ -297,7 +323,25 @@ export default function FarmLinkZim() {
               {/* Desktop spacer */}
               <div style={{ flex: 1 }} />
               <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>🔔</div>
+                <div style={{ position: "relative" }}>
+                  <div onClick={() => { setShowNotifications(v => !v); if (!showNotifications) loadNotifications(); }}
+                    style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", position: "relative" }}>
+                    🔔
+                    {notifications.filter(n => !n.read).length > 0 && (
+                      <span style={{ position: "absolute", top: -4, right: -4, background: "#e07060", borderRadius: "50%", width: 16, height: 16, fontSize: 9, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Space Mono', monospace", fontWeight: 700 }}>
+                        {notifications.filter(n => !n.read).length}
+                      </span>
+                    )}
+                  </div>
+                  {showNotifications && (
+                    <NotificationPanel
+                      notifications={notifications}
+                      onClose={() => setShowNotifications(false)}
+                      onMarkRead={markNotificationRead}
+                      onMarkAllRead={markAllRead}
+                    />
+                  )}
+                </div>
                 <div onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a" }}>
                   {authUser ? "✓ Logged in" : "👤 Login"}
                 </div>
@@ -312,6 +356,7 @@ export default function FarmLinkZim() {
             {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
             {activeTab === "prices" && <PriceFeedsTab />}
+            {activeTab === "calendar" && <PlantingCalendarTab />}
             {activeTab === "suppliers" && <InputSuppliersTab />}
             {activeTab === "insights" && <InsightsTab />}
             {activeTab === "calendar" && <CalendarTab />}
@@ -331,7 +376,7 @@ export default function FarmLinkZim() {
       </div>
 
       {showListingModal && <ListingModal onClose={() => setShowListingModal(false)} onSave={async (listing) => { await db.post("listings", listing); setShowListingModal(false); loadListings(); loadCounts(); }} />}
-      {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); setShowContactModal(null); }} />}
+      {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); await db.post("notifications", { type: "message", title: "New buyer enquiry", body: `${msg.sender_name} is interested in your ${showContactModal.crop} listing (${showContactModal.quantity} at ${showContactModal.price})`, read: false }); loadNotifications(); setShowContactModal(null); }} />}
       {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} loadFarmers={loadFarmers} />}
       {showListingDetail && <ListingDetailModal listing={showListingDetail} onClose={() => setShowListingDetail(null)} onContact={() => { setShowContactModal(showListingDetail); setShowListingDetail(null); }} />}
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onAuth={(user) => { setAuthUser(user); setShowAuthModal(false); }} />}
@@ -384,6 +429,68 @@ const ZW_PROVINCES = {
   ZWBU: "M426.6 605.5l1.5-3.4-0.2-1.2-1.1-1.2-0.9-1.4-0.8-0.3-1 0.1-1.4 0.6-0.6 0.1-0.7 0-2-0.6-0.9 0-1.5 0-0.9-0.1-1.4-0.4-0.6-0.6-0.1-0.6 0.4-0.5 1.5-1 0.7-0.5 0.5-0.8-0.1-1.3 0.1-0.9 0.2-0.9 0.5-1.2 0.2-0.7 0-1.1-1.1-4.5-0.1-1.5 0.1-0.6 0.4-0.3 0.5 0 0.9 0.2 6.6 3.6 1.1 0.3 0.9 0 0.8-0.4 1.4-1.3 0.7-0.3 2.6-0.4 2.2-0.8 0.7 0 0.4 0.2 0.1 0.3-0.4 1-0.1 0.6-0.1 1.5-0.1 0.4 0 0.4 0.1 0.3 0.3 0.4 0.3 0.2 0.5 0.1 0.6 0.1 0.7 0.1 0.5 0.3 1.2 1 0.8 0.4 0.9 0 0.8-0.2 1.6-0.8 0.7 0 0.5 0.4 0.2 1.5 0.2 0.5 0.4 0.4 0.8 0.3 0.8 0.3 0.3 0.4 0.1 0.6-0.2 0.8-0.4 0.9-0.7 1.4-0.1 0.4-0.1 0.6 0 0.5 0.4 0.5 0.4 0.4 2.3 1.5 0.4 0.5 0.3 0.6 0 0.6-0.3 0.7-0.4 0.7-0.6 0.7-0.8 0.7-2 0.8-7.7 1.8-1.5-0.8-1.4-0.3-0.8-0.4-0.6-0.2-0.4 0.1-3.8 3.1-0.6 0-0.5 0-2.1-2.4z",
   ZWMV: "M728.4 868.1l0-0.1-1.6-3.1-0.5-0.6-0.7-0.1-0.6 0.1-0.8-0.1-0.8-0.3-0.6-0.5-0.3-0.9-0.2-1.6-0.3-0.7-1.4-2-0.2-0.9-0.1-1.5-0.3-0.9-0.9-1.5-0.2-1-0.1-0.9-0.1-0.7-0.5-0.5-0.9-0.4-0.8-0.1-1.4 0.1-0.6-0.1-0.5-0.3 0.2-1.4-0.2-0.7-0.6-0.5-1.2-0.4-1.7-0.3-0.6-0.4-0.5-0.7-0.5-1.1-0.3-1.8-0.2-0.6-0.3-0.6-1-1.2-0.4-0.7-0.2-0.6 0-1.5-0.3-0.6-0.5-0.4-1.1 0-1.5 0.2-0.7-0.2-0.4-0.4-0.7-1.8-0.5-0.8-1.3-1-0.7-0.7-0.7-1.1-0.8-0.8-1.6-1.1-1.1-0.4-0.9-0.3-0.7 0-0.6-0.1-0.4-0.3 0.2-0.6 0.2-0.3 0.1-0.2 0.1-0.1 0.1-0.2 0.2-0.3-0.1-1.2 0.1-0.7 0.2-0.6 0-0.6-0.3-0.6-1.2-0.5-0.9-0.6-0.8-0.7-0.8-1.4-0.1-0.9 0.2-1.3-0.2-0.6-5.3-6.7-0.3-0.8-0.6-0.7-0.6-0.7-3-1.7-0.4-0.6-0.4-0.9-0.8-2.6-0.1-0.7 0.1-0.8-0.2-0.7-0.4-0.6-1.6-0.8-0.4-0.4 0-0.8 0.2-0.7-0.1-0.6-0.4-0.4-0.8-0.2-1.2 0.6-0.6 0.1-0.6 0-2.8-1.1-1.3-0.8-0.7-0.2-0.6 0-0.6 0-0.6-0.2-0.9-1.7-0.7-0.9-2.3-2.6-1-1.4-0.1-0.5 0.2-0.5 0.6-0.9 0.1-0.5-0.4-0.5-0.9-0.4-2.3-0.1-3.6-1.4-0.9-0.8-2.5-1.2-2.9-2-2.7-1.4-0.7 0.1-0.6 0.2-0.6 0.3-0.6 0.1-0.6-0.1-1.3-0.4-9.4-1.2-0.8-0.2-0.5-0.4-0.3-0.5 0.2-1.6 0-0.8-0.2-0.6-0.4-0.5-0.5-0.4-1.1-0.2-0.8-0.4-2.4-1.4-1-0.2-0.5-0.3-0.5-0.5-0.5-1.8-0.4-0.7-1-0.4-1.6-0.1-0.7-0.1-1.5-0.4-0.5-0.1-0.5 0.1-0.1 0-0.3 0.1-0.5-0.1-0.5-0.4-0.5-1.1-0.5-0.7-0.8-0.5-0.8-0.3-0.6-0.6-0.7-0.8-0.9-1.6-2.2-2-1.2-0.8-0.5-0.5-2-3.5-1.2-1.2-0.6-0.4-1.3-0.8-0.5-0.4-0.5-0.4-0.9-0.8-1.3-0.6-0.5-0.3-0.6-0.8-0.5-1.1-1.8-4.2-0.2-0.3-0.4-0.3-0.6-0.3-0.6-0.3-0.3-0.4-0.2-0.9 0-0.6-0.2-0.7-0.4-0.4-0.9-0.4-0.6-0.2-0.5 0-0.3-0.4-0.2-0.8-0.2-3.4-0.2-1-0.5-0.6-1.1-0.7-0.7-0.2-1-0.2-0.5-0.6-0.7-1.1-1.2-2.6-0.2-1.2 0-0.6 0.3-0.3-0.2-0.3-0.4-0.4-2.8-1.7-0.9-0.3-0.6-0.5-5.2-6.1-0.9-1.9-1.7-5.9 1.9 0-3.6 0.5-8.1 1.9-4.8-0.1-4.3-1.1-3.1-0.2-0.6-0.1-2.3-0.7-1.2-0.6-0.3-0.4-0.1-0.6 1.5-1.3 16.5-11.4 0.5-0.7 0.3-1.1 6.2-29-0.1-0.8-0.7 0-4.9 1.6-1.1 0.1-0.6-0.3-0.5-1.4-0.4-1.1-0.8-1-1-1.1-0.4-0.5-0.1-0.7 0.2-1.1 0.3-0.7 0.3-0.5 0.7-0.3 0.8-0.6 0.8-0.8-0.1-1.5 1.1-2.7 0.3-1.3 0-6.5 0.7-0.2 0.9 0.3 3.9 2.8 1.1 0.4 1-0.5 0.8-0.8 2-2.5 0.8-1.8 0.9-2.4 0.4-1.2 0-1-0.2-4 0-1.1 0.2-0.7 6.9-16.9 0.2-0.8 0.6-5.9 0.2-0.7 7.7-16.4 0.3-1.3 0-1.2-3.6-6.1-0.4-0.2-0.5 0.1-1.7 1.1-0.4 0.1-0.4-0.3-0.8-3.1-0.8-1.3-1.7-0.1-8.1 2-1-0.3-0.5-1.5-0.8-3.7-0.4-1.4-0.7-0.1-0.6 0.1-1.2 0.6-0.6 0.2-5.2 1.1-0.7 0-0.7-0.4-5.3-4-7.6-3.9-1-0.2-1.7-0.1-2 0.9-2 0.6-1.3-0.3-1.2-2.5-0.4-1.3-0.2-1.2 0-1.5 1.3-6-0.2-1-0.3-1.2-1-2.1-0.7-1.3-3.1-3.2-1-1.5-0.9-2.8-0.1-1-0.4-0.7-0.6-0.9-2.6-2.4-0.5-0.6-0.5-0.8-2.7-5.3-1.2-3.3-1.6-2-5.9-5.5 1-2.1 0.6-0.7 1.2-0.8 0.9-0.2 0.9 0.2 0.8 0.5 0.7 0.5 1 0.6 1.2 0.4 3.8 0.8 0.7 0 0.9-0.1 0.7-0.2 0.6-0.5 0.4-0.6 0-1.4-0.4-0.9-0.6-0.8-1.7-1.7-0.8-0.9-0.4-0.9-0.2-1 0.1-1 0.4-1.9 0.6-1.1 1-1.3 5.1-4.6 0.5-0.5 0.3-0.7-0.3-1-0.5-0.6-1.5-1.6-0.8-0.6-1-0.6-0.7-0.6-0.3-0.9-0.1-1.4 0.1-4.9 0.2-1 0.5-1.9 0.9-2.3 0-0.8 0.4-0.9 0.7-1 2.7-2 1.5-0.6 1.3-0.3 7 1.3 0.6 0 0.4-0.4 0-0.8-0.1-0.7-0.5-1.2-1.6-6.5-1.1-2.7 0-0.4 0-0.5 0.3-0.6 2-3.3 1.4-1.1 8.1-4.7 5.1-2.1 0.5-0.3 0.4-0.6 0.3-0.9 0-0.8-0.1-0.7-0.7-2.5 0-0.7 0.3-0.7 11.5-13.9 2.1-2.1 1.9-1.5 0.8-1.8 3.1-3.4 1.6-0.2 0.8 0.2 6 4.9 5.8 0.8 1 0 1.3-0.2 2.4-1.2 13.7-11.6 1.5-0.8 1.1-0.4 1.3-0.2 1.4 0.1 0.8 0.2 0.8 0.5 0.6 0.7 0.8 0.6 0.8 0.5 0.9 0.7 0.8 0.8 0.7 0.5 0.6 0.3 1.8 0.8 0.7 0.4 0.5 0.4 1.8 2.4 1.1 1.1 1.4 0.8 2.7 0.8 0.7 0.4 0.4 0.4 0.7 0.9 0.7 0.6 0.5 0.3 0.6 0.3 1.1 0.3 2.9 0.4 2.2 0 3.1 0.5 0.8 0 0.7-0.3 0.4-0.3 0.3-0.2 0.5-0.2 0.6-0.3 1.1-0.8 0.4-0.1 0.6 0 2.2 1.3 0.8 0.2 0.8 0.3 0.8 0.1 1-0.1 11.6-10.7 0.8-1.4 0.3-2-0.6-9 0.2-0.7 0.4-0.7 1.3-1.5 0.4-0.8 0.3-0.7 0.6-3 1.3-2.4 0.1-0.8 0-0.7-0.6-2.5 0-0.8 0.2-0.7 0.3-0.8 1.5-2.7 0.2-0.6 0.1-0.7-0.3-0.6-0.1-0.7-0.3-1.5-0.3-0.6-0.3-0.5-1-0.7-0.4-0.5-0.4-0.4-0.3-0.6-0.3-0.6-0.1-0.7-0.1-0.8 0.2-2.2 0-0.8-0.2-0.6-0.5-1.3 0-0.9 0.1-1.1 0.6-1.4 0.1-0.9-0.2-0.7-4.8-5.4 0-0.1-0.3-0.6-0.1-0.7-0.2-1.5-0.2-0.6-0.3-0.6-0.4-0.4-2.6-1.7-0.5-0.4-0.4-0.5-0.3-0.5-0.2-0.7-0.3-0.6-0.3-0.5-0.4-0.4-0.6-0.2-1.4-0.3-0.7-0.2-0.5-0.3-0.4-0.4-0.8-1-0.3-0.6-0.2-0.6 0-0.8 0.1-0.6 0-0.7-0.3-0.5-0.4-0.3-0.6-0.1-2.3-0.2-1.3-0.4-0.6-0.2-0.5-0.4-0.9-0.7-0.4-0.5-1.6-2.7-0.4-0.5-0.6-0.2-0.3-0.7 0-1.3 1-3.1 0.1-2.5-0.2-2.4-0.4-2-0.5-1.6-0.7-0.9-1.5-1-1.9-0.5-1.9-0.2-2.1 1.3-0.7 0.3-0.4-0.2 0-3.6 0.6-5.1 1.4-2.6 0.8-4.4-0.1-1.7-0.3-0.9-0.7-0.9 0.4-0.6 0.9-0.7 8.7-4.2 0.7-0.2 0.7-0.1 18.1-0.8 0.8-0.1 0.6-0.2 0.6-0.6-0.8-0.1-0.4 0-0.2-0.1 0-0.3 0.1-0.4 0.3-0.7 0.1-0.4-0.1-0.3-0.1-0.2-0.1-0.4 0-0.6 0.2-1.1 0.3-0.6 2.8-2.1 0.6-0.8 0.3-0.5 0.1-0.4 0-0.3-0.2-0.3-0.1-0.2-0.2-0.3-0.1-0.5-0.1-0.6 0-0.4-0.1-0.2-0.2-0.2-0.1-0.1-0.1-0.2-0.1-0.5-0.2-0.3-0.1-0.4 0.1-0.6 1.3-2.5 1.1-0.6 9.9-0.3 1.1 0 0.9 0.4 3.2 1.7 3.4 0.9 1.5 0.2 1.5-0.1 3.4-0.9 0.8-0.3 0.9-0.5 0.2-0.6-0.2-0.4-0.3-0.4-0.4-0.3-0.2-0.3-0.1-0.6-0.2-1.4 0-1.5 0.3-2.3 1.3-3.9 0.1-0.8-0.1-3 0.1-1 2-9.9 0.1-1.3-0.1-1.3-0.5-1.7-0.4-2 1.3-6.5 0.2-10.2 0.2-1 0.7-0.6 1.3-0.5 1.5-0.9 0.6-1-0.1-0.9-0.7-0.8-0.9-0.4-3.6-0.8-0.7-0.3-0.5-0.5 0.3-0.6 0.9-0.9 16.2-13.4 5.1-4.7 5.9 5.5 1.6 2 1.2 3.3 2.7 5.3 0.5 0.8 0.5 0.6 2.6 2.4 0.6 0.9 0.4 0.7 0.1 1 0.9 2.8 1 1.5 3.1 3.2 0.7 1.3 1 2.1 0.3 1.2 0.2 1-1.3 6 0 1.5 0.2 1.2 0.4 1.3 1.2 2.5 1.3 0.3 2-0.6 2-0.9 1.7 0.1 1 0.2 7.6 3.9 5.3 4 0.7 0.4 0.7 0 5.2-1.1 0.6-0.2 1.2-0.6 0.6-0.1 0.7 0.1 0.4 1.4 0.8 3.7 0.5 1.5 1 0.3 8.1-2 1.7 0.1 0.8 1.3 0.8 3.1 0.4 0.3 0.4-0.1 1.7-1.1 0.5-0.1 0.4 0.2 3.6 6.1 0 1.2-0.3 1.3-7.7 16.4-0.2 0.7-0.6 5.9-0.2 0.8-6.9 16.9-0.2 0.7 0 1.1 0.2 4 0 1-0.4 1.2-0.9 2.4-0.8 1.8-2 2.5-0.8 0.8-1 0.5-1.1-0.4-3.9-2.8-0.9-0.3-0.7 0.2 0 6.5-0.3 1.3-1.1 2.7 0.1 1.5-0.8 0.8-0.8 0.6-0.7 0.3-0.3 0.5-0.3 0.7-0.2 1.1 0.1 0.7 0.4 0.5 1 1.1 0.8 1 0.4 1.1 0.5 1.4 0.6 0.3 1.1-0.1 4.9-1.6 0.7 0 0.1 0.8-6.2 29-0.3 1.1-0.5 0.7-16.5 11.4-1.5 1.3 0.1 0.6 0.3 0.4 1.2 0.6 2.3 0.7 0.6 0.1 3.1 0.2 4.3 1.1 4.8 0.1 8.1-1.9 3.6-0.5 1.9 0 1.7 5.9 0.9 1.9 5.2 6.1 0.6 0.5 0.9 0.3 2.8 1.7 0.4 0.4 0.2 0.3-0.3 0.3 0 0.6 0.2 1.2 1.2 2.6 0.7 1.1 0.5 0.6 1 0.2 0.7 0.2 1.1 0.7 0.5 0.6 0.2 1 0.2 3.4 0.2 0.8 0.3 0.4 0.5 0 0.6 0.2 0.9 0.4 0.4 0.4 0.2 0.7 0 0.6 0.2 0.9 0.3 0.4 0.6 0.3 0.6 0.3 0.4 0.3 0.2 0.3 1.8 4.2 0.5 1.1 0.6 0.8 0.5 0.3 1.3 0.6 0.9 0.8 0.5 0.4 0.5 0.4 1.3 0.8 0.6 0.4 1.2 1.2 2 3.5 0.5 0.5 1.2 0.8 2.2 2 0.9 1.6 0.7 0.8 0.6 0.6 0.8 0.3 0.8 0.5 0.5 0.7 0.5 1.1 0.5 0.4 0.5 0.1 0.3-0.1 0.1 0 0.5-0.1 0.5 0.1 1.5 0.4 0.7 0.1 1.6 0.1 1 0.4 0.4 0.7 0.5 1.8 0.5 0.5 0.5 0.3 1 0.2 2.4 1.4 0.8 0.4 1.1 0.2 0.5 0.4 0.4 0.5 0.2 0.6 0 0.8-0.2 1.6 0.3 0.5 0.5 0.4 0.8 0.2 9.4 1.2 1.3 0.4 0.6 0.1 0.6-0.1 0.6-0.3 0.6-0.2 0.7-0.1 2.7 1.4 2.9 2 2.5 1.2 0.9 0.8 3.6 1.4 2.3 0.1 0.9 0.4 0.4 0.5-0.1 0.5-0.6 0.9-0.2 0.5 0.1 0.5 1 1.4 2.3 2.6 0.7 0.9 0.9 1.7 0.6 0.2 0.6 0 0.6 0 0.7 0.2 1.3 0.8 2.8 1.1 0.6 0 0.6-0.1 1.2-0.6 0.8 0.2 0.4 0.4 0.1 0.6-0.2 0.7 0 0.8 0.4 0.4 1.6 0.8 0.4 0.6 0.2 0.7-0.1 0.8 0.1 0.7 0.8 2.6 0.4 0.9 0.4 0.6 3 1.7 0.6 0.7 0.6 0.7 0.3 0.8 5.3 6.7 0.2 0.6-0.2 1.3 0.1 0.9 0.8 1.4 0.8 0.7 0.9 0.6 1.2 0.5 0.3 0.6 0 0.6-0.2 0.6-0.1 0.7 0.1 1.2-0.2 0.3-0.1 0.2-0.1 0.1-0.1 0.2-0.2 0.3-0.2 0.6 0.4 0.3 0.6 0.1 0.7 0 0.9 0.3 1.1 0.4 1.6 1.1 0.8 0.8 0.7 1.1 0.7 0.7 1.3 1 0.5 0.8 0.7 1.8 0.4 0.4 0.7 0.2 1.5-0.2 1.1 0 0.5 0.4 0.3 0.6 0 1.5 0.2 0.6 0.4 0.7 1 1.2 0.3 0.6 0.2 0.6 0.3 1.8 0.5 1.1 0.5 0.7 0.6 0.4 1.7 0.3 1.2 0.4 0.6 0.5 0.2 0.7-0.2 1.4 0.5 0.3 0.6 0.1 1.4-0.1 0.8 0.1 0.9 0.4 0.5 0.5 0.1 0.7 0.1 0.9 0.2 1 0.9 1.5 0.3 0.9 0.1 1.5 0.2 0.9 1.4 2 0.3 0.7 0.2 1.6 0.3 0.9 0.6 0.5 0.8 0.3 0.8 0.1 0.6-0.1 0.7 0.1 0.5 0.6 1.6 3.1z",
 };
+
+// ─── NOTIFICATION PANEL ───────────────────────────────────────────────────────
+const NOTIF_ICONS = { message: "✉️", price: "📈", pest: "🚨", weather: "🌧️", system: "🌿" };
+const NOTIF_COLORS = { message: "#7ec99a", price: "#d4a017", pest: "#e07060", weather: "#5a9fd4", system: "#7ec99a" };
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }) {
+  const unreadCount = notifications.filter(n => !n.read).length;
+  return (
+    <>
+      {/* Backdrop */}
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 150 }} />
+      {/* Panel */}
+      <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 200, overflow: "hidden" }}>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #1f3525" }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#c8e8d4" }}>Notifications</div>
+            {unreadCount > 0 && <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginTop: 2 }}>{unreadCount} UNREAD</div>}
+          </div>
+          {unreadCount > 0 && (
+            <button onClick={onMarkAllRead} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 10px", color: "#5c8f6b", fontSize: 10, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
+              Mark all read
+            </button>
+          )}
+        </div>
+        {/* List */}
+        <div style={{ maxHeight: 420, overflowY: "auto" }}>
+          {notifications.length === 0 ? (
+            <div style={{ padding: "32px 16px", textAlign: "center", color: "#3d6b4a", fontSize: 12 }}>No notifications yet</div>
+          ) : notifications.map(n => (
+            <div key={n.id} onClick={() => onMarkRead(n.id)}
+              style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: "1px solid #1a2e1e", background: n.read ? "transparent" : "rgba(45,122,79,0.08)", cursor: "pointer", transition: "background 0.2s" }}
+              onMouseOver={e => e.currentTarget.style.background = "rgba(45,122,79,0.12)"}
+              onMouseOut={e => e.currentTarget.style.background = n.read ? "transparent" : "rgba(45,122,79,0.08)"}>
+              {/* Icon */}
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: `${NOTIF_COLORS[n.type]}20`, border: `1px solid ${NOTIF_COLORS[n.type]}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
+                {NOTIF_ICONS[n.type] || "🔔"}
+              </div>
+              {/* Content */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                  <div style={{ fontSize: 13, fontWeight: n.read ? 400 : 600, color: n.read ? "#8aaa94" : "#c8e8d4", lineHeight: 1.3 }}>{n.title}</div>
+                  {!n.read && <div style={{ width: 7, height: 7, borderRadius: "50%", background: NOTIF_COLORS[n.type], flexShrink: 0, marginTop: 4 }} />}
+                </div>
+                <div style={{ fontSize: 11, color: "#5c8f6b", marginTop: 3, lineHeight: 1.4 }}>{n.body}</div>
+                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3d6b4a", marginTop: 4 }}>{timeAgo(n.created_at)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
 
 // ─── CROP HECTARE ROW (inline editable) ───────────────────────────────────────
 function CropHectareRow({ crop, onUpdate }) {
@@ -1760,6 +1867,149 @@ function PriceFeedsTab() {
 }
 
 // ─── PLANTING CALENDAR TAB ─────────────────────────────────────────────────────
+function PlantingCalendarTab() {
+  const [calendar, setCalendar] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("All");
+  const [selectedCrop, setSelectedCrop] = useState("All");
+  const [loading, setLoading] = useState(true);
+
+  const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const currentMonth = new Date().getMonth() + 1;
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const data = await db.get("planting_calendar", "?order=crop_name.asc");
+      setCalendar(Array.isArray(data) ? data : []);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const provinces = ["All", ...new Set(calendar.map(c => c.province).filter(p => p !== "All"))];
+  const cropNames = ["All", ...new Set(calendar.map(c => c.crop_name))];
+
+  const filtered = calendar.filter(c =>
+    (selectedProvince === "All" || c.province === "All" || c.province === selectedProvince) &&
+    (selectedCrop === "All" || c.crop_name === selectedCrop)
+  );
+
+  const getMonthRange = (start, end) => {
+    const months = [];
+    let m = start;
+    while (m !== end + 1) {
+      months.push(m > 12 ? m - 12 : m);
+      m++;
+      if (m > 24) break;
+    }
+    return months;
+  };
+
+  const isActiveNow = (entry) => {
+    const planting = getMonthRange(entry.planting_start, entry.planting_end);
+    const harvest = getMonthRange(entry.harvest_start, entry.harvest_end);
+    return planting.includes(currentMonth) || harvest.includes(currentMonth);
+  };
+
+  return (
+    <div className="fade-in single-col">
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Planting Calendar</div>
+      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 16 }}>AGRITEX-aligned planting & harvest guide for Zimbabwe</div>
+
+      {/* Current month banner */}
+      <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 12, padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ fontSize: 28 }}>📅</div>
+        <div>
+          <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5cd68a" }}>CURRENT MONTH — {MONTH_NAMES[currentMonth - 1].toUpperCase()}</div>
+          <div style={{ fontSize: 13, color: "#c8e8d4", marginTop: 2 }}>
+            {filtered.filter(isActiveNow).length > 0
+              ? `${filtered.filter(c => getMonthRange(c.planting_start, c.planting_end).includes(currentMonth)).length} crops to plant · ${filtered.filter(c => getMonthRange(c.harvest_start, c.harvest_end).includes(currentMonth)).length} crops to harvest`
+              : "No active planting or harvesting this month for selected filters"}
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 4 }}>PROVINCE</label>
+          <select className="select-field" value={selectedProvince} onChange={e => setSelectedProvince(e.target.value)}>
+            {provinces.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 4 }}>CROP</label>
+          <select className="select-field" value={selectedCrop} onChange={e => setSelectedCrop(e.target.value)}>
+            {cropNames.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {/* Month header bar */}
+      <div style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, marginBottom: 8, alignItems: "center" }}>
+        <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#3d6b4a" }}>CROP</div>
+        {MONTH_NAMES.map((m, i) => (
+          <div key={i} style={{ fontSize: 9, textAlign: "center", fontFamily: "'Space Mono', monospace", color: i + 1 === currentMonth ? "#7ec99a" : "#3d6b4a", background: i + 1 === currentMonth ? "rgba(45,122,79,0.2)" : "transparent", borderRadius: 4, padding: "2px 0", fontWeight: i + 1 === currentMonth ? "700" : "400" }}>{m}</div>
+        ))}
+      </div>
+
+      {/* Calendar rows */}
+      {loading ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 48, borderRadius: 8, marginBottom: 6 }} />) :
+        filtered.map((entry, idx) => {
+          const plantMonths = getMonthRange(entry.planting_start, entry.planting_end);
+          const harvestMonths = getMonthRange(entry.harvest_start, entry.harvest_end);
+          const fertMonth = entry.fertilising_month;
+          const active = isActiveNow(entry);
+
+          return (
+            <div key={idx} style={{ background: active ? "#1a2e1e" : "#152218", border: `1px solid ${active ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, marginBottom: 6, padding: "8px 10px", transition: "all 0.2s" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, alignItems: "center", marginBottom: entry.notes ? 6 : 0 }}>
+                <div>
+                  <div style={{ fontSize: 12, color: "#c8e8d4", fontWeight: 600 }}>{entry.crop_name}</div>
+                  {entry.province !== "All" && <div style={{ fontSize: 9, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{entry.province}</div>}
+                </div>
+                {MONTH_NAMES.map((_, i) => {
+                  const m = i + 1;
+                  const isPlant = plantMonths.includes(m);
+                  const isHarvest = harvestMonths.includes(m);
+                  const isFert = fertMonth === m;
+                  const isCurrent = m === currentMonth;
+                  return (
+                    <div key={i} style={{ height: 20, borderRadius: 3, position: "relative",
+                      background: isHarvest ? "rgba(212,160,23,0.8)" : isPlant ? "rgba(45,122,79,0.85)" : isFert ? "rgba(90,143,163,0.6)" : "transparent",
+                      outline: isCurrent ? "1px solid #7ec99a" : "none",
+                      title: isPlant ? "Plant" : isHarvest ? "Harvest" : isFert ? "Fertilise" : ""
+                    }} />
+                  );
+                })}
+              </div>
+              {entry.notes && <div style={{ fontSize: 11, color: "#8aaa94", marginTop: 4, paddingLeft: 0 }}>{entry.notes}</div>}
+              {entry.variety && <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>Varieties: {entry.variety}</div>}
+            </div>
+          );
+        })
+      }
+
+      {/* Legend */}
+      <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap" }}>
+        {[
+          { color: "rgba(45,122,79,0.85)", label: "Planting" },
+          { color: "rgba(212,160,23,0.8)", label: "Harvest" },
+          { color: "rgba(90,143,163,0.6)", label: "Fertilise" },
+        ].map((l, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 16, height: 12, borderRadius: 3, background: l.color }} />
+            <span style={{ fontSize: 11, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>{l.label}</span>
+          </div>
+        ))}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ width: 16, height: 12, borderRadius: 3, border: "1px solid #7ec99a" }} />
+          <span style={{ fontSize: 11, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>Current Month</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── INPUT SUPPLIERS TAB ───────────────────────────────────────────────────────
 function InputSuppliersTab() {
