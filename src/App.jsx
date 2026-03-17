@@ -1005,7 +1005,6 @@ function ListingModal({ onClose, onSave }) {
       </div>
     </div>
   );
-  );
 }
 
 // ─── CONTACT MODAL ─────────────────────────────────────────────────────────────
