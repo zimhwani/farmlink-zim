@@ -612,8 +612,8 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
             <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>Farmers</div>
             <div style={{ fontSize: 8, color: "#2d7a4f", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>TAP MAP ↗</div>
           </div>
-          {[{ label: "Listings", value: listingCount, icon: "🛒" }, { label: "Districts", value: "60+", icon: "📍" }].map(s => (
-            <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
+          {[{ label: "Listings", value: listingCount, icon: "🛒", tab: "market" }, { label: "Districts", value: "60+", icon: "📍", tab: "register" }].map(s => (
+            <div key={s.label} onClick={() => setActiveTab(s.tab)} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>
               <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#7ec99a", fontWeight: 700 }}>{s.value}</div>
               <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>{s.label}</div>
