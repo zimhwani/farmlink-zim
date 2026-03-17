@@ -1488,7 +1488,7 @@ function InsightsTab() {
         <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
           <div style={{ fontSize: 28 }}>🛰️</div>
           <div>
-            <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5cd68a", marginBottom: 4 }}>AI SATELLITE FORECAST · 2024/25 SEASON</div>
+            <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5cd68a", marginBottom: 4 }}>AI SATELLITE FORECAST · 2025/26 SEASON</div>
             <div style={{ fontSize: 15, color: "#e8dfc8", lineHeight: 1.5 }}>Mashonaland maize yield expected to drop <strong style={{ color: "#e07060" }}>12–15%</strong> due to reduced rainfall. Manicaland tobacco shows strong recovery.</div>
           </div>
         </div>
