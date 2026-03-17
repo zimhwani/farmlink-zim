@@ -253,7 +253,7 @@ export default function FarmLinkZim() {
         /* Mobile — keep original look */
         @media (max-width: 767px) {
           .sidebar { display: none; }
-          .main-area { width: 100%; max-width: 480px; margin: 0 auto; }
+          .main-area { width: 100%; }
           .top-bar { padding: 16px 20px 12px; border-bottom: 1px solid #1f3525; position: sticky; top: 0; z-index: 100; background: linear-gradient(180deg, #0a1a0c 0%, #0d1a0f 100%); }
           .page-content { padding-bottom: 80px; }
           .two-col { display: block; padding: 0; }
@@ -296,7 +296,7 @@ export default function FarmLinkZim() {
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .map-dot { cursor: pointer; transition: all 0.2s; } .map-dot:hover { r: 7; }
         .stat-card { background: #152218; border: 1px solid #1f3525; border-radius: 10px; padding: 14px 12px; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,20,12,0.97); backdrop-filter: blur(12px); border-top: 1px solid #1f3525; display: flex; justify-content: space-around; padding: 8px 0 12px; z-index: 100; max-width: 480px; margin: 0 auto; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,20,12,0.97); backdrop-filter: blur(12px); border-top: 1px solid #1f3525; display: flex; justify-content: space-around; padding: 8px 0 12px; z-index: 100; }
       `}</style>
 
       <div className="app-shell">
