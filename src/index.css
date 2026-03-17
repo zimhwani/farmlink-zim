@@ -77,6 +77,7 @@ body { background: #0d1a0f; color: #e8dfc8; font-family: 'Crimson Pro', Georgia,
   .top-bar {
     padding: 16px 32px 12px;
     z-index: 50;
+    border-bottom: none;
   }
 
   .page-content {
@@ -216,6 +217,12 @@ body { background: #0d1a0f; color: #e8dfc8; font-family: 'Crimson Pro', Georgia,
 .prov-label { font-family: monospace; font-size: 20px; fill: #3a6b48; text-anchor: middle; pointer-events: none; }
 .city-dot { fill: #5c8f6b; }
 .city-label { font-family: monospace; font-size: 14px; fill: #5c8f6b; }
+
+/* Remove top bar border on desktop */
+@media (min-width: 768px) {
+  .top-bar { border-bottom: none !important; }
+  .sidebar-logo-area { border-bottom: 1px solid #1f3525; }
+}
 
 /* Hide mobile logo on desktop, show page title instead */
 @media (min-width: 768px) {

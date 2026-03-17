@@ -266,10 +266,8 @@ export default function FarmLinkZim() {
                   <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
                 </div>
               </div>
-              {/* Desktop page title */}
-              <div style={{ fontSize: 14, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", letterSpacing: "0.1em", display: "none" }} className="desktop-title">
-                {TABS.find(t => t.id === activeTab)?.label?.toUpperCase()}
-              </div>
+              {/* Desktop spacer */}
+              <div style={{ flex: 1 }} />
               <div style={{ display: "flex", gap: 8 }}>
                 <div style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>🔔</div>
                 <div style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>👤</div>
