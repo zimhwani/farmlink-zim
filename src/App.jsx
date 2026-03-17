@@ -206,12 +206,65 @@ export default function FarmLinkZim() {
     setProvince(""); setDistrict(""); setWard(""); setSelectedCrops([]); setSelectedLivestock([]); setFarmSize(""); setRegisteredFarmer(null);
   };
 
+  const TABS = [
+    { id: "home", icon: "🛖", label: "Home" },
+    { id: "market", icon: "🛒", label: "Marketplace" },
+    { id: "register", icon: "📍", label: "Register Farm" },
+    { id: "advisory", icon: "🤖", label: "AI Advisor" },
+    { id: "insights", icon: "📊", label: "Insights" },
+    { id: "admin", icon: "⚙️", label: "Admin" },
+  ];
+
   return (
-    <div style={{ fontFamily: "'Crimson Pro', Georgia, serif", background: "#0d1a0f", minHeight: "100vh", color: "#e8dfc8", maxWidth: 480, margin: "0 auto", position: "relative" }}>
+    <div style={{ fontFamily: "'Crimson Pro', Georgia, serif", background: "#0d1a0f", minHeight: "100vh", color: "#e8dfc8" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #0d1a0f; } ::-webkit-scrollbar-thumb { background: #2d7a4f; border-radius: 2px; }
+
+        /* ── RESPONSIVE LAYOUT ── */
+        .app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* Desktop sidebar */
+        @media (min-width: 768px) {
+          .app-shell { flex-direction: row; }
+          .sidebar { width: 240px; min-height: 100vh; background: #0a1a0c; border-right: 1px solid #1f3525; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; padding: 24px 0 0; }
+          .main-area { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+          .top-bar { padding: 16px 32px 12px; border-bottom: 1px solid #1f3525; position: sticky; top: 0; z-index: 50; background: linear-gradient(180deg, #0a1a0c 0%, #0d1a0f 100%); }
+          .page-content { padding: 0; max-width: 900px; }
+          .bottom-nav { display: none !important; }
+          .sidebar-nav-btn { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: none; cursor: pointer; padding: 12px 20px; color: #4a7a5a; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.05em; transition: all 0.2s; text-align: left; border-left: 3px solid transparent; }
+          .sidebar-nav-btn:hover { color: #aee0c0; background: #152218; }
+          .sidebar-nav-btn.active { color: #7ec99a; background: #152218; border-left-color: #2d7a4f; }
+          .sidebar-nav-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+          .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px 32px; align-items: start; }
+          .single-col { padding: 24px 32px; max-width: 680px; }
+          .chat-col { display: flex; flex-direction: column; height: calc(100vh - 70px); }
+          .modal { border-radius: 16px !important; max-width: 560px !important; margin: auto; }
+          .modal-overlay { align-items: center !important; }
+          .listing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+          .listing-card { margin-bottom: 0 !important; }
+          .stats-row { grid-template-columns: repeat(4, 1fr) !important; }
+          .price-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          .quick-grid { grid-template-columns: repeat(4, 1fr) !important; }
+          .weather-strip { gap: 8px !important; }
+        }
+
+        /* Mobile — keep original look */
+        @media (max-width: 767px) {
+          .sidebar { display: none; }
+          .main-area { width: 100%; max-width: 480px; margin: 0 auto; }
+          .top-bar { padding: 16px 20px 12px; border-bottom: 1px solid #1f3525; position: sticky; top: 0; z-index: 100; background: linear-gradient(180deg, #0a1a0c 0%, #0d1a0f 100%); }
+          .page-content { padding-bottom: 80px; }
+          .two-col { display: block; padding: 0; }
+          .single-col { padding: 0; }
+          .chat-col { height: calc(100vh - 130px); display: flex; flex-direction: column; }
+          .listing-grid { display: block; }
+          .stats-row { grid-template-columns: 1fr 1fr 1fr !important; }
+          .price-grid { grid-template-columns: 1fr 1fr !important; }
+          .quick-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+
         .tab-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 10px; transition: all 0.2s; }
         .tab-btn.active { color: #7ec99a !important; } .tab-btn:hover { color: #aee0c0 !important; }
         .tab-icon { font-size: 18px; line-height: 1; } .tab-label { font-size: 8px; letter-spacing: 0.08em; font-family: 'Space Mono', monospace; text-transform: uppercase; }
@@ -236,48 +289,94 @@ export default function FarmLinkZim() {
         .step-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s; }
         .step-dot.active { background: #7ec99a; width: 24px; border-radius: 4px; } .step-dot.done { background: #2d7a4f; } .step-dot.pending { background: #1f3525; }
         .fade-in { animation: fadeIn 0.4s ease forwards; } @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .hero-grain { position: absolute; inset: 0; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); pointer-events: none; }
+        .hero-grain { position: absolute; inset: 0; opacity: 0.04; background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E'); pointer-events: none; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
         .modal { background: #0d1a0f; border: 1px solid #2d5a36; border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
         .skeleton { background: linear-gradient(90deg, #152218 25%, #1f3525 50%, #152218 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .map-dot { cursor: pointer; transition: all 0.2s; } .map-dot:hover { r: 7; }
         .stat-card { background: #152218; border: 1px solid #1f3525; border-radius: 10px; padding: 14px 12px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,20,12,0.97); backdrop-filter: blur(12px); border-top: 1px solid #1f3525; display: flex; justify-content: space-around; padding: 8px 0 12px; z-index: 100; max-width: 480px; margin: 0 auto; }
       `}</style>
 
-      {/* HEADER */}
-      <div style={{ background: "linear-gradient(180deg, #0a1a0c 0%, #0d1a0f 100%)", borderBottom: "1px solid #1f3525", padding: "16px 20px 12px", position: "sticky", top: 0, zIndex: 100 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#c8e8d4" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
-              <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
+      <div className="app-shell">
+
+        {/* ── DESKTOP SIDEBAR ── */}
+        <div className="sidebar">
+          {/* Logo */}
+          <div style={{ padding: "0 20px 24px", borderBottom: "1px solid #1f3525" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
+                <div style={{ fontSize: 8, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
+              </div>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <div style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>🔔</div>
-            <div style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>👤</div>
+
+          {/* Nav items */}
+          <nav style={{ flex: 1, paddingTop: 12 }}>
+            {TABS.map(tab => (
+              <button key={tab.id} className={`sidebar-nav-btn ${activeTab === tab.id ? "active" : ""}`} onClick={() => setActiveTab(tab.id)}>
+                <span className="sidebar-nav-icon">{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* Bottom sidebar info */}
+          <div style={{ padding: "16px 20px", borderTop: "1px solid #1f3525" }}>
+            <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3d6b4a", marginBottom: 6 }}>PLATFORM STATUS</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#5cd68a" }} className="pulse" />
+              <span style={{ fontSize: 11, color: "#5c8f6b" }}>Live · Supabase connected</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── MAIN AREA ── */}
+        <div className="main-area">
+
+          {/* Top bar */}
+          <div className="top-bar">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              {/* Mobile logo */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="mobile-logo">
+                <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#c8e8d4" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
+                </div>
+              </div>
+              {/* Desktop page title */}
+              <div style={{ fontSize: 14, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", letterSpacing: "0.1em", display: "none" }} className="desktop-title">
+                {TABS.find(t => t.id === activeTab)?.label?.toUpperCase()}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>🔔</div>
+                <div style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer" }}>👤</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Page content */}
+          <div className="page-content">
+            {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
+            {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} />}
+            {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
+            {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
+            {activeTab === "insights" && <InsightsTab />}
+            {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
           </div>
         </div>
       </div>
 
-      {/* CONTENT */}
-      <div style={{ paddingBottom: 80, minHeight: "calc(100vh - 130px)" }}>
-        {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
-        {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} />}
-        {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
-        {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
-        {activeTab === "insights" && <InsightsTab />}
-        {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
-      </div>
-
-      {/* BOTTOM NAV */}
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "rgba(10,20,12,0.97)", backdropFilter: "blur(12px)", borderTop: "1px solid #1f3525", display: "flex", justifyContent: "space-around", padding: "8px 0 12px", zIndex: 100 }}>
-        {[{ id: "home", icon: "🛖", label: "Home" }, { id: "market", icon: "🛒", label: "Market" }, { id: "register", icon: "📍", label: "Register" }, { id: "advisory", icon: "🤖", label: "AI" }, { id: "insights", icon: "📊", label: "Insights" }, { id: "admin", icon: "⚙️", label: "Admin" }].map(tab => (
+      {/* MOBILE BOTTOM NAV */}
+      <div className="bottom-nav">
+        {TABS.map(tab => (
           <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`} style={{ color: "#3d6b4a" }} onClick={() => setActiveTab(tab.id)}>
             <span className="tab-icon">{tab.icon}</span>
-            <span className="tab-label">{tab.label}</span>
+            <span className="tab-label">{tab.id === "advisory" ? "AI" : tab.label}</span>
           </button>
         ))}
       </div>
@@ -479,7 +578,112 @@ function FarmerMapModal({ farmers, onClose }) {
 function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherIcon, onFarmerMapClick }) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   return (
-    <div className="fade-in" style={{ padding: "20px 16px" }}>
+    <div className="fade-in two-col">
+      {/* LEFT COLUMN */}
+      <div style={{ padding: "20px 16px" }}>
+        {/* Hero */}
+        <div style={{ background: "linear-gradient(135deg, #1a3d24 0%, #0f2a18 100%)", borderRadius: 16, padding: "24px 20px", marginBottom: 16, position: "relative", overflow: "hidden", border: "1px solid #2d5a36" }}>
+          <div className="hero-grain" />
+          <div style={{ position: "absolute", right: -20, top: -20, fontSize: 100, opacity: 0.07 }}>🌿</div>
+          <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5cd68a", letterSpacing: "0.15em", marginBottom: 8 }}>ZIMBABWE'S FARMING PLATFORM</div>
+          <div style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.2, color: "#d8f0e0", marginBottom: 8 }}>Connect. Grow.<br /><span style={{ color: "#7ec99a" }}>Prosper.</span></div>
+          <div style={{ fontSize: 14, color: "#8aaa94", lineHeight: 1.5, marginBottom: 20 }}>Linking farmers to markets, advisors, and buyers across Zimbabwe.</div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="btn-primary" style={{ width: "auto", padding: "10px 18px", fontSize: 11 }} onClick={() => setActiveTab("register")}>Register Farm</button>
+            <button className="btn-secondary" style={{ padding: "10px 18px", fontSize: 11 }} onClick={() => setActiveTab("market")}>Browse Market</button>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div style={{ display: "grid", gap: 8, marginBottom: 16 }} className="stats-row">
+          <div onClick={onFarmerMapClick} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 10, padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>
+            <div style={{ fontSize: 20, marginBottom: 4 }}>👩🏾‍🌾</div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#7ec99a", fontWeight: 700 }}>{farmerCount}</div>
+            <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>Farmers</div>
+            <div style={{ fontSize: 8, color: "#2d7a4f", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>TAP MAP ↗</div>
+          </div>
+          {[{ label: "Listings", value: listingCount, icon: "🛒" }, { label: "Districts", value: "60+", icon: "📍" }].map(s => (
+            <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
+              <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#7ec99a", fontWeight: 700 }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Quick Actions */}
+        <div className="section-title">Quick Actions</div>
+        <div style={{ display: "grid", gap: 8 }} className="quick-grid">
+          {[{ label: "AI Farm Advisor", icon: "🤖", desc: "Get instant advice", tab: "advisory" }, { label: "Sell Produce", icon: "📦", desc: "List your harvest", tab: "market" }, { label: "Crop Mapping", icon: "🗺️", desc: "Register your farm", tab: "register" }, { label: "Market Insights", icon: "📈", desc: "Yield & price data", tab: "insights" }].map((a, i) => (
+            <button key={i} onClick={() => setActiveTab(a.tab)} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "14px 12px", textAlign: "left", cursor: "pointer", transition: "border-color 0.2s" }} onMouseOver={e => e.currentTarget.style.borderColor = "#3a7a50"} onMouseOut={e => e.currentTarget.style.borderColor = "#1f3525"}>
+              <div style={{ fontSize: 24, marginBottom: 8 }}>{a.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4", marginBottom: 2 }}>{a.label}</div>
+              <div style={{ fontSize: 11, color: "#4a7a5a" }}>{a.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN */}
+      <div style={{ padding: "20px 16px" }}>
+        {/* Weather */}
+        <div className="card" style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <div className="section-title" style={{ margin: 0 }}>Weather — Harare</div>
+            <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#5cd68a" }}>● LIVE</div>
+          </div>
+          <div style={{ display: "flex", gap: 5, overflowX: "auto", paddingBottom: 4 }} className="weather-strip">
+            {weather ? weather.time.map((t, i) => {
+              const date = new Date(t);
+              const label = i === 0 ? "Today" : days[date.getDay()];
+              return (
+                <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#2d7a4f", background: "#1a2e1e" } : {}}>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>{label}</div>
+                  <div style={{ fontSize: 18, marginBottom: 4 }}>{getWeatherIcon(weather.weathercode[i])}</div>
+                  <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#e8dfc8" }}>{Math.round(weather.temperature_2m_max[i])}°</div>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>{Math.round(weather.temperature_2m_min[i])}°</div>
+                  <div style={{ fontSize: 9, color: "#5a9fd4", marginTop: 4 }}>{weather.precipitation_probability_max[i]}%</div>
+                </div>
+              );
+            }) : [1,2,3,4,5,6].map(i => <div key={i} className="skeleton weather-day" style={{ height: 80 }} />)}
+          </div>
+          {weather && weather.precipitation_probability_max[0] > 60 && (
+            <div style={{ marginTop: 10, background: "#1a2e1e", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#8aaa94", borderLeft: "3px solid #2d7a4f" }}>
+              ⚠️ High rain probability today. Consider delaying fertiliser application.
+            </div>
+          )}
+        </div>
+
+        {/* Price Alerts */}
+        <div className="section-title">Live Price Alerts</div>
+        <div style={{ display: "grid", gap: 8, marginBottom: 16 }} className="price-grid">
+          {PRICE_ALERTS.map((p, i) => (
+            <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{p.crop}</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060" }}>{p.change}</div>
+              </div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#7ec99a", margin: "6px 0 4px" }}>{p.price}</div>
+              <div style={{ fontSize: 10, color: "#4a7a5a" }}>{p.region}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pest Alerts */}
+        <div className="section-title">🚨 Pest & Disease Alerts</div>
+        {[{ name: "Fall Armyworm", risk: "High", regions: "Mash West, Mash Central", action: "Apply chlorpyrifos immediately" }, { name: "Stalk Borer", risk: "Medium", regions: "Midlands, Masvingo", action: "Monitor trap counts weekly" }, { name: "Tick Season", risk: "High", regions: "Matabeleland", action: "Dip cattle weekly with Triatix" }].map((p, i) => (
+          <div key={i} style={{ background: "#152218", border: `1px solid ${p.risk === "High" ? "#5a2020" : "#3a4a20"}`, borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{p.name}</div>
+              <span style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", background: p.risk === "High" ? "rgba(224,112,96,0.2)" : "rgba(200,180,60,0.2)", color: p.risk === "High" ? "#e07060" : "#c8b43c", padding: "2px 8px", borderRadius: 8 }}>{p.risk}</span>
+            </div>
+            <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 2 }}>📍 {p.regions}</div>
+            <div style={{ fontSize: 11, color: "#8aaa94" }}>💊 {p.action}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
       <div style={{ background: "linear-gradient(135deg, #1a3d24 0%, #0f2a18 100%)", borderRadius: 16, padding: "24px 20px", marginBottom: 16, position: "relative", overflow: "hidden", border: "1px solid #2d5a36" }}>
         <div className="hero-grain" />
         <div style={{ position: "absolute", right: -20, top: -20, fontSize: 100, opacity: 0.07 }}>🌿</div>
@@ -572,9 +776,8 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
   const filters = ["All", "Grain", "Livestock", "Horticulture", "Cash Crops"];
   const filterMap = { "Grain": ["Maize", "Wheat", "Sorghum"], "Livestock": ["Cattle", "Goats", "Sheep", "Pigs", "Poultry"], "Horticulture": ["Tomatoes", "Vegetables", "Sweet Potatoes"], "Cash Crops": ["Tobacco", "Cotton", "Coffee", "Soya", "Sunflower", "Groundnuts"] };
   const filtered = filterCrop === "All" ? listings : listings.filter(l => (filterMap[filterCrop] || []).some(f => l.crop?.toLowerCase().includes(f.toLowerCase())));
-
   return (
-    <div className="fade-in" style={{ padding: "20px 16px" }}>
+    <div className="fade-in single-col">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Marketplace</div>
@@ -585,36 +788,38 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
       <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
         {filters.map(f => <span key={f} className={`chip ${filterCrop === f ? "active" : ""}`} onClick={() => setFilterCrop(f)} style={{ fontFamily: "'Space Mono', monospace", fontSize: 10 }}>{f}</span>)}
       </div>
-      {loadingListings ? [1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12, marginBottom: 10 }} />) :
-        filtered.length === 0 ? <div style={{ textAlign: "center", padding: "40px 20px", color: "#4a7a5a" }}><div style={{ fontSize: 40, marginBottom: 12 }}>🌾</div><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>No listings in this category</div></div> :
-        filtered.map(l => (
-          <div key={l.id} className="listing-card">
-            <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              {l.image_url
-                ? <img src={l.image_url} alt={l.crop} style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
-                : <div style={{ width: 56, height: 56, background: "#1a2e1e", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{CROP_EMOJIS[l.crop] || l.img || "🌾"}</div>
-              }
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
-                  <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, fontFamily: "'Space Mono', monospace", padding: "2px 7px", borderRadius: 10 }}>{l.badge}</span>
-                </div>
-                <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 6 }}>📍 {l.location} · {l.farmer_name}</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: "#7ec99a" }}>{l.price}</span>
-                    <span style={{ fontSize: 11, color: "#4a7a5a", marginLeft: 8 }}>{l.quantity}</span>
+      <div className="listing-grid">
+        {loadingListings ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12, marginBottom: 10 }} />) :
+          filtered.length === 0 ? <div style={{ textAlign: "center", padding: "40px 20px", color: "#4a7a5a" }}><div style={{ fontSize: 40, marginBottom: 12 }}>🌾</div><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>No listings in this category</div></div> :
+          filtered.map(l => (
+            <div key={l.id} className="listing-card">
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                {l.image_url
+                  ? <img src={l.image_url} alt={l.crop} style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+                  : <div style={{ width: 56, height: 56, background: "#1a2e1e", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{CROP_EMOJIS[l.crop] || l.img || "🌾"}</div>
+                }
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
+                    <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, fontFamily: "'Space Mono', monospace", padding: "2px 7px", borderRadius: 10 }}>{l.badge}</span>
                   </div>
-                  <button className="btn-secondary" style={{ padding: "5px 14px", fontSize: 10 }} onClick={() => setShowContactModal(l)}>Contact</button>
+                  <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 6 }}>📍 {l.location} · {l.farmer_name}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: "#7ec99a" }}>{l.price}</span>
+                      <span style={{ fontSize: 11, color: "#4a7a5a", marginLeft: 8 }}>{l.quantity}</span>
+                    </div>
+                    <button className="btn-secondary" style={{ padding: "5px 14px", fontSize: 10 }} onClick={() => setShowContactModal(l)}>Contact</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))
-      }
+          ))
+        }
+      </div>
     </div>
   );
-}
+
 
 function badgeColorBg(b) { if (b === "Premium") return "rgba(212,160,23,0.2)"; if (b === "Verified") return "rgba(45,122,79,0.25)"; return "rgba(90,143,163,0.2)"; }
 function badgeColorText(b) { if (b === "Premium") return "#d4a017"; if (b === "Verified") return "#5cd68a"; return "#5a9fd4"; }
@@ -737,7 +942,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
   }
 
   return (
-    <div className="fade-in" style={{ padding: "20px 16px" }}>
+    <div className="fade-in single-col">
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Farmer Registration</div>
         <div style={{ fontSize: 12, color: "#4a7a5a" }}>Join farmers on FarmLink Zim 👩🏾‍🌾</div>
@@ -824,7 +1029,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
 // ─── ADVISORY TAB ──────────────────────────────────────────────────────────────
 function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping, chatEndRef }) {
   return (
-    <div className="fade-in" style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 130px)" }}>
+    <div className="fade-in chat-col">
       <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #1f3525" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
@@ -887,7 +1092,7 @@ function AdminTab({ farmers, listings }) {
   const topProvinces = Object.entries(cropTally).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
   return (
-    <div className="fade-in" style={{ padding: "20px 16px" }}>
+    <div className="fade-in single-col">
       <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Admin Dashboard</div>
       <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>Platform overview & management</div>
 
@@ -964,7 +1169,7 @@ function InsightsTab() {
     { region: "Mat North", crop: "Cattle", yield: 820, forecast: 790, change: -4 },
   ];
   return (
-    <div className="fade-in" style={{ padding: "20px 16px" }}>
+    <div className="fade-in single-col">
       <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Market Insights</div>
       <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>AI-powered yield & price intelligence</div>
       <div style={{ background: "linear-gradient(135deg, #1a2e1e, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
