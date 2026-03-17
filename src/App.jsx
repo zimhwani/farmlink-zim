@@ -18,6 +18,14 @@ const db = {
     });
     return res.json();
   },
+  async patch(table, id, data) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: "PATCH",
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", Prefer: "return=representation" },
+      body: JSON.stringify({ ...data, updated_at: new Date().toISOString() }),
+    });
+    return res.json();
+  },
   async uploadImage(file) {
     const ext = file.name.split(".").pop();
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
@@ -138,7 +146,7 @@ export default function FarmLinkZim() {
 
   const loadFarmers = async () => {
     try {
-      const data = await db.get("farmers", "?select=id,name,province,district,ward,latitude,longitude&order=created_at.desc");
+      const data = await db.get("farmers", "?select=id,name,province,district,ward,latitude,longitude,farmer_crops(crop_name,type)&order=created_at.desc");
       setFarmers(Array.isArray(data) ? data : []);
     } catch (e) { console.error(e); }
   };
@@ -299,7 +307,7 @@ export default function FarmLinkZim() {
 
       {showListingModal && <ListingModal onClose={() => setShowListingModal(false)} onSave={async (listing) => { await db.post("listings", listing); setShowListingModal(false); loadListings(); loadCounts(); }} />}
       {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); setShowContactModal(null); }} />}
-      {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} />}
+      {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} loadFarmers={loadFarmers} />}
     </div>
   );
 }
@@ -350,7 +358,65 @@ const ZW_PROVINCES = {
   ZWMV: "M728.4 868.1l0-0.1-1.6-3.1-0.5-0.6-0.7-0.1-0.6 0.1-0.8-0.1-0.8-0.3-0.6-0.5-0.3-0.9-0.2-1.6-0.3-0.7-1.4-2-0.2-0.9-0.1-1.5-0.3-0.9-0.9-1.5-0.2-1-0.1-0.9-0.1-0.7-0.5-0.5-0.9-0.4-0.8-0.1-1.4 0.1-0.6-0.1-0.5-0.3 0.2-1.4-0.2-0.7-0.6-0.5-1.2-0.4-1.7-0.3-0.6-0.4-0.5-0.7-0.5-1.1-0.3-1.8-0.2-0.6-0.3-0.6-1-1.2-0.4-0.7-0.2-0.6 0-1.5-0.3-0.6-0.5-0.4-1.1 0-1.5 0.2-0.7-0.2-0.4-0.4-0.7-1.8-0.5-0.8-1.3-1-0.7-0.7-0.7-1.1-0.8-0.8-1.6-1.1-1.1-0.4-0.9-0.3-0.7 0-0.6-0.1-0.4-0.3 0.2-0.6 0.2-0.3 0.1-0.2 0.1-0.1 0.1-0.2 0.2-0.3-0.1-1.2 0.1-0.7 0.2-0.6 0-0.6-0.3-0.6-1.2-0.5-0.9-0.6-0.8-0.7-0.8-1.4-0.1-0.9 0.2-1.3-0.2-0.6-5.3-6.7-0.3-0.8-0.6-0.7-0.6-0.7-3-1.7-0.4-0.6-0.4-0.9-0.8-2.6-0.1-0.7 0.1-0.8-0.2-0.7-0.4-0.6-1.6-0.8-0.4-0.4 0-0.8 0.2-0.7-0.1-0.6-0.4-0.4-0.8-0.2-1.2 0.6-0.6 0.1-0.6 0-2.8-1.1-1.3-0.8-0.7-0.2-0.6 0-0.6 0-0.6-0.2-0.9-1.7-0.7-0.9-2.3-2.6-1-1.4-0.1-0.5 0.2-0.5 0.6-0.9 0.1-0.5-0.4-0.5-0.9-0.4-2.3-0.1-3.6-1.4-0.9-0.8-2.5-1.2-2.9-2-2.7-1.4-0.7 0.1-0.6 0.2-0.6 0.3-0.6 0.1-0.6-0.1-1.3-0.4-9.4-1.2-0.8-0.2-0.5-0.4-0.3-0.5 0.2-1.6 0-0.8-0.2-0.6-0.4-0.5-0.5-0.4-1.1-0.2-0.8-0.4-2.4-1.4-1-0.2-0.5-0.3-0.5-0.5-0.5-1.8-0.4-0.7-1-0.4-1.6-0.1-0.7-0.1-1.5-0.4-0.5-0.1-0.5 0.1-0.1 0-0.3 0.1-0.5-0.1-0.5-0.4-0.5-1.1-0.5-0.7-0.8-0.5-0.8-0.3-0.6-0.6-0.7-0.8-0.9-1.6-2.2-2-1.2-0.8-0.5-0.5-2-3.5-1.2-1.2-0.6-0.4-1.3-0.8-0.5-0.4-0.5-0.4-0.9-0.8-1.3-0.6-0.5-0.3-0.6-0.8-0.5-1.1-1.8-4.2-0.2-0.3-0.4-0.3-0.6-0.3-0.6-0.3-0.3-0.4-0.2-0.9 0-0.6-0.2-0.7-0.4-0.4-0.9-0.4-0.6-0.2-0.5 0-0.3-0.4-0.2-0.8-0.2-3.4-0.2-1-0.5-0.6-1.1-0.7-0.7-0.2-1-0.2-0.5-0.6-0.7-1.1-1.2-2.6-0.2-1.2 0-0.6 0.3-0.3-0.2-0.3-0.4-0.4-2.8-1.7-0.9-0.3-0.6-0.5-5.2-6.1-0.9-1.9-1.7-5.9 1.9 0-3.6 0.5-8.1 1.9-4.8-0.1-4.3-1.1-3.1-0.2-0.6-0.1-2.3-0.7-1.2-0.6-0.3-0.4-0.1-0.6 1.5-1.3 16.5-11.4 0.5-0.7 0.3-1.1 6.2-29-0.1-0.8-0.7 0-4.9 1.6-1.1 0.1-0.6-0.3-0.5-1.4-0.4-1.1-0.8-1-1-1.1-0.4-0.5-0.1-0.7 0.2-1.1 0.3-0.7 0.3-0.5 0.7-0.3 0.8-0.6 0.8-0.8-0.1-1.5 1.1-2.7 0.3-1.3 0-6.5 0.7-0.2 0.9 0.3 3.9 2.8 1.1 0.4 1-0.5 0.8-0.8 2-2.5 0.8-1.8 0.9-2.4 0.4-1.2 0-1-0.2-4 0-1.1 0.2-0.7 6.9-16.9 0.2-0.8 0.6-5.9 0.2-0.7 7.7-16.4 0.3-1.3 0-1.2-3.6-6.1-0.4-0.2-0.5 0.1-1.7 1.1-0.4 0.1-0.4-0.3-0.8-3.1-0.8-1.3-1.7-0.1-8.1 2-1-0.3-0.5-1.5-0.8-3.7-0.4-1.4-0.7-0.1-0.6 0.1-1.2 0.6-0.6 0.2-5.2 1.1-0.7 0-0.7-0.4-5.3-4-7.6-3.9-1-0.2-1.7-0.1-2 0.9-2 0.6-1.3-0.3-1.2-2.5-0.4-1.3-0.2-1.2 0-1.5 1.3-6-0.2-1-0.3-1.2-1-2.1-0.7-1.3-3.1-3.2-1-1.5-0.9-2.8-0.1-1-0.4-0.7-0.6-0.9-2.6-2.4-0.5-0.6-0.5-0.8-2.7-5.3-1.2-3.3-1.6-2-5.9-5.5 1-2.1 0.6-0.7 1.2-0.8 0.9-0.2 0.9 0.2 0.8 0.5 0.7 0.5 1 0.6 1.2 0.4 3.8 0.8 0.7 0 0.9-0.1 0.7-0.2 0.6-0.5 0.4-0.6 0-1.4-0.4-0.9-0.6-0.8-1.7-1.7-0.8-0.9-0.4-0.9-0.2-1 0.1-1 0.4-1.9 0.6-1.1 1-1.3 5.1-4.6 0.5-0.5 0.3-0.7-0.3-1-0.5-0.6-1.5-1.6-0.8-0.6-1-0.6-0.7-0.6-0.3-0.9-0.1-1.4 0.1-4.9 0.2-1 0.5-1.9 0.9-2.3 0-0.8 0.4-0.9 0.7-1 2.7-2 1.5-0.6 1.3-0.3 7 1.3 0.6 0 0.4-0.4 0-0.8-0.1-0.7-0.5-1.2-1.6-6.5-1.1-2.7 0-0.4 0-0.5 0.3-0.6 2-3.3 1.4-1.1 8.1-4.7 5.1-2.1 0.5-0.3 0.4-0.6 0.3-0.9 0-0.8-0.1-0.7-0.7-2.5 0-0.7 0.3-0.7 11.5-13.9 2.1-2.1 1.9-1.5 0.8-1.8 3.1-3.4 1.6-0.2 0.8 0.2 6 4.9 5.8 0.8 1 0 1.3-0.2 2.4-1.2 13.7-11.6 1.5-0.8 1.1-0.4 1.3-0.2 1.4 0.1 0.8 0.2 0.8 0.5 0.6 0.7 0.8 0.6 0.8 0.5 0.9 0.7 0.8 0.8 0.7 0.5 0.6 0.3 1.8 0.8 0.7 0.4 0.5 0.4 1.8 2.4 1.1 1.1 1.4 0.8 2.7 0.8 0.7 0.4 0.4 0.4 0.7 0.9 0.7 0.6 0.5 0.3 0.6 0.3 1.1 0.3 2.9 0.4 2.2 0 3.1 0.5 0.8 0 0.7-0.3 0.4-0.3 0.3-0.2 0.5-0.2 0.6-0.3 1.1-0.8 0.4-0.1 0.6 0 2.2 1.3 0.8 0.2 0.8 0.3 0.8 0.1 1-0.1 11.6-10.7 0.8-1.4 0.3-2-0.6-9 0.2-0.7 0.4-0.7 1.3-1.5 0.4-0.8 0.3-0.7 0.6-3 1.3-2.4 0.1-0.8 0-0.7-0.6-2.5 0-0.8 0.2-0.7 0.3-0.8 1.5-2.7 0.2-0.6 0.1-0.7-0.3-0.6-0.1-0.7-0.3-1.5-0.3-0.6-0.3-0.5-1-0.7-0.4-0.5-0.4-0.4-0.3-0.6-0.3-0.6-0.1-0.7-0.1-0.8 0.2-2.2 0-0.8-0.2-0.6-0.5-1.3 0-0.9 0.1-1.1 0.6-1.4 0.1-0.9-0.2-0.7-4.8-5.4 0-0.1-0.3-0.6-0.1-0.7-0.2-1.5-0.2-0.6-0.3-0.6-0.4-0.4-2.6-1.7-0.5-0.4-0.4-0.5-0.3-0.5-0.2-0.7-0.3-0.6-0.3-0.5-0.4-0.4-0.6-0.2-1.4-0.3-0.7-0.2-0.5-0.3-0.4-0.4-0.8-1-0.3-0.6-0.2-0.6 0-0.8 0.1-0.6 0-0.7-0.3-0.5-0.4-0.3-0.6-0.1-2.3-0.2-1.3-0.4-0.6-0.2-0.5-0.4-0.9-0.7-0.4-0.5-1.6-2.7-0.4-0.5-0.6-0.2-0.3-0.7 0-1.3 1-3.1 0.1-2.5-0.2-2.4-0.4-2-0.5-1.6-0.7-0.9-1.5-1-1.9-0.5-1.9-0.2-2.1 1.3-0.7 0.3-0.4-0.2 0-3.6 0.6-5.1 1.4-2.6 0.8-4.4-0.1-1.7-0.3-0.9-0.7-0.9 0.4-0.6 0.9-0.7 8.7-4.2 0.7-0.2 0.7-0.1 18.1-0.8 0.8-0.1 0.6-0.2 0.6-0.6-0.8-0.1-0.4 0-0.2-0.1 0-0.3 0.1-0.4 0.3-0.7 0.1-0.4-0.1-0.3-0.1-0.2-0.1-0.4 0-0.6 0.2-1.1 0.3-0.6 2.8-2.1 0.6-0.8 0.3-0.5 0.1-0.4 0-0.3-0.2-0.3-0.1-0.2-0.2-0.3-0.1-0.5-0.1-0.6 0-0.4-0.1-0.2-0.2-0.2-0.1-0.1-0.1-0.2-0.1-0.5-0.2-0.3-0.1-0.4 0.1-0.6 1.3-2.5 1.1-0.6 9.9-0.3 1.1 0 0.9 0.4 3.2 1.7 3.4 0.9 1.5 0.2 1.5-0.1 3.4-0.9 0.8-0.3 0.9-0.5 0.2-0.6-0.2-0.4-0.3-0.4-0.4-0.3-0.2-0.3-0.1-0.6-0.2-1.4 0-1.5 0.3-2.3 1.3-3.9 0.1-0.8-0.1-3 0.1-1 2-9.9 0.1-1.3-0.1-1.3-0.5-1.7-0.4-2 1.3-6.5 0.2-10.2 0.2-1 0.7-0.6 1.3-0.5 1.5-0.9 0.6-1-0.1-0.9-0.7-0.8-0.9-0.4-3.6-0.8-0.7-0.3-0.5-0.5 0.3-0.6 0.9-0.9 16.2-13.4 5.1-4.7 5.9 5.5 1.6 2 1.2 3.3 2.7 5.3 0.5 0.8 0.5 0.6 2.6 2.4 0.6 0.9 0.4 0.7 0.1 1 0.9 2.8 1 1.5 3.1 3.2 0.7 1.3 1 2.1 0.3 1.2 0.2 1-1.3 6 0 1.5 0.2 1.2 0.4 1.3 1.2 2.5 1.3 0.3 2-0.6 2-0.9 1.7 0.1 1 0.2 7.6 3.9 5.3 4 0.7 0.4 0.7 0 5.2-1.1 0.6-0.2 1.2-0.6 0.6-0.1 0.7 0.1 0.4 1.4 0.8 3.7 0.5 1.5 1 0.3 8.1-2 1.7 0.1 0.8 1.3 0.8 3.1 0.4 0.3 0.4-0.1 1.7-1.1 0.5-0.1 0.4 0.2 3.6 6.1 0 1.2-0.3 1.3-7.7 16.4-0.2 0.7-0.6 5.9-0.2 0.8-6.9 16.9-0.2 0.7 0 1.1 0.2 4 0 1-0.4 1.2-0.9 2.4-0.8 1.8-2 2.5-0.8 0.8-1 0.5-1.1-0.4-3.9-2.8-0.9-0.3-0.7 0.2 0 6.5-0.3 1.3-1.1 2.7 0.1 1.5-0.8 0.8-0.8 0.6-0.7 0.3-0.3 0.5-0.3 0.7-0.2 1.1 0.1 0.7 0.4 0.5 1 1.1 0.8 1 0.4 1.1 0.5 1.4 0.6 0.3 1.1-0.1 4.9-1.6 0.7 0 0.1 0.8-6.2 29-0.3 1.1-0.5 0.7-16.5 11.4-1.5 1.3 0.1 0.6 0.3 0.4 1.2 0.6 2.3 0.7 0.6 0.1 3.1 0.2 4.3 1.1 4.8 0.1 8.1-1.9 3.6-0.5 1.9 0 1.7 5.9 0.9 1.9 5.2 6.1 0.6 0.5 0.9 0.3 2.8 1.7 0.4 0.4 0.2 0.3-0.3 0.3 0 0.6 0.2 1.2 1.2 2.6 0.7 1.1 0.5 0.6 1 0.2 0.7 0.2 1.1 0.7 0.5 0.6 0.2 1 0.2 3.4 0.2 0.8 0.3 0.4 0.5 0 0.6 0.2 0.9 0.4 0.4 0.4 0.2 0.7 0 0.6 0.2 0.9 0.3 0.4 0.6 0.3 0.6 0.3 0.4 0.3 0.2 0.3 1.8 4.2 0.5 1.1 0.6 0.8 0.5 0.3 1.3 0.6 0.9 0.8 0.5 0.4 0.5 0.4 1.3 0.8 0.6 0.4 1.2 1.2 2 3.5 0.5 0.5 1.2 0.8 2.2 2 0.9 1.6 0.7 0.8 0.6 0.6 0.8 0.3 0.8 0.5 0.5 0.7 0.5 1.1 0.5 0.4 0.5 0.1 0.3-0.1 0.1 0 0.5-0.1 0.5 0.1 1.5 0.4 0.7 0.1 1.6 0.1 1 0.4 0.4 0.7 0.5 1.8 0.5 0.5 0.5 0.3 1 0.2 2.4 1.4 0.8 0.4 1.1 0.2 0.5 0.4 0.4 0.5 0.2 0.6 0 0.8-0.2 1.6 0.3 0.5 0.5 0.4 0.8 0.2 9.4 1.2 1.3 0.4 0.6 0.1 0.6-0.1 0.6-0.3 0.6-0.2 0.7-0.1 2.7 1.4 2.9 2 2.5 1.2 0.9 0.8 3.6 1.4 2.3 0.1 0.9 0.4 0.4 0.5-0.1 0.5-0.6 0.9-0.2 0.5 0.1 0.5 1 1.4 2.3 2.6 0.7 0.9 0.9 1.7 0.6 0.2 0.6 0 0.6 0 0.7 0.2 1.3 0.8 2.8 1.1 0.6 0 0.6-0.1 1.2-0.6 0.8 0.2 0.4 0.4 0.1 0.6-0.2 0.7 0 0.8 0.4 0.4 1.6 0.8 0.4 0.6 0.2 0.7-0.1 0.8 0.1 0.7 0.8 2.6 0.4 0.9 0.4 0.6 3 1.7 0.6 0.7 0.6 0.7 0.3 0.8 5.3 6.7 0.2 0.6-0.2 1.3 0.1 0.9 0.8 1.4 0.8 0.7 0.9 0.6 1.2 0.5 0.3 0.6 0 0.6-0.2 0.6-0.1 0.7 0.1 1.2-0.2 0.3-0.1 0.2-0.1 0.1-0.1 0.2-0.2 0.3-0.2 0.6 0.4 0.3 0.6 0.1 0.7 0 0.9 0.3 1.1 0.4 1.6 1.1 0.8 0.8 0.7 1.1 0.7 0.7 1.3 1 0.5 0.8 0.7 1.8 0.4 0.4 0.7 0.2 1.5-0.2 1.1 0 0.5 0.4 0.3 0.6 0 1.5 0.2 0.6 0.4 0.7 1 1.2 0.3 0.6 0.2 0.6 0.3 1.8 0.5 1.1 0.5 0.7 0.6 0.4 1.7 0.3 1.2 0.4 0.6 0.5 0.2 0.7-0.2 1.4 0.5 0.3 0.6 0.1 1.4-0.1 0.8 0.1 0.9 0.4 0.5 0.5 0.1 0.7 0.1 0.9 0.2 1 0.9 1.5 0.3 0.9 0.1 1.5 0.2 0.9 1.4 2 0.3 0.7 0.2 1.6 0.3 0.9 0.6 0.5 0.8 0.3 0.8 0.1 0.6-0.1 0.7 0.1 0.5 0.6 1.6 3.1z",
 };
 
-function FarmerMapModal({ farmers, onClose }) {
+// ─── CROP HECTARE ROW (inline editable) ───────────────────────────────────────
+function CropHectareRow({ crop, onUpdate }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(crop.hectares ?? "");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    await onUpdate(crop.id, value ? parseFloat(value) : null);
+    setSaving(false);
+    setEditing(false);
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+      <span style={{
+        fontSize: 10, padding: "2px 8px", borderRadius: 10,
+        background: crop.type === "livestock" ? "rgba(90,143,163,0.2)" : "rgba(45,122,79,0.2)",
+        color: crop.type === "livestock" ? "#5a9fd4" : "#7ec99a",
+        fontFamily: "'Space Mono', monospace", flexShrink: 0,
+      }}>
+        {crop.type === "livestock" ? "🐄" : "🌾"} {crop.crop_name}
+      </span>
+
+      {editing ? (
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <input
+            type="number"
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            placeholder="ha"
+            style={{
+              width: 60, background: "#1a2e1e", border: "1px solid #4aad72",
+              borderRadius: 6, padding: "2px 6px", color: "#e8dfc8",
+              fontSize: 11, fontFamily: "'Space Mono', monospace", outline: "none",
+            }}
+            autoFocus
+            onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
+          />
+          <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 8px", color: "#e8dfc8", fontSize: 10, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
+            {saving ? "..." : "✓"}
+          </button>
+          <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer" }}>✕</button>
+        </div>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ fontSize: 10, color: crop.hectares ? "#c8b43c" : "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>
+            {crop.hectares ? `${crop.hectares} ha` : "— ha"}
+          </span>
+          <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 6px", color: "#4a7a5a", fontSize: 9, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
+            edit
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FarmerMapModal({ farmers, onClose, loadFarmers }) {
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const farmersWithCoords = farmers.filter(f => f.latitude && f.longitude);
   const districtCounts = {};
@@ -460,12 +526,23 @@ function FarmerMapModal({ farmers, onClose }) {
               </div>
             </div>
             {selectedDistrict.farmers.map((f, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderTop: i > 0 ? "1px solid #1a2e1e" : "none" }}>
-                <div style={{ fontSize: 20 }}>👩🏾‍🌾</div>
-                <div>
-                  <div style={{ fontSize: 13, color: "#c8e8d4" }}>{f.name}</div>
-                  <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.ward}</div>
+              <div key={i} style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid #1a2e1e" : "none" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <div style={{ fontSize: 20 }}>👩🏾‍🌾</div>
+                  <div>
+                    <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600 }}>{f.name}</div>
+                    <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.ward}</div>
+                  </div>
                 </div>
+                {f.farmer_crops && f.farmer_crops.length > 0 && (
+                  <div style={{ paddingLeft: 28 }}>
+                    {f.farmer_crops.map((c, j) => (
+                      <CropHectareRow key={j} crop={c} onUpdate={(id, ha) => {
+                        db.patch("farmer_crops", id, { hectares: ha }).then(() => loadFarmers());
+                      }} />
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -958,13 +1035,24 @@ function AdminTab({ farmers, listings }) {
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="section-title">Recent Farmer Registrations</div>
         {farmers.slice(0, 5).map((f, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderTop: i > 0 ? "1px solid #1a2e1e" : "none" }}>
-            <div style={{ fontSize: 22 }}>👩🏾‍🌾</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, color: "#c8e8d4" }}>{f.name}</div>
-              <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.district}, {f.province}</div>
+          <div key={i} style={{ padding: "8px 0", borderTop: i > 0 ? "1px solid #1a2e1e" : "none" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+              <div style={{ fontSize: 22 }}>👩🏾‍🌾</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, color: "#c8e8d4" }}>{f.name}</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.district}, {f.province}</div>
+              </div>
+              {f.phone && <div style={{ fontSize: 11, color: "#5c8f6b" }}>{f.phone}</div>}
             </div>
-            {f.phone && <div style={{ fontSize: 11, color: "#5c8f6b" }}>{f.phone}</div>}
+            {f.farmer_crops && f.farmer_crops.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4, paddingLeft: 32 }}>
+                {f.farmer_crops.map((c, j) => (
+                  <span key={j} style={{ fontSize: 10, padding: "2px 7px", borderRadius: 10, background: c.type === "livestock" ? "rgba(90,143,163,0.15)" : "rgba(45,122,79,0.15)", color: c.type === "livestock" ? "#5a9fd4" : "#7ec99a", fontFamily: "'Space Mono', monospace" }}>
+                    {c.type === "livestock" ? "🐄" : "🌾"} {c.crop_name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         ))}
         {farmers.length === 0 && <div style={{ fontSize: 12, color: "#4a7a5a", textAlign: "center", padding: "12px 0" }}>No registrations yet</div>}
