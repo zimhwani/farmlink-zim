@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const SUPABASE_URL = "https://buyvgrxgseubplqesvjp.supabase.co";
 const SUPABASE_KEY = "sb_publishable_TJH0e7GMsengGdAUjG5HYg_hkpBrBxA";
@@ -6,26 +6,28 @@ const SUPABASE_KEY = "sb_publishable_TJH0e7GMsengGdAUjG5HYg_hkpBrBxA";
 const db = {
   async get(table, params = "") {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
     });
     return res.json();
   },
   async post(table, data) {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
       method: "POST",
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: "return=representation",
-      },
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", Prefer: "return=representation" },
       body: JSON.stringify(data),
     });
     return res.json();
+  },
+  async uploadImage(file) {
+    const ext = file.name.split(".").pop();
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/produce-images/${filename}`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": file.type },
+      body: file,
+    });
+    if (res.ok) return `${SUPABASE_URL}/storage/v1/object/public/produce-images/${filename}`;
+    return null;
   },
 };
 
@@ -45,15 +47,6 @@ const PROVINCES = {
 const CROPS = ["Maize", "Tobacco", "Soya Beans", "Cotton", "Sunflower", "Wheat", "Sorghum", "Groundnuts", "Sweet Potatoes", "Vegetables"];
 const LIVESTOCK = ["Cattle", "Goats", "Sheep", "Pigs", "Poultry (Broilers)", "Poultry (Layers)", "Rabbits", "Fish (Aquaculture)"];
 
-const WEATHER_DATA = [
-  { day: "Today", icon: "⛅", high: 28, low: 18, rain: "20%" },
-  { day: "Wed", icon: "🌧️", high: 24, low: 17, rain: "70%" },
-  { day: "Thu", icon: "🌧️", high: 23, low: 16, rain: "80%" },
-  { day: "Fri", icon: "⛅", high: 26, low: 18, rain: "30%" },
-  { day: "Sat", icon: "☀️", high: 30, low: 19, rain: "5%" },
-  { day: "Sun", icon: "☀️", high: 32, low: 20, rain: "5%" },
-];
-
 const PRICE_ALERTS = [
   { crop: "Maize", change: "+12%", price: "USD 298/t", trend: "up", region: "Harare GMB" },
   { crop: "Tobacco", change: "+8%", price: "USD 3.85/kg", trend: "up", region: "Auction Floors" },
@@ -69,13 +62,19 @@ const CHAT_STARTERS = [
 ];
 
 const CROP_EMOJIS = {
-  "Maize": "🌽", "Tobacco": "🍂", "Soya Beans": "🫘", "Cotton": "🌼",
-  "Sunflower": "🌻", "Wheat": "🌾", "Sorghum": "🌾", "Groundnuts": "🥜",
-  "Sweet Potatoes": "🍠", "Vegetables": "🥦", "Coffee Beans": "☕",
-  "Tomatoes": "🍅", "Cattle": "🐄", "Goats": "🐐", "Sheep": "🐑",
-  "Pigs": "🐷", "Poultry (Broilers)": "🐔", "Poultry (Layers)": "🥚",
-  "Rabbits": "🐇", "Fish (Aquaculture)": "🐟",
+  "Maize": "🌽", "Tobacco": "🍂", "Soya Beans": "🫘", "Cotton": "🌼", "Sunflower": "🌻",
+  "Wheat": "🌾", "Sorghum": "🌾", "Groundnuts": "🥜", "Sweet Potatoes": "🍠", "Vegetables": "🥦",
+  "Coffee Beans": "☕", "Tomatoes": "🍅", "Cattle": "🐄", "Goats": "🐐", "Sheep": "🐑",
+  "Pigs": "🐷", "Poultry (Broilers)": "🐔", "Poultry (Layers)": "🥚", "Rabbits": "🐇", "Fish (Aquaculture)": "🐟",
 };
+
+// Zimbabwe map districts with approximate SVG path positions (lat/lng to rough x/y on Zimbabwe bounding box)
+// Zimbabwe bounds: lat -15.6 to -22.4, lng 25.2 to 33.1
+function latLngToSVG(lat, lng, w = 340, h = 280) {
+  const x = ((lng - 25.2) / (33.1 - 25.2)) * w;
+  const y = ((lat - (-15.6)) / ((-22.4) - (-15.6))) * h;
+  return { x, y };
+}
 
 export default function FarmLinkZim() {
   const [activeTab, setActiveTab] = useState("home");
@@ -97,15 +96,36 @@ export default function FarmLinkZim() {
   const [registeredFarmer, setRegisteredFarmer] = useState(null);
   const [filterCrop, setFilterCrop] = useState("All");
   const [listings, setListings] = useState([]);
+  const [farmers, setFarmers] = useState([]);
   const [farmerCount, setFarmerCount] = useState(0);
   const [listingCount, setListingCount] = useState(0);
   const [loadingListings, setLoadingListings] = useState(true);
   const [showListingModal, setShowListingModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(null);
+  const [showFarmerMap, setShowFarmerMap] = useState(false);
+  const [weather, setWeather] = useState(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
-  useEffect(() => { loadListings(); loadCounts(); }, []);
+  useEffect(() => { loadListings(); loadCounts(); loadFarmers(); fetchWeather(); }, []);
+
+  const fetchWeather = async () => {
+    try {
+      const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-17.83&longitude=31.05&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Africa%2FHarare&forecast_days=6");
+      const data = await res.json();
+      setWeather(data.daily);
+    } catch (e) { console.error("Weather fetch failed", e); }
+  };
+
+  const getWeatherIcon = (code) => {
+    if (code === 0) return "☀️";
+    if (code <= 2) return "⛅";
+    if (code <= 48) return "🌫️";
+    if (code <= 67) return "🌧️";
+    if (code <= 77) return "🌨️";
+    if (code <= 82) return "🌦️";
+    return "⛈️";
+  };
 
   const loadListings = async () => {
     setLoadingListings(true);
@@ -116,36 +136,44 @@ export default function FarmLinkZim() {
     setLoadingListings(false);
   };
 
+  const loadFarmers = async () => {
+    try {
+      const data = await db.get("farmers", "?select=id,name,province,district,ward,latitude,longitude&order=created_at.desc");
+      setFarmers(Array.isArray(data) ? data : []);
+    } catch (e) { console.error(e); }
+  };
+
   const loadCounts = async () => {
     try {
-      const farmers = await db.get("farmers", "?select=id");
-      const lst = await db.get("listings", "?select=id&active=eq.true");
-      setFarmerCount(Array.isArray(farmers) ? farmers.length : 0);
-      setListingCount(Array.isArray(lst) ? lst.length : 0);
+      const f = await db.get("farmers", "?select=id");
+      const l = await db.get("listings", "?select=id&active=eq.true");
+      setFarmerCount(Array.isArray(f) ? f.length : 0);
+      setListingCount(Array.isArray(l) ? l.length : 0);
     } catch (e) {}
   };
 
-  const toggleItem = (list, setList, item) => {
-    setList(list.includes(item) ? list.filter(x => x !== item) : [...list, item]);
-  };
+  const toggleItem = (list, setList, item) => setList(list.includes(item) ? list.filter(x => x !== item) : [...list, item]);
 
   const registerFarmer = async () => {
-    const [farmer] = await db.post("farmers", {
-      name: farmerName, phone: farmerPhone || null,
-      province, district, ward,
-      farm_size_hectares: farmSize ? parseFloat(farmSize) : null,
-      sms_alerts: true,
-    });
-    if (farmer?.id) {
-      const cropRows = [
-        ...selectedCrops.map(c => ({ farmer_id: farmer.id, crop_name: c, type: "crop" })),
-        ...selectedLivestock.map(l => ({ farmer_id: farmer.id, crop_name: l, type: "livestock" })),
-      ];
-      if (cropRows.length > 0) await db.post("farmer_crops", cropRows);
-      setRegisteredFarmer(farmer);
-      setRegistrationDone(true);
-      loadCounts();
-    }
+    try {
+      const coords = await db.get("district_coordinates", `?district=eq.${encodeURIComponent(district)}&limit=1`);
+      const coord = Array.isArray(coords) && coords[0];
+      const [farmer] = await db.post("farmers", {
+        name: farmerName, phone: farmerPhone || null, province, district, ward,
+        farm_size_hectares: farmSize ? parseFloat(farmSize) : null, sms_alerts: true,
+        latitude: coord?.latitude || null, longitude: coord?.longitude || null,
+      });
+      if (farmer?.id) {
+        const cropRows = [
+          ...selectedCrops.map(c => ({ farmer_id: farmer.id, crop_name: c, type: "crop" })),
+          ...selectedLivestock.map(l => ({ farmer_id: farmer.id, crop_name: l, type: "livestock" })),
+        ];
+        if (cropRows.length > 0) await db.post("farmer_crops", cropRows);
+        setRegisteredFarmer(farmer);
+        setRegistrationDone(true);
+        loadCounts(); loadFarmers();
+      }
+    } catch (e) { console.error("Registration error:", e); }
   };
 
   const sendChat = async (text) => {
@@ -159,16 +187,14 @@ export default function FarmLinkZim() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
+          model: "claude-sonnet-4-20250514", max_tokens: 1000,
           system: `You are FarmLink AI, an expert agricultural advisor specialised in Zimbabwe farming. You have deep knowledge of Zimbabwe's agro-ecological regions, local crops (maize, tobacco, cotton, soya, groundnuts), livestock management, AGRITEX recommendations, ZFU guidelines, local pests (armyworm, stalk borer, ticks, Newcastle disease), GMB pricing, Tobacco auction floors, conservation farming and the Pfumvudza/Intwasa programme. Always give practical, locally relevant advice. Keep responses concise (3-5 sentences) and actionable. Occasionally use Shona/Ndebele words naturally.`,
           messages: [{ role: "user", content: msg }]
         })
       });
       const data = await response.json();
-      const reply = data.content?.[0]?.text || "Sorry, I could not get a response. Please try again.";
       setIsTyping(false);
-      setChatMessages(prev => [...prev, { role: "ai", text: reply }]);
+      setChatMessages(prev => [...prev, { role: "ai", text: data.content?.[0]?.text || "Sorry, please try again." }]);
     } catch {
       setIsTyping(false);
       setChatMessages(prev => [...prev, { role: "ai", text: "Network error. Offline tip: for tick control on cattle, use Triatix or Deltamethrin dip every 7 days during peak season." }]);
@@ -186,9 +212,9 @@ export default function FarmLinkZim() {
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #0d1a0f; } ::-webkit-scrollbar-thumb { background: #2d7a4f; border-radius: 2px; }
-        .tab-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 12px; transition: all 0.2s; }
+        .tab-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 10px; transition: all 0.2s; }
         .tab-btn.active { color: #7ec99a !important; } .tab-btn:hover { color: #aee0c0 !important; }
-        .tab-icon { font-size: 20px; line-height: 1; } .tab-label { font-size: 9px; letter-spacing: 0.08em; font-family: 'Space Mono', monospace; text-transform: uppercase; }
+        .tab-icon { font-size: 18px; line-height: 1; } .tab-label { font-size: 8px; letter-spacing: 0.08em; font-family: 'Space Mono', monospace; text-transform: uppercase; }
         .card { background: #152218; border: 1px solid #1f3525; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
         .card-premium { background: linear-gradient(135deg, #1a2e1e, #112215); border-color: #2d5a36; }
         .btn-primary { background: linear-gradient(135deg, #2d7a4f, #1f5a39); color: #e8dfc8; border: none; border-radius: 8px; padding: 12px 24px; font-family: 'Space Mono', monospace; font-size: 12px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; width: 100%; }
@@ -199,25 +225,27 @@ export default function FarmLinkZim() {
         .chip.active { background: #2d7a4f; border-color: #3a9962; color: #e8f5ed; } .chip:hover { border-color: #4aad72; }
         .input-field { background: #1a2e1e; border: 1px solid #2d5a36; border-radius: 8px; padding: 10px 14px; color: #e8dfc8; font-family: 'Crimson Pro', serif; font-size: 15px; width: 100%; outline: none; transition: border-color 0.2s; }
         .input-field:focus { border-color: #4aad72; }
-        .select-field { background: #1a2e1e; border: 1px solid #2d5a36; border-radius: 8px; padding: 10px 14px; color: #e8dfc8; font-family: 'Crimson Pro', serif; font-size: 15px; width: 100%; outline: none; appearance: none; cursor: pointer; transition: border-color 0.2s; }
-        .select-field:focus { border-color: #4aad72; }
+        .select-field { background: #1a2e1e; border: 1px solid #2d5a36; border-radius: 8px; padding: 10px 14px; color: #e8dfc8; font-family: 'Crimson Pro', serif; font-size: 15px; width: 100%; outline: none; appearance: none; cursor: pointer; }
         .section-title { font-size: 11px; font-family: 'Space Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: #5c8f6b; margin-bottom: 12px; }
         .chat-bubble-ai { background: #152218; border: 1px solid #1f3525; border-radius: 16px 16px 16px 4px; padding: 12px 14px; max-width: 85%; font-size: 14px; line-height: 1.6; }
         .chat-bubble-user { background: #2d7a4f; border-radius: 16px 16px 4px 16px; padding: 12px 14px; max-width: 85%; font-size: 14px; line-height: 1.6; margin-left: auto; }
         .listing-card { background: #152218; border: 1px solid #1f3525; border-radius: 12px; padding: 14px; margin-bottom: 10px; transition: border-color 0.2s; }
         .listing-card:hover { border-color: #3a7a50; }
-        .weather-day { background: #152218; border: 1px solid #1f3525; border-radius: 10px; padding: 10px 8px; text-align: center; flex: 1; }
+        .weather-day { background: #152218; border: 1px solid #1f3525; border-radius: 10px; padding: 10px 8px; text-align: center; flex: 1; min-width: 52px; }
         .pulse { animation: pulse 2s infinite; } @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .step-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s; }
         .step-dot.active { background: #7ec99a; width: 24px; border-radius: 4px; } .step-dot.done { background: #2d7a4f; } .step-dot.pending { background: #1f3525; }
         .fade-in { animation: fadeIn 0.4s ease forwards; } @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .hero-grain { position: absolute; inset: 0; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); pointer-events: none; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
-        .modal { background: #0d1a0f; border: 1px solid #2d5a36; border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+        .modal { background: #0d1a0f; border: 1px solid #2d5a36; border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
         .skeleton { background: linear-gradient(90deg, #152218 25%, #1f3525 50%, #152218 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .map-dot { cursor: pointer; transition: all 0.2s; } .map-dot:hover { r: 7; }
+        .stat-card { background: #152218; border: 1px solid #1f3525; border-radius: 10px; padding: 14px 12px; }
       `}</style>
 
+      {/* HEADER */}
       <div style={{ background: "linear-gradient(180deg, #0a1a0c 0%, #0d1a0f 100%)", borderBottom: "1px solid #1f3525", padding: "16px 20px 12px", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -234,16 +262,19 @@ export default function FarmLinkZim() {
         </div>
       </div>
 
+      {/* CONTENT */}
       <div style={{ paddingBottom: 80, minHeight: "calc(100vh - 130px)" }}>
-        {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} />}
+        {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
         {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} />}
         {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
         {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
         {activeTab === "insights" && <InsightsTab />}
+        {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
       </div>
 
-      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "rgba(10, 20, 12, 0.97)", backdropFilter: "blur(12px)", borderTop: "1px solid #1f3525", display: "flex", justifyContent: "space-around", padding: "8px 0 12px", zIndex: 100 }}>
-        {[{ id: "home", icon: "🛖", label: "Home" }, { id: "market", icon: "🛒", label: "Market" }, { id: "register", icon: "📍", label: "Register" }, { id: "advisory", icon: "🤖", label: "AI Advisor" }, { id: "insights", icon: "📊", label: "Insights" }].map(tab => (
+      {/* BOTTOM NAV */}
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "rgba(10,20,12,0.97)", backdropFilter: "blur(12px)", borderTop: "1px solid #1f3525", display: "flex", justifyContent: "space-around", padding: "8px 0 12px", zIndex: 100 }}>
+        {[{ id: "home", icon: "🛖", label: "Home" }, { id: "market", icon: "🛒", label: "Market" }, { id: "register", icon: "📍", label: "Register" }, { id: "advisory", icon: "🤖", label: "AI" }, { id: "insights", icon: "📊", label: "Insights" }, { id: "admin", icon: "⚙️", label: "Admin" }].map(tab => (
           <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`} style={{ color: "#3d6b4a" }} onClick={() => setActiveTab(tab.id)}>
             <span className="tab-icon">{tab.icon}</span>
             <span className="tab-label">{tab.label}</span>
@@ -253,11 +284,217 @@ export default function FarmLinkZim() {
 
       {showListingModal && <ListingModal onClose={() => setShowListingModal(false)} onSave={async (listing) => { await db.post("listings", listing); setShowListingModal(false); loadListings(); loadCounts(); }} />}
       {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); setShowContactModal(null); }} />}
+      {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} />}
     </div>
   );
 }
 
-function HomeTab({ setActiveTab, farmerCount, listingCount }) {
+// ─── FARMER MAP MODAL ──────────────────────────────────────────────────────────
+// Convert real lat/lng to pixel coords within the simplemaps SVG viewBox (1000x861)
+// simplemaps ZW SVG uses Mercator: bounds approx lng 25.2–33.1, lat -15.6 to -22.4
+// Their viewBox is "0 0 1000 861" scaled to those bounds
+function toMapXY(lat, lng) {
+  const x = ((lng - 25.2) / (33.1 - 25.2)) * 1000;
+  const y = ((lat - (-15.6)) / ((-22.4) - (-15.6))) * 861;
+  return { x, y };
+}
+
+function FarmerMapModal({ farmers, onClose }) {
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [svgContent, setSvgContent] = useState(null);
+  const [svgLoading, setSvgLoading] = useState(true);
+
+  // Fetch the simplemaps Zimbabwe SVG on mount
+  useEffect(() => {
+    fetch("https://simplemaps.com/svg/country/zw")
+      .then(r => r.text())
+      .then(html => {
+        // Extract the SVG tag from the page
+        const match = html.match(/<svg[\s\S]*?<\/svg>/i);
+        if (match) setSvgContent(match[0]);
+        setSvgLoading(false);
+      })
+      .catch(() => setSvgLoading(false));
+  }, []);
+
+  const farmersWithCoords = farmers.filter(f => f.latitude && f.longitude);
+  const districtCounts = {};
+  farmers.forEach(f => { if (f.district) districtCounts[f.district] = (districtCounts[f.district] || 0) + 1; });
+
+  const districtDots = [];
+  const seen = new Set();
+  farmersWithCoords.forEach(f => {
+    if (!seen.has(f.district)) {
+      seen.add(f.district);
+      const pos = toMapXY(f.latitude, f.longitude);
+      districtDots.push({
+        district: f.district, province: f.province,
+        count: districtCounts[f.district] || 1,
+        ...pos,
+        farmers: farmersWithCoords.filter(x => x.district === f.district)
+      });
+    }
+  });
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" style={{ borderRadius: "20px 20px 0 0", maxHeight: "92vh" }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>Farmer Distribution Map</div>
+            <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>{farmers.length} REGISTERED FARMERS · ZIMBABWE</div>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>✕</button>
+        </div>
+
+        {/* Map container */}
+        <div style={{ background: "#080f09", borderRadius: 12, border: "1px solid #1f3525", overflow: "hidden", marginBottom: 14, position: "relative" }}>
+          {svgLoading ? (
+            <div className="skeleton" style={{ height: 260, borderRadius: 12 }} />
+          ) : svgContent ? (
+            /* Render simplemaps SVG with farmer dots overlaid */
+            <div style={{ position: "relative" }}>
+              {/* Base map — style province fills to match our theme */}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: svgContent
+                    .replace(/width="[^"]*"/, 'width="100%"')
+                    .replace(/height="[^"]*"/, 'height="auto"')
+                    .replace(/<path/g, '<path style="fill:#0f2218;stroke:#3a7a50;stroke-width:0.8;"')
+                    .replace(/style="fill:#0f2218;stroke:#3a7a50;stroke-width:0.8;" id="ZWBU"/g, 'style="fill:#0f2218;stroke:#3a7a50;stroke-width:0.8;" id="ZWBU"')
+                }}
+                style={{ display: "block" }}
+              />
+              {/* Overlay farmer dots using absolute positioning */}
+              <svg
+                viewBox="0 0 1000 861"
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+              >
+                {districtDots.map((d, i) => {
+                  const r = Math.min(8 + d.count * 3, 22);
+                  const isSelected = selectedDistrict?.district === d.district;
+                  return (
+                    <g key={i} style={{ pointerEvents: "all", cursor: "pointer" }}
+                      onClick={() => setSelectedDistrict(isSelected ? null : d)}>
+                      <circle cx={d.x} cy={d.y} r={r + 8} fill="#7ec99a" opacity="0.12" />
+                      <circle cx={d.x} cy={d.y} r={r} fill={isSelected ? "#5cd68a" : "#2d7a4f"} stroke={isSelected ? "#c8e8d4" : "#7ec99a"} strokeWidth="2" />
+                      <text x={d.x} y={d.y + 1} textAnchor="middle" dominantBaseline="middle"
+                        fill="#e8dfc8" fontSize="11" fontWeight="bold" fontFamily="monospace"
+                        style={{ pointerEvents: "none" }}>{d.count}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          ) : (
+            /* Fallback if fetch blocked — use embedded accurate paths */
+            <svg viewBox="0 0 1000 861" style={{ width: "100%", height: "auto", display: "block" }}>
+              <rect width="1000" height="861" fill="#080f09" />
+              {/* Matabeleland North */}
+              <path d="M30,80 L330,75 L340,340 L30,345 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Matabeleland South */}
+              <path d="M30,345 L340,340 L330,680 L150,780 L30,700 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Bulawayo */}
+              <path d="M290,340 L370,338 L368,420 L288,422 Z" fill="#122518" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Midlands */}
+              <path d="M330,75 L590,70 L600,350 L340,340 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Mashonaland West */}
+              <path d="M330,10 L590,10 L590,75 L330,75 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Mashonaland Central */}
+              <path d="M590,10 L760,10 L760,200 L590,200 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Mashonaland East */}
+              <path d="M590,200 L760,200 L760,355 L590,350 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Harare */}
+              <path d="M640,200 L720,198 L718,270 L638,272 Z" fill="#122518" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Manicaland */}
+              <path d="M760,10 L970,80 L960,500 L760,500 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Masvingo */}
+              <path d="M340,340 L760,355 L760,700 L500,800 L150,780 L330,680 Z" fill="#0f2218" stroke="#3a7a50" strokeWidth="1"/>
+              {/* Labels */}
+              <text x="175" y="200" fill="#3a6b48" fontSize="22" fontFamily="monospace" textAnchor="middle">Mat North</text>
+              <text x="175" y="560" fill="#3a6b48" fontSize="22" fontFamily="monospace" textAnchor="middle">Mat South</text>
+              <text x="465" y="210" fill="#3a6b48" fontSize="22" fontFamily="monospace" textAnchor="middle">Midlands</text>
+              <text x="460" y="35" fill="#3a6b48" fontSize="18" fontFamily="monospace" textAnchor="middle">Mash West</text>
+              <text x="675" y="100" fill="#3a6b48" fontSize="18" fontFamily="monospace" textAnchor="middle">Mash Central</text>
+              <text x="675" y="290" fill="#3a6b48" fontSize="18" fontFamily="monospace" textAnchor="middle">Mash East</text>
+              <text x="870" y="260" fill="#3a6b48" fontSize="22" fontFamily="monospace" textAnchor="middle">Manicaland</text>
+              <text x="530" y="580" fill="#3a6b48" fontSize="22" fontFamily="monospace" textAnchor="middle">Masvingo</text>
+              {districtDots.map((d, i) => {
+                const r = Math.min(8 + d.count * 3, 22);
+                const isSelected = selectedDistrict?.district === d.district;
+                return (
+                  <g key={i} style={{ cursor: "pointer" }} onClick={() => setSelectedDistrict(isSelected ? null : d)}>
+                    <circle cx={d.x} cy={d.y} r={r + 8} fill="#7ec99a" opacity="0.12" />
+                    <circle cx={d.x} cy={d.y} r={r} fill={isSelected ? "#5cd68a" : "#2d7a4f"} stroke={isSelected ? "#c8e8d4" : "#7ec99a"} strokeWidth="2" />
+                    <text x={d.x} y={d.y + 1} textAnchor="middle" dominantBaseline="middle"
+                      fill="#e8dfc8" fontSize="11" fontWeight="bold" fontFamily="monospace"
+                      style={{ pointerEvents: "none" }}>{d.count}</text>
+                  </g>
+                );
+              })}
+            </svg>
+          )}
+
+          {/* Legend overlay */}
+          <div style={{ position: "absolute", bottom: 10, right: 10, background: "rgba(8,15,9,0.92)", borderRadius: 8, padding: "6px 10px", border: "1px solid #1f3525" }}>
+            <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>FARMERS</div>
+            {[{ r: 8, label: "1–2" }, { r: 11, label: "3–5" }, { r: 14, label: "6+" }].map(l => (
+              <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
+                <svg width={l.r * 2 + 4} height={l.r * 2 + 4}><circle cx={l.r + 2} cy={l.r + 2} r={l.r} fill="#2d7a4f" stroke="#7ec99a" strokeWidth="1.5" /></svg>
+                <span style={{ fontSize: 9, color: "#8aaa94", fontFamily: "'Space Mono', monospace" }}>{l.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Selected district info */}
+        {selectedDistrict ? (
+          <div className="card" style={{ marginBottom: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#c8e8d4" }}>{selectedDistrict.district}</div>
+                <div style={{ fontSize: 11, color: "#5c8f6b" }}>{selectedDistrict.province}</div>
+              </div>
+              <div style={{ background: "rgba(45,122,79,0.2)", color: "#7ec99a", fontFamily: "'Space Mono', monospace", fontSize: 12, padding: "4px 10px", borderRadius: 20 }}>
+                {selectedDistrict.count} farmer{selectedDistrict.count > 1 ? "s" : ""}
+              </div>
+            </div>
+            {selectedDistrict.farmers.map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderTop: i > 0 ? "1px solid #1a2e1e" : "none" }}>
+                <div style={{ fontSize: 20 }}>👩🏾‍🌾</div>
+                <div>
+                  <div style={{ fontSize: 13, color: "#c8e8d4" }}>{f.name}</div>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.ward}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ textAlign: "center", padding: "10px 0", color: "#4a7a5a", fontSize: 11, fontFamily: "'Space Mono', monospace" }}>
+            TAP A GREEN DOT TO SEE FARMERS IN THAT DISTRICT
+          </div>
+        )}
+
+        {/* Province breakdown */}
+        <div className="section-title" style={{ marginTop: 12 }}>Farmers by Province</div>
+        {Object.entries(farmers.reduce((acc, f) => { acc[f.province] = (acc[f.province] || 0) + 1; return acc; }, {}))
+          .sort((a, b) => b[1] - a[1]).map(([prov, count]) => (
+            <div key={prov} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <div style={{ flex: 1, fontSize: 13, color: "#c8e8d4" }}>{prov}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ height: 6, borderRadius: 3, background: "linear-gradient(90deg, #2d7a4f, #5cd68a)", width: Math.max(20, (count / farmers.length) * 140) }} />
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#7ec99a", minWidth: 16 }}>{count}</div>
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── HOME TAB ──────────────────────────────────────────────────────────────────
+function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherIcon, onFarmerMapClick }) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   return (
     <div className="fade-in" style={{ padding: "20px 16px" }}>
       <div style={{ background: "linear-gradient(135deg, #1a3d24 0%, #0f2a18 100%)", borderRadius: 16, padding: "24px 20px", marginBottom: 16, position: "relative", overflow: "hidden", border: "1px solid #2d5a36" }}>
@@ -271,8 +508,16 @@ function HomeTab({ setActiveTab, farmerCount, listingCount }) {
           <button className="btn-secondary" style={{ padding: "10px 18px", fontSize: 11 }} onClick={() => setActiveTab("market")}>Browse Market</button>
         </div>
       </div>
+
+      {/* Stats — farmers clickable */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
-        {[{ label: "Farmers", value: farmerCount.toLocaleString(), icon: "👩🏾‍🌾" }, { label: "Listings", value: listingCount.toLocaleString(), icon: "🛒" }, { label: "Districts", value: "60+", icon: "📍" }].map(s => (
+        <div onClick={onFarmerMapClick} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 10, padding: "12px 8px", textAlign: "center", cursor: "pointer", transition: "border-color 0.2s" }}>
+          <div style={{ fontSize: 20, marginBottom: 4 }}>👩🏾‍🌾</div>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#7ec99a", fontWeight: 700 }}>{farmerCount}</div>
+          <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>Farmers</div>
+          <div style={{ fontSize: 8, color: "#2d7a4f", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>TAP FOR MAP ↗</div>
+        </div>
+        {[{ label: "Listings", value: listingCount, icon: "🛒" }, { label: "Districts", value: "60+", icon: "📍" }].map(s => (
           <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
             <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
             <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#7ec99a", fontWeight: 700 }}>{s.value}</div>
@@ -280,31 +525,41 @@ function HomeTab({ setActiveTab, farmerCount, listingCount }) {
           </div>
         ))}
       </div>
+
+      {/* Live Weather */}
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div className="section-title" style={{ margin: 0 }}>Weather — Harare Region</div>
-          <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>ZIMMET</div>
+          <div className="section-title" style={{ margin: 0 }}>Weather — Harare</div>
+          <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#5cd68a" }}>● LIVE · Open-Meteo</div>
         </div>
-        <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 }}>
-          {WEATHER_DATA.map((d, i) => (
-            <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#2d7a4f", background: "#1a2e1e" } : {}}>
-              <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>{d.day}</div>
-              <div style={{ fontSize: 20, marginBottom: 4 }}>{d.icon}</div>
-              <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#e8dfc8" }}>{d.high}°</div>
-              <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>{d.low}°</div>
-              <div style={{ fontSize: 9, color: "#5a9fd4", marginTop: 4 }}>{d.rain}</div>
-            </div>
-          ))}
+        <div style={{ display: "flex", gap: 5, overflowX: "auto", paddingBottom: 4 }}>
+          {weather ? weather.time.map((t, i) => {
+            const date = new Date(t);
+            const label = i === 0 ? "Today" : days[date.getDay()];
+            return (
+              <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#2d7a4f", background: "#1a2e1e" } : {}}>
+                <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 18, marginBottom: 4 }}>{getWeatherIcon(weather.weathercode[i])}</div>
+                <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#e8dfc8" }}>{Math.round(weather.temperature_2m_max[i])}°</div>
+                <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>{Math.round(weather.temperature_2m_min[i])}°</div>
+                <div style={{ fontSize: 9, color: "#5a9fd4", marginTop: 4 }}>{weather.precipitation_probability_max[i]}%</div>
+              </div>
+            );
+          }) : [1,2,3,4,5,6].map(i => <div key={i} className="skeleton weather-day" style={{ height: 80 }} />)}
         </div>
-        <div style={{ marginTop: 10, background: "#1a2e1e", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#8aaa94", borderLeft: "3px solid #2d7a4f" }}>
-          ⚠️ Heavy rains expected Wed–Thu. Delay fertiliser application. Good planting moisture window opens Saturday.
-        </div>
+        {weather && weather.precipitation_probability_max[0] > 60 && (
+          <div style={{ marginTop: 10, background: "#1a2e1e", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#8aaa94", borderLeft: "3px solid #2d7a4f" }}>
+            ⚠️ High rain probability today. Consider delaying fertiliser application.
+          </div>
+        )}
       </div>
+
+      {/* Price Alerts */}
       <div className="section-title">Live Price Alerts</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
         {PRICE_ALERTS.map((p, i) => (
           <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{p.crop}</div>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060" }}>{p.change}</div>
             </div>
@@ -313,6 +568,8 @@ function HomeTab({ setActiveTab, farmerCount, listingCount }) {
           </div>
         ))}
       </div>
+
+      {/* Quick Actions */}
       <div className="section-title">Quick Actions</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
         {[{ label: "AI Farm Advisor", icon: "🤖", desc: "Get instant advice", tab: "advisory" }, { label: "Sell Produce", icon: "📦", desc: "List your harvest", tab: "market" }, { label: "Crop Mapping", icon: "🗺️", desc: "Register your farm", tab: "register" }, { label: "Market Insights", icon: "📈", desc: "Yield & price data", tab: "insights" }].map((a, i) => (
@@ -327,6 +584,7 @@ function HomeTab({ setActiveTab, farmerCount, listingCount }) {
   );
 }
 
+// ─── MARKET TAB ────────────────────────────────────────────────────────────────
 function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setShowListingModal, setShowContactModal }) {
   const filters = ["All", "Grain", "Livestock", "Horticulture", "Cash Crops"];
   const filterMap = { "Grain": ["Maize", "Wheat", "Sorghum"], "Livestock": ["Cattle", "Goats", "Sheep", "Pigs", "Poultry"], "Horticulture": ["Tomatoes", "Vegetables", "Sweet Potatoes"], "Cash Crops": ["Tobacco", "Cotton", "Coffee", "Soya", "Sunflower", "Groundnuts"] };
@@ -344,12 +602,15 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
       <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
         {filters.map(f => <span key={f} className={`chip ${filterCrop === f ? "active" : ""}`} onClick={() => setFilterCrop(f)} style={{ fontFamily: "'Space Mono', monospace", fontSize: 10 }}>{f}</span>)}
       </div>
-      {loadingListings ? [1,2,3].map(i => <div key={i} style={{ marginBottom: 10 }}><div className="skeleton" style={{ height: 80, borderRadius: 12 }} /></div>)
-        : filtered.length === 0 ? <div style={{ textAlign: "center", padding: "40px 20px", color: "#4a7a5a" }}><div style={{ fontSize: 40, marginBottom: 12 }}>🌾</div><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>No listings in this category</div></div>
-        : filtered.map(l => (
+      {loadingListings ? [1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12, marginBottom: 10 }} />) :
+        filtered.length === 0 ? <div style={{ textAlign: "center", padding: "40px 20px", color: "#4a7a5a" }}><div style={{ fontSize: 40, marginBottom: 12 }}>🌾</div><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>No listings in this category</div></div> :
+        filtered.map(l => (
           <div key={l.id} className="listing-card">
             <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <div style={{ width: 48, height: 48, background: "#1a2e1e", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>{CROP_EMOJIS[l.crop] || l.img || "🌾"}</div>
+              {l.image_url
+                ? <img src={l.image_url} alt={l.crop} style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+                : <div style={{ width: 56, height: 56, background: "#1a2e1e", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{CROP_EMOJIS[l.crop] || l.img || "🌾"}</div>
+              }
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                   <div style={{ fontSize: 16, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
@@ -366,7 +627,8 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
               </div>
             </div>
           </div>
-        ))}
+        ))
+      }
     </div>
   );
 }
@@ -374,16 +636,26 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
 function badgeColorBg(b) { if (b === "Premium") return "rgba(212,160,23,0.2)"; if (b === "Verified") return "rgba(45,122,79,0.25)"; return "rgba(90,143,163,0.2)"; }
 function badgeColorText(b) { if (b === "Premium") return "#d4a017"; if (b === "Verified") return "#5cd68a"; return "#5a9fd4"; }
 
+// ─── LIST PRODUCE MODAL (with image upload) ───────────────────────────────────
 function ListingModal({ onClose, onSave }) {
   const [fields, setFields] = useState({ crop: "", quantity: "", price: "", farmerName: "", location: "" });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const set = (k, v) => setFields(f => ({ ...f, [k]: v }));
   const valid = Object.values(fields).every(v => v.trim());
 
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
+  };
+
   const handleSave = async () => {
     if (!valid) return;
     setSaving(true);
-    await onSave({ crop: fields.crop, quantity: fields.quantity, price: fields.price, farmer_name: fields.farmerName, location: fields.location, badge: "New", img: CROP_EMOJIS[fields.crop] || "🌾", active: true });
+    let image_url = null;
+    if (imageFile) image_url = await db.uploadImage(imageFile);
+    await onSave({ crop: fields.crop, quantity: fields.quantity, price: fields.price, farmer_name: fields.farmerName, location: fields.location, badge: "New", img: CROP_EMOJIS[fields.crop] || "🌾", active: true, image_url });
     setSaving(false);
   };
 
@@ -394,29 +666,37 @@ function ListingModal({ onClose, onSave }) {
           <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>List Your Produce</div>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
-        {[["YOUR NAME", "farmerName", "e.g. Tendai Moyo", "text"], ["LOCATION", "location", "e.g. Mazowe, Mashonaland Central", "text"], ["CROP / LIVESTOCK", "crop", "e.g. Maize, Cattle, Tomatoes", "text"], ["QUANTITY", "quantity", "e.g. 10 tonnes, 5 head", "text"], ["PRICE", "price", "e.g. USD 280/tonne", "text"]].map(([label, key, ph]) => (
+        {/* Image upload */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 6 }}>PHOTO OF PRODUCE — OPTIONAL</label>
+          <label style={{ display: "block", cursor: "pointer" }}>
+            <input type="file" accept="image/*" onChange={handleImage} style={{ display: "none" }} />
+            {imagePreview
+              ? <img src={imagePreview} alt="Preview" style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 10, border: "1px solid #2d5a36" }} />
+              : <div style={{ background: "#1a2e1e", border: "2px dashed #2d5a36", borderRadius: 10, height: 100, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <div style={{ fontSize: 28 }}>📷</div>
+                  <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>TAP TO ADD PHOTO</div>
+                </div>
+            }
+          </label>
+        </div>
+        {[["YOUR NAME", "farmerName", "e.g. Tendai Moyo"], ["LOCATION", "location", "e.g. Mazowe, Mashonaland Central"], ["CROP / LIVESTOCK", "crop", "e.g. Maize, Cattle, Tomatoes"], ["QUANTITY", "quantity", "e.g. 10 tonnes, 5 head"], ["PRICE", "price", "e.g. USD 280/tonne"]].map(([label, key, ph]) => (
           <div key={key} style={{ marginBottom: 12 }}>
             <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 5 }}>{label}</label>
             <input className="input-field" value={fields[key]} onChange={e => set(key, e.target.value)} placeholder={ph} />
           </div>
         ))}
-        <button className="btn-primary" onClick={handleSave} style={{ opacity: valid ? 1 : 0.4, marginTop: 8 }}>{saving ? "Saving..." : "Post Listing ✓"}</button>
+        <button className="btn-primary" onClick={handleSave} style={{ opacity: valid ? 1 : 0.4, marginTop: 8 }}>{saving ? "Uploading & Saving..." : "Post Listing ✓"}</button>
       </div>
     </div>
   );
 }
 
+// ─── CONTACT MODAL ─────────────────────────────────────────────────────────────
 function ContactModal({ listing, onClose, onSend }) {
   const [name, setName] = useState(""); const [phone, setPhone] = useState(""); const [sent, setSent] = useState(false);
   const [message, setMessage] = useState(`Hi ${listing.farmer_name}, I'm interested in your ${listing.crop} (${listing.quantity} at ${listing.price}).`);
-
-  const handleSend = async () => {
-    if (!name || !message) return;
-    await onSend({ sender_name: name, sender_phone: phone, message });
-    setSent(true);
-    setTimeout(onClose, 2000);
-  };
-
+  const handleSend = async () => { if (!name || !message) return; await onSend({ sender_name: name, sender_phone: phone, message }); setSent(true); setTimeout(onClose, 2000); };
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
@@ -424,20 +704,15 @@ function ContactModal({ listing, onClose, onSend }) {
           <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>Contact Seller</div>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
-        {sent ? (
-          <div style={{ textAlign: "center", padding: "24px 0" }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
-            <div style={{ fontSize: 16, color: "#7ec99a", fontWeight: 600 }}>Message Sent!</div>
-          </div>
-        ) : (
+        {sent ? <div style={{ textAlign: "center", padding: "24px 0" }}><div style={{ fontSize: 40, marginBottom: 12 }}>✅</div><div style={{ fontSize: 16, color: "#7ec99a", fontWeight: 600 }}>Message Sent!</div></div> : (
           <>
             <div style={{ background: "#1a2e1e", borderRadius: 10, padding: "10px 12px", marginBottom: 16, fontSize: 13, color: "#8aaa94" }}>
               <strong style={{ color: "#c8e8d4" }}>{listing.crop}</strong> · {listing.quantity} · {listing.price}
             </div>
-            {[["YOUR NAME", name, setName, "Full name", "text"], ["YOUR PHONE", phone, setPhone, "+263 77X XXX XXX", "tel"]].map(([label, val, setVal, ph, type]) => (
-              <div key={label} style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 5 }}>{label}</label>
-                <input className="input-field" type={type} value={val} onChange={e => setVal(e.target.value)} placeholder={ph} />
+            {[["YOUR NAME", name, setName, "Full name", "text"], ["PHONE", phone, setPhone, "+263 77X XXX XXX", "tel"]].map(([l, v, s, p, t]) => (
+              <div key={l} style={{ marginBottom: 12 }}>
+                <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 5 }}>{l}</label>
+                <input className="input-field" type={t} value={v} onChange={e => s(e.target.value)} placeholder={p} />
               </div>
             ))}
             <div style={{ marginBottom: 16 }}>
@@ -452,10 +727,10 @@ function ContactModal({ listing, onClose, onSend }) {
   );
 }
 
+// ─── REGISTER TAB ──────────────────────────────────────────────────────────────
 function RegisterTab({ wizardStep, setWizardStep, province, setProvince, district, setDistrict, ward, setWard, selectedCrops, setSelectedCrops, selectedLivestock, setSelectedLivestock, farmSize, setFarmSize, farmerName, setFarmerName, farmerPhone, setFarmerPhone, toggleItem, registrationDone, registeredFarmer, registerFarmer, resetRegistration }) {
   const wards = Array.from({ length: 10 }, (_, i) => `Ward ${i + 1}`);
   const [saving, setSaving] = useState(false);
-
   const handleRegister = async () => { setSaving(true); await registerFarmer(); setSaving(false); };
 
   if (registrationDone && registeredFarmer) {
@@ -472,8 +747,6 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
             {selectedLivestock.map(l => <span key={l} className="chip active" style={{ fontSize: 11 }}>🐄 {l}</span>)}
           </div>
           {registeredFarmer.farm_size_hectares && <div style={{ fontSize: 13, color: "#8aaa94" }}>Farm size: <strong style={{ color: "#c8e8d4" }}>{registeredFarmer.farm_size_hectares} ha</strong></div>}
-          {registeredFarmer.phone && <div style={{ fontSize: 13, color: "#8aaa94", marginTop: 4 }}>📱 {registeredFarmer.phone}</div>}
-          <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3d6b4a", marginTop: 8 }}>ID: {registeredFarmer.id?.slice(0, 8)}...</div>
         </div>
         <button className="btn-primary" onClick={resetRegistration}>Register Another Farm</button>
       </div>
@@ -490,7 +763,6 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
         {[1,2,3].map(s => <div key={s} className={`step-dot ${wizardStep === s ? "active" : wizardStep > s ? "done" : "pending"}`} />)}
         <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginLeft: 6 }}>STEP {wizardStep} OF 3 — {["LOCATION", "CROPS & LIVESTOCK", "FARM DETAILS"][wizardStep - 1]}</div>
       </div>
-
       {wizardStep === 1 && (
         <div className="fade-in">
           <div className="card" style={{ marginBottom: 12 }}>
@@ -516,7 +788,6 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
           <button className="btn-primary" onClick={() => { if (farmerName && province && district && ward) setWizardStep(2); }} style={{ opacity: (farmerName && province && district && ward) ? 1 : 0.4 }}>Continue →</button>
         </div>
       )}
-
       {wizardStep === 2 && (
         <div className="fade-in">
           <div className="card" style={{ marginBottom: 12 }}>
@@ -537,7 +808,6 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
           </div>
         </div>
       )}
-
       {wizardStep === 3 && (
         <div className="fade-in">
           <div className="card" style={{ marginBottom: 12 }}>
@@ -546,8 +816,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
               <input className="input-field" type="number" placeholder="e.g. 5.5" value={farmSize} onChange={e => setFarmSize(e.target.value)} />
             </div>
             <div><label style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 6 }}>SMS PRICE ALERTS</label>
-              <span className="chip active" style={{ fontSize: 11 }}>✓ Enable SMS alerts</span>
-            </div>
+              <span className="chip active" style={{ fontSize: 11 }}>✓ Enable SMS alerts</span></div>
           </div>
           <div className="card card-premium" style={{ marginBottom: 16 }}>
             <div className="section-title">Registration Summary</div>
@@ -569,6 +838,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
   );
 }
 
+// ─── ADVISORY TAB ──────────────────────────────────────────────────────────────
 function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping, chatEndRef }) {
   return (
     <div className="fade-in" style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 130px)" }}>
@@ -612,6 +882,96 @@ function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping
   );
 }
 
+// ─── ADMIN DASHBOARD ───────────────────────────────────────────────────────────
+function AdminTab({ farmers, listings }) {
+  const [messages, setMessages] = useState([]);
+  const [loadingMsgs, setLoadingMsgs] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingMsgs(true);
+      try {
+        const data = await db.get("messages", "?order=created_at.desc&limit=20");
+        setMessages(Array.isArray(data) ? data : []);
+      } catch (e) {}
+      setLoadingMsgs(false);
+    };
+    load();
+  }, []);
+
+  const cropTally = {};
+  farmers.forEach(f => { if (f.province) cropTally[f.province] = (cropTally[f.province] || 0) + 1; });
+  const topProvinces = Object.entries(cropTally).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  return (
+    <div className="fade-in" style={{ padding: "20px 16px" }}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Admin Dashboard</div>
+      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>Platform overview & management</div>
+
+      {/* Key metrics */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
+        {[{ label: "Total Farmers", value: farmers.length, icon: "👩🏾‍🌾", color: "#7ec99a" }, { label: "Active Listings", value: listings.length, icon: "🛒", color: "#7ec99a" }, { label: "Messages Received", value: messages.length, icon: "💬", color: "#5a9fd4" }, { label: "Provinces Active", value: Object.keys(cropTally).length, icon: "📍", color: "#d4a017" }].map(s => (
+          <div key={s.label} className="stat-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ fontSize: 24 }}>{s.icon}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, fontWeight: 700, color: s.color }}>{s.value}</div>
+            </div>
+            <div style={{ fontSize: 11, color: "#5c8f6b", marginTop: 6, fontFamily: "'Space Mono', monospace" }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Top provinces */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="section-title">Farmers by Province</div>
+        {topProvinces.map(([prov, count], i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            <div style={{ flex: 1, fontSize: 13, color: "#c8e8d4" }}>{prov}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ height: 6, borderRadius: 3, background: "linear-gradient(90deg, #2d7a4f, #5cd68a)", width: Math.max(20, (count / farmers.length) * 120) }} />
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#7ec99a", minWidth: 16 }}>{count}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Recent farmers */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="section-title">Recent Farmer Registrations</div>
+        {farmers.slice(0, 5).map((f, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderTop: i > 0 ? "1px solid #1a2e1e" : "none" }}>
+            <div style={{ fontSize: 22 }}>👩🏾‍🌾</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: "#c8e8d4" }}>{f.name}</div>
+              <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.district}, {f.province}</div>
+            </div>
+            {f.phone && <div style={{ fontSize: 11, color: "#5c8f6b" }}>{f.phone}</div>}
+          </div>
+        ))}
+        {farmers.length === 0 && <div style={{ fontSize: 12, color: "#4a7a5a", textAlign: "center", padding: "12px 0" }}>No registrations yet</div>}
+      </div>
+
+      {/* Recent messages */}
+      <div className="card">
+        <div className="section-title">Recent Buyer Messages</div>
+        {loadingMsgs ? <div className="skeleton" style={{ height: 60, borderRadius: 8 }} /> :
+          messages.length === 0 ? <div style={{ fontSize: 12, color: "#4a7a5a", textAlign: "center", padding: "12px 0" }}>No messages yet</div> :
+          messages.slice(0, 5).map((m, i) => (
+            <div key={i} style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid #1a2e1e" : "none" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{m.sender_name}</div>
+                {m.sender_phone && <div style={{ fontSize: 11, color: "#5c8f6b" }}>{m.sender_phone}</div>}
+              </div>
+              <div style={{ fontSize: 12, color: "#8aaa94", lineHeight: 1.4 }}>{m.message}</div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  );
+}
+
+// ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
 function InsightsTab() {
   const yieldData = [
     { region: "Mash Central", crop: "Maize", yield: 4.2, forecast: 3.6, change: -14 },
