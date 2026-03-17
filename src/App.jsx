@@ -727,7 +727,7 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
       </div>
     </div>
   );
-
+}
 
 function badgeColorBg(b) { if (b === "Premium") return "rgba(212,160,23,0.2)"; if (b === "Verified") return "rgba(45,122,79,0.25)"; return "rgba(90,143,163,0.2)"; }
 function badgeColorText(b) { if (b === "Premium") return "#d4a017"; if (b === "Verified") return "#5cd68a"; return "#5a9fd4"; }
