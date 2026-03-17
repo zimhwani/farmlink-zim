@@ -29,13 +29,18 @@ const db = {
   async uploadImage(file) {
     const ext = file.name.split(".").pop();
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/produce-images/${filename}`, {
+    const bucket = file.type.startsWith("video/") ? "listing-media" : "produce-images";
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${filename}`, {
       method: "POST",
       headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": file.type },
       body: file,
     });
-    if (res.ok) return `${SUPABASE_URL}/storage/v1/object/public/produce-images/${filename}`;
+    if (res.ok) return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${filename}`;
     return null;
+  },
+  async uploadMedia(files) {
+    const urls = await Promise.all(Array.from(files).map(f => this.uploadImage(f)));
+    return urls.filter(Boolean);
   },
 };
 
@@ -111,6 +116,7 @@ export default function FarmLinkZim() {
   const [showListingModal, setShowListingModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(null);
   const [showFarmerMap, setShowFarmerMap] = useState(false);
+  const [showListingDetail, setShowListingDetail] = useState(null);
   const [weather, setWeather] = useState(null);
   const chatEndRef = useRef(null);
 
@@ -286,7 +292,7 @@ export default function FarmLinkZim() {
           {/* Page content */}
           <div className="page-content">
             {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
-            {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} />}
+            {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} />}
             {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
             {activeTab === "insights" && <InsightsTab />}
@@ -308,6 +314,7 @@ export default function FarmLinkZim() {
       {showListingModal && <ListingModal onClose={() => setShowListingModal(false)} onSave={async (listing) => { await db.post("listings", listing); setShowListingModal(false); loadListings(); loadCounts(); }} />}
       {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); setShowContactModal(null); }} />}
       {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} loadFarmers={loadFarmers} />}
+      {showListingDetail && <ListingDetailModal listing={showListingDetail} onClose={() => setShowListingDetail(null)} onContact={() => { setShowContactModal(showListingDetail); setShowListingDetail(null); }} />}
     </div>
   );
 }
@@ -690,10 +697,14 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
 }
 
 // ─── MARKET TAB ────────────────────────────────────────────────────────────────
-function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setShowListingModal, setShowContactModal }) {
+function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setShowListingModal, setShowContactModal, setShowListingDetail }) {
   const filters = ["All", "Grain", "Livestock", "Horticulture", "Cash Crops"];
   const filterMap = { "Grain": ["Maize", "Wheat", "Sorghum"], "Livestock": ["Cattle", "Goats", "Sheep", "Pigs", "Poultry"], "Horticulture": ["Tomatoes", "Vegetables", "Sweet Potatoes"], "Cash Crops": ["Tobacco", "Cotton", "Coffee", "Soya", "Sunflower", "Groundnuts"] };
-  const filtered = filterCrop === "All" ? listings : listings.filter(l => (filterMap[filterCrop] || []).some(f => l.crop?.toLowerCase().includes(f.toLowerCase())));
+  const [search, setSearch] = useState("");
+  const filtered = listings
+    .filter(l => filterCrop === "All" || (filterMap[filterCrop] || []).some(f => l.crop?.toLowerCase().includes(f.toLowerCase())))
+    .filter(l => !search || l.crop?.toLowerCase().includes(search.toLowerCase()) || l.location?.toLowerCase().includes(search.toLowerCase()) || l.farmer_name?.toLowerCase().includes(search.toLowerCase()));
+
   return (
     <div className="fade-in single-col">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -701,34 +712,66 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
           <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Marketplace</div>
           <div style={{ fontSize: 12, color: "#4a7a5a" }}>{listings.length} active listings</div>
         </div>
-        <button onClick={() => setShowListingModal(true)} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#7ec99a", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>+ List Produce</button>
+        <button onClick={() => setShowListingModal(true)} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#7ec99a", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", whiteSpace: "nowrap" }}>+ List Produce</button>
       </div>
+
+      {/* Search */}
+      <div style={{ position: "relative", marginBottom: 12 }}>
+        <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#3d6b4a", fontSize: 14 }}>🔍</span>
+        <input className="input-field" placeholder="Search crops, location, farmer..." style={{ paddingLeft: 36 }} value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
+
+      {/* Filters */}
       <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
         {filters.map(f => <span key={f} className={`chip ${filterCrop === f ? "active" : ""}`} onClick={() => setFilterCrop(f)} style={{ fontFamily: "'Space Mono', monospace", fontSize: 10 }}>{f}</span>)}
       </div>
+
+      {/* Listings grid */}
       <div className="listing-grid">
-        {loadingListings ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12, marginBottom: 10 }} />) :
-          filtered.length === 0 ? <div style={{ textAlign: "center", padding: "40px 20px", color: "#4a7a5a" }}><div style={{ fontSize: 40, marginBottom: 12 }}>🌾</div><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>No listings in this category</div></div> :
-          filtered.map(l => (
-            <div key={l.id} className="listing-card">
-              <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                {l.image_url
-                  ? <img src={l.image_url} alt={l.crop} style={{ width: 56, height: 56, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
-                  : <div style={{ width: 56, height: 56, background: "#1a2e1e", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{CROP_EMOJIS[l.crop] || l.img || "🌾"}</div>
-                }
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                    <div style={{ fontSize: 16, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
-                    <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, fontFamily: "'Space Mono', monospace", padding: "2px 7px", borderRadius: 10 }}>{l.badge}</span>
-                  </div>
-                  <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 6 }}>📍 {l.location} · {l.farmer_name}</div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: "#7ec99a" }}>{l.price}</span>
-                      <span style={{ fontSize: 11, color: "#4a7a5a", marginLeft: 8 }}>{l.quantity}</span>
-                    </div>
-                    <button className="btn-secondary" style={{ padding: "5px 14px", fontSize: 10 }} onClick={() => setShowContactModal(l)}>Contact</button>
-                  </div>
+        {loadingListings ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 120, borderRadius: 12, marginBottom: 10 }} />) :
+          filtered.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "#4a7a5a", gridColumn: "1/-1" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>🌾</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>No listings found</div>
+            </div>
+          ) : filtered.map(l => (
+            <div key={l.id} className="listing-card" onClick={() => setShowListingDetail(l)} style={{ cursor: "pointer" }}>
+              {/* Media thumbnail */}
+              {(l.image_url || (l.media_urls && l.media_urls.length > 0)) ? (
+                <img
+                  src={l.media_urls?.[0] || l.image_url}
+                  alt={l.crop}
+                  style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 8, marginBottom: 10 }}
+                />
+              ) : (
+                <div style={{ width: "100%", height: 100, background: "#1a2e1e", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 10 }}>
+                  {CROP_EMOJIS[l.crop] || l.img || "🌾"}
+                </div>
+              )}
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
+                <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, fontFamily: "'Space Mono', monospace", padding: "2px 7px", borderRadius: 10, flexShrink: 0 }}>{l.badge}</span>
+              </div>
+              <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 6 }}>📍 {l.location}</div>
+              {l.description && <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{l.description}</div>}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#7ec99a" }}>{l.price}</span>
+                  <span style={{ fontSize: 11, color: "#4a7a5a", marginLeft: 6 }}>{l.quantity}</span>
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {l.phone && (
+                    <a href={`https://wa.me/${l.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      style={{ background: "#1a5c2a", border: "1px solid #25a244", borderRadius: 6, padding: "4px 8px", color: "#4cd964", fontSize: 11, textDecoration: "none", display: "flex", alignItems: "center", gap: 3 }}>
+                      <span style={{ fontSize: 13 }}>💬</span> WA
+                    </a>
+                  )}
+                  <button className="btn-secondary" style={{ padding: "4px 10px", fontSize: 10 }}
+                    onClick={e => { e.stopPropagation(); setShowContactModal(l); }}>
+                    Contact
+                  </button>
                 </div>
               </div>
             </div>
