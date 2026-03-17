@@ -360,13 +360,22 @@ const ZW_PROVINCES = {
 
 // ─── CROP HECTARE ROW (inline editable) ───────────────────────────────────────
 function CropHectareRow({ crop, onUpdate }) {
+  const isLivestock = crop.type === "livestock";
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(crop.hectares ?? "");
+  const [value, setValue] = useState(
+    isLivestock ? (crop.head_count ?? "") : (crop.hectares ?? "")
+  );
   const [saving, setSaving] = useState(false);
+
+  const currentVal = isLivestock ? crop.head_count : crop.hectares;
+  const unit = isLivestock ? "head" : "ha";
+  const placeholder = isLivestock ? "e.g. 24" : "e.g. 5.5";
 
   const handleSave = async () => {
     setSaving(true);
-    await onUpdate(crop.id, value ? parseFloat(value) : null);
+    const parsed = value !== "" ? (isLivestock ? parseInt(value) : parseFloat(value)) : null;
+    const updateData = isLivestock ? { head_count: parsed } : { hectares: parsed };
+    await onUpdate(crop.id, updateData);
     setSaving(false);
     setEditing(false);
   };
@@ -375,11 +384,11 @@ function CropHectareRow({ crop, onUpdate }) {
     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
       <span style={{
         fontSize: 10, padding: "2px 8px", borderRadius: 10,
-        background: crop.type === "livestock" ? "rgba(90,143,163,0.2)" : "rgba(45,122,79,0.2)",
-        color: crop.type === "livestock" ? "#5a9fd4" : "#7ec99a",
+        background: isLivestock ? "rgba(90,143,163,0.2)" : "rgba(45,122,79,0.2)",
+        color: isLivestock ? "#5a9fd4" : "#7ec99a",
         fontFamily: "'Space Mono', monospace", flexShrink: 0,
       }}>
-        {crop.type === "livestock" ? "🐄" : "🌾"} {crop.crop_name}
+        {isLivestock ? "🐄" : "🌾"} {crop.crop_name}
       </span>
 
       {editing ? (
@@ -388,15 +397,16 @@ function CropHectareRow({ crop, onUpdate }) {
             type="number"
             value={value}
             onChange={e => setValue(e.target.value)}
-            placeholder="ha"
+            placeholder={placeholder}
             style={{
-              width: 60, background: "#1a2e1e", border: "1px solid #4aad72",
+              width: 64, background: "#1a2e1e", border: "1px solid #4aad72",
               borderRadius: 6, padding: "2px 6px", color: "#e8dfc8",
               fontSize: 11, fontFamily: "'Space Mono', monospace", outline: "none",
             }}
             autoFocus
             onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
           />
+          <span style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{unit}</span>
           <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 8px", color: "#e8dfc8", fontSize: 10, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
             {saving ? "..." : "✓"}
           </button>
@@ -404,8 +414,8 @@ function CropHectareRow({ crop, onUpdate }) {
         </div>
       ) : (
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 10, color: crop.hectares ? "#c8b43c" : "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>
-            {crop.hectares ? `${crop.hectares} ha` : "— ha"}
+          <span style={{ fontSize: 10, color: currentVal ? "#c8b43c" : "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>
+            {currentVal != null ? `${currentVal} ${unit}` : `— ${unit}`}
           </span>
           <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 6px", color: "#4a7a5a", fontSize: 9, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
             edit
@@ -537,8 +547,8 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
                 {f.farmer_crops && f.farmer_crops.length > 0 && (
                   <div style={{ paddingLeft: 28 }}>
                     {f.farmer_crops.map((c, j) => (
-                      <CropHectareRow key={j} crop={c} onUpdate={(id, ha) => {
-                        db.patch("farmer_crops", id, { hectares: ha }).then(() => loadFarmers());
+                      <CropHectareRow key={j} crop={c} onUpdate={(id, data) => {
+                        db.patch("farmer_crops", id, data).then(() => loadFarmers());
                       }} />
                     ))}
                   </div>
@@ -1088,17 +1098,20 @@ function InsightsTab() {
     const load = async () => {
       setLoading(true);
       try {
-        const data = await db.get("farmer_crops", "?select=crop_name,type,hectares&hectares=not.is.null");
+        const data = await db.get("farmer_crops", "?select=id,crop_name,type,hectares,head_count,farmer_id");
         if (Array.isArray(data)) {
-          // Aggregate by crop
           const agg = {};
           data.forEach(row => {
+            const isLive = row.type === "livestock";
+            // Only include rows that have the relevant metric set
+            if (isLive && row.head_count == null) return;
+            if (!isLive && row.hectares == null) return;
             const key = row.crop_name;
-            if (!agg[key]) agg[key] = { crop_name: row.crop_name, type: row.type, total_hectares: 0, farmer_count: 0 };
-            agg[key].total_hectares += parseFloat(row.hectares) || 0;
+            if (!agg[key]) agg[key] = { crop_name: row.crop_name, type: row.type, total: 0, farmer_count: 0 };
+            agg[key].total += isLive ? (parseInt(row.head_count) || 0) : (parseFloat(row.hectares) || 0);
             agg[key].farmer_count += 1;
           });
-          const sorted = Object.values(agg).sort((a, b) => b.total_hectares - a.total_hectares);
+          const sorted = Object.values(agg).sort((a, b) => b.total - a.total);
           setCropData(sorted.filter(d => d.type === "crop"));
           setLivestockData(sorted.filter(d => d.type === "livestock"));
         }
@@ -1116,10 +1129,10 @@ function InsightsTab() {
     { region: "Mat North", crop: "Cattle", yield: 820, forecast: 790, change: -4 },
   ];
 
-  const maxCrop = Math.max(...cropData.map(d => d.total_hectares), 1);
-  const maxLive = Math.max(...livestockData.map(d => d.total_hectares), 1);
-  const totalCropHa = cropData.reduce((s, d) => s + d.total_hectares, 0);
-  const totalLiveHa = livestockData.reduce((s, d) => s + d.total_hectares, 0);
+  const maxCrop = Math.max(...cropData.map(d => d.total), 1);
+  const maxLive = Math.max(...livestockData.map(d => d.total), 1);
+  const totalCropHa = cropData.reduce((s, d) => s + d.total, 0);
+  const totalLiveHead = livestockData.reduce((s, d) => s + d.total, 0);
 
   const CROP_COLORS = ["#2d7a4f", "#3a9962", "#5cd68a", "#7ec99a", "#4aad72", "#1f5a39", "#27803d", "#60c070"];
   const LIVE_COLORS = ["#5a9fd4", "#3a7ab5", "#7abde8", "#2d6fa0", "#4a8fc4"];
@@ -1143,8 +1156,8 @@ function InsightsTab() {
             </div>
             <div style={{ background: "linear-gradient(135deg, #152218, #0f1a2a)", border: "1px solid #2d4a6a", borderRadius: 12, padding: 16 }}>
               <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a6a8f", marginBottom: 6 }}>TOTAL LIVESTOCK AREA</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#5a9fd4" }}>{totalLiveHa.toFixed(1)}</div>
-              <div style={{ fontSize: 11, color: "#4a6a8f", fontFamily: "'Space Mono', monospace" }}>HECTARES · {livestockData.length} TYPES</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "#5a9fd4" }}>{totalLiveHead.toLocaleString()}</div>
+              <div style={{ fontSize: 11, color: "#4a6a8f", fontFamily: "'Space Mono', monospace" }}>HEAD · {livestockData.length} TYPES</div>
             </div>
           </div>
 
@@ -1157,10 +1170,10 @@ function InsightsTab() {
               </div>
               <svg viewBox={`0 0 400 ${Math.max(cropData.length * 44 + 20, 80)}`} style={{ width: "100%", height: "auto" }}>
                 {cropData.map((d, i) => {
-                  const barW = Math.max((d.total_hectares / maxCrop) * 280, 4);
+                  const barW = Math.max((d.total / maxCrop) * 280, 4);
                   const y = i * 44 + 8;
                   const color = CROP_COLORS[i % CROP_COLORS.length];
-                  const pct = ((d.total_hectares / totalCropHa) * 100).toFixed(1);
+                  const pct = ((d.total / totalCropHa) * 100).toFixed(1);
                   return (
                     <g key={i}>
                       {/* Label */}
@@ -1171,7 +1184,7 @@ function InsightsTab() {
                       {/* Bar */}
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
                       {/* Value */}
-                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total_hectares.toFixed(1)} ha</text>
+                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total.toFixed(1)} ha</text>
                       <text x="388" y={y + 16} fill="#5c8f6b" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text>
                     </g>
                   );
@@ -1184,10 +1197,10 @@ function InsightsTab() {
                   <svg viewBox="0 0 100 100" style={{ width: 100, height: 100, flexShrink: 0 }}>
                     {(() => {
                       let offset = 0;
-                      const total = cropData.reduce((s, d) => s + d.total_hectares, 0);
+                      const total = cropData.reduce((s, d) => s + d.total, 0);
                       const r = 35, cx = 50, cy = 50, circ = 2 * Math.PI * r;
                       return cropData.map((d, i) => {
-                        const pct = d.total_hectares / total;
+                        const pct = d.total / total;
                         const dash = pct * circ;
                         const gap = circ - dash;
                         const seg = (
@@ -1226,17 +1239,17 @@ function InsightsTab() {
               </div>
               <svg viewBox={`0 0 400 ${Math.max(livestockData.length * 44 + 20, 80)}`} style={{ width: "100%", height: "auto" }}>
                 {livestockData.map((d, i) => {
-                  const barW = Math.max((d.total_hectares / maxLive) * 280, 4);
+                  const barW = Math.max((d.total / maxLive) * 280, 4);
                   const y = i * 44 + 8;
                   const color = LIVE_COLORS[i % LIVE_COLORS.length];
-                  const pct = ((d.total_hectares / totalLiveHa) * 100).toFixed(1);
+                  const pct = ((d.total / totalLiveHead) * 100).toFixed(1);
                   return (
                     <g key={i}>
                       <text x="0" y={y + 12} fill="#c8e8d4" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
                       <text x="0" y={y + 24} fill="#4a7a5a" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
                       <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2218" />
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
-                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total_hectares.toFixed(1)} ha</text>
+                      <text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total.toFixed(1)} ha</text>
                       <text x="388" y={y + 16} fill="#4a6a8f" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text>
                     </g>
                   );
