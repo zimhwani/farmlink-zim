@@ -216,3 +216,10 @@ body { background: #0d1a0f; color: #e8dfc8; font-family: 'Crimson Pro', Georgia,
 .prov-label { font-family: monospace; font-size: 20px; fill: #3a6b48; text-anchor: middle; pointer-events: none; }
 .city-dot { fill: #5c8f6b; }
 .city-label { font-family: monospace; font-size: 14px; fill: #5c8f6b; }
+
+/* Hide mobile logo on desktop, show page title instead */
+@media (min-width: 768px) {
+  .mobile-logo { display: none !important; }
+  .desktop-title { display: block !important; }
+  .top-bar-right { margin-left: auto; }
+}
