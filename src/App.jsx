@@ -785,26 +785,165 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
 function badgeColorBg(b) { if (b === "Premium") return "rgba(212,160,23,0.2)"; if (b === "Verified") return "rgba(45,122,79,0.25)"; return "rgba(90,143,163,0.2)"; }
 function badgeColorText(b) { if (b === "Premium") return "#d4a017"; if (b === "Verified") return "#5cd68a"; return "#5a9fd4"; }
 
-// ─── LIST PRODUCE MODAL (with image upload) ───────────────────────────────────
+// ─── LISTING DETAIL MODAL ──────────────────────────────────────────────────────
+function ListingDetailModal({ listing, onClose, onContact }) {
+  const l = listing;
+  const [mediaIdx, setMediaIdx] = useState(0);
+  const allMedia = [
+    ...(l.media_urls || []),
+    ...(l.image_url ? [l.image_url] : []),
+  ].filter(Boolean);
+
+  const waNumber = l.phone ? l.phone.replace(/\D/g, '') : null;
+  const waMsg = encodeURIComponent(`Hi ${l.farmer_name}, I saw your listing on FarmLink Zim for ${l.crop} (${l.quantity} at ${l.price}). I'm interested, please contact me.`);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" style={{ borderRadius: "20px 20px 0 0", maxHeight: "92vh", padding: 0, overflow: "hidden", display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()}>
+
+        {/* Media gallery */}
+        <div style={{ position: "relative", background: "#080f09", flexShrink: 0 }}>
+          {allMedia.length > 0 ? (
+            <>
+              {allMedia[mediaIdx]?.match(/\.(mp4|mov|webm)$/i) || l.video_url === allMedia[mediaIdx] ? (
+                <video src={allMedia[mediaIdx]} controls style={{ width: "100%", maxHeight: 280, objectFit: "cover" }} />
+              ) : (
+                <img src={allMedia[mediaIdx]} alt={l.crop} style={{ width: "100%", height: 240, objectFit: "cover" }} />
+              )}
+              {/* Navigation dots */}
+              {allMedia.length > 1 && (
+                <div style={{ position: "absolute", bottom: 10, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6 }}>
+                  {allMedia.map((_, dotIdx) => (
+                    <div key={dotIdx} onClick={() => setMediaIdx(dotIdx)} style={{ width: dotIdx === mediaIdx ? 20 : 6, height: 6, borderRadius: 3, background: dotIdx === mediaIdx ? "#7ec99a" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.2s" }} />
+                  ))}
+                </div>
+              )}
+              {/* Arrows */}
+              {allMedia.length > 1 && <>
+                <button onClick={() => setMediaIdx(prev => (prev - 1 + allMedia.length) % allMedia.length)}
+                  style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 32, height: 32, color: "#fff", cursor: "pointer", fontSize: 16 }}>‹</button>
+                <button onClick={() => setMediaIdx(prev => (prev + 1) % allMedia.length)}
+                  style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", border: "none", borderRadius: "50%", width: 32, height: 32, color: "#fff", cursor: "pointer", fontSize: 16 }}>›</button>
+              </>}
+              {/* Media count badge */}
+              {allMedia.length > 1 && (
+                <div style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.6)", borderRadius: 10, padding: "2px 8px", fontSize: 10, color: "#fff", fontFamily: "'Space Mono', monospace" }}>
+                  {mediaIdx + 1}/{allMedia.length}
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ height: 160, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 64 }}>
+              {CROP_EMOJIS[l.crop] || "🌾"}
+            </div>
+          )}
+          {/* Thumbnail strip */}
+          {allMedia.length > 1 && (
+            <div style={{ display: "flex", gap: 6, padding: "8px 12px", overflowX: "auto" }}>
+              {allMedia.map((m, thumbIdx) => (
+                <div key={thumbIdx} onClick={() => setMediaIdx(thumbIdx)} style={{ width: 52, height: 40, borderRadius: 6, overflow: "hidden", flexShrink: 0, border: thumbIdx === mediaIdx ? "2px solid #7ec99a" : "2px solid transparent", cursor: "pointer" }}>
+                  <img src={m} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => e.target.style.display = "none"} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Scrollable content */}
+        <div style={{ overflowY: "auto", padding: "16px 20px", flex: 1 }}>
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#c8e8d4" }}>{l.crop}</div>
+              <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>👩🏾‍🌾 {l.farmer_name} · 📍 {l.location}</div>
+            </div>
+            <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer", flexShrink: 0 }}>✕</button>
+          </div>
+
+          {/* Price + quantity */}
+          <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+            <div style={{ background: "rgba(45,122,79,0.2)", borderRadius: 10, padding: "10px 16px", flex: 1 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginBottom: 4 }}>PRICE</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#7ec99a", fontFamily: "'Space Mono', monospace" }}>{l.price}</div>
+            </div>
+            <div style={{ background: "#152218", borderRadius: 10, padding: "10px 16px", flex: 1 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginBottom: 4 }}>AVAILABLE</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#c8e8d4" }}>{l.quantity}</div>
+            </div>
+            <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 10, fontFamily: "'Space Mono', monospace", padding: "6px 10px", borderRadius: 10, alignSelf: "center" }}>{l.badge}</span>
+          </div>
+
+          {/* Description */}
+          {l.description && (
+            <div style={{ marginBottom: 16 }}>
+              <div className="section-title">About this listing</div>
+              <div style={{ fontSize: 14, color: "#c8e8d4", lineHeight: 1.7 }}>{l.description}</div>
+            </div>
+          )}
+
+          {/* Contact actions */}
+          <div className="section-title">Contact Seller</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {/* WhatsApp */}
+            {waNumber && (
+              <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: "linear-gradient(135deg, #1a5c2a, #128c3c)", border: "1px solid #25a244", borderRadius: 10, padding: "14px", textDecoration: "none", color: "#4cd964", fontFamily: "'Space Mono', monospace", fontSize: 13 }}>
+                <span style={{ fontSize: 22 }}>💬</span>
+                <div>
+                  <div style={{ fontWeight: 700 }}>Chat on WhatsApp</div>
+                  <div style={{ fontSize: 10, color: "rgba(76,217,100,0.7)" }}>{l.phone}</div>
+                </div>
+              </a>
+            )}
+            {/* In-app message */}
+            <button onClick={onContact} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "14px", color: "#e8dfc8", fontFamily: "'Space Mono', monospace", fontSize: 13, cursor: "pointer" }}>
+              <span style={{ fontSize: 18 }}>✉️</span> Send In-App Message
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── LIST PRODUCE MODAL ────────────────────────────────────────────────────────
 function ListingModal({ onClose, onSave }) {
-  const [fields, setFields] = useState({ crop: "", quantity: "", price: "", farmerName: "", location: "" });
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [fields, setFields] = useState({ crop: "", quantity: "", price: "", farmerName: "", location: "", phone: "", description: "" });
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [mediaPreviews, setMediaPreviews] = useState([]);
   const [saving, setSaving] = useState(false);
   const set = (k, v) => setFields(f => ({ ...f, [k]: v }));
-  const valid = Object.values(fields).every(v => v.trim());
+  const required = ["crop", "quantity", "price", "farmerName", "location"];
+  const valid = required.every(k => fields[k].trim());
 
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
+  const handleMedia = (e) => {
+    const files = Array.from(e.target.files);
+    setMediaFiles(prev => [...prev, ...files]);
+    const previews = files.map(f => ({ url: URL.createObjectURL(f), type: f.type }));
+    setMediaPreviews(prev => [...prev, ...previews]);
+  };
+
+  const removeMedia = (i) => {
+    setMediaFiles(prev => prev.filter((_, idx) => idx !== i));
+    setMediaPreviews(prev => prev.filter((_, idx) => idx !== i));
   };
 
   const handleSave = async () => {
     if (!valid) return;
     setSaving(true);
-    let image_url = null;
-    if (imageFile) image_url = await db.uploadImage(imageFile);
-    await onSave({ crop: fields.crop, quantity: fields.quantity, price: fields.price, farmer_name: fields.farmerName, location: fields.location, badge: "New", img: CROP_EMOJIS[fields.crop] || "🌾", active: true, image_url });
+    const mediaUrls = mediaFiles.length > 0 ? await db.uploadMedia(mediaFiles) : [];
+    const videoUrl = mediaUrls.find(u => u.match(/\.(mp4|mov|webm)$/i)) || null;
+    const imageUrls = mediaUrls.filter(u => !u.match(/\.(mp4|mov|webm)$/i));
+    await onSave({
+      crop: fields.crop, quantity: fields.quantity, price: fields.price,
+      farmer_name: fields.farmerName, location: fields.location,
+      phone: fields.phone || null,
+      description: fields.description || null,
+      badge: "New", img: CROP_EMOJIS[fields.crop] || "🌾", active: true,
+      image_url: imageUrls[0] || null,
+      media_urls: imageUrls,
+      video_url: videoUrl,
+    });
     setSaving(false);
   };
 
@@ -815,29 +954,57 @@ function ListingModal({ onClose, onSave }) {
           <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>List Your Produce</div>
           <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
-        {/* Image upload */}
+
+        {/* Media upload */}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 6 }}>PHOTO OF PRODUCE — OPTIONAL</label>
-          <label style={{ display: "block", cursor: "pointer" }}>
-            <input type="file" accept="image/*" onChange={handleImage} style={{ display: "none" }} />
-            {imagePreview
-              ? <img src={imagePreview} alt="Preview" style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 10, border: "1px solid #2d5a36" }} />
-              : <div style={{ background: "#1a2e1e", border: "2px dashed #2d5a36", borderRadius: 10, height: 100, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <div style={{ fontSize: 28 }}>📷</div>
-                  <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>TAP TO ADD PHOTO</div>
-                </div>
-            }
-          </label>
+          <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 8 }}>PHOTOS & VIDEOS</label>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+            {mediaPreviews.map((p, i) => (
+              <div key={i} style={{ position: "relative", width: 72, height: 72, borderRadius: 8, overflow: "hidden", flexShrink: 0 }}>
+                {p.type.startsWith("video/")
+                  ? <div style={{ width: "100%", height: "100%", background: "#1a2e1e", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎥</div>
+                  : <img src={p.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                }
+                <button onClick={() => removeMedia(i)} style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.7)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+              </div>
+            ))}
+            <label style={{ width: 72, height: 72, background: "#1a2e1e", border: "2px dashed #2d5a36", borderRadius: 8, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+              <input type="file" accept="image/*,video/*" multiple onChange={handleMedia} style={{ display: "none" }} />
+              <div style={{ fontSize: 22 }}>📷</div>
+              <div style={{ fontSize: 9, color: "#4a7a5a", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>ADD</div>
+            </label>
+          </div>
+          <div style={{ fontSize: 10, color: "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>Add up to 6 photos or 1 video</div>
         </div>
-        {[["YOUR NAME", "farmerName", "e.g. Tendai Moyo"], ["LOCATION", "location", "e.g. Mazowe, Mashonaland Central"], ["CROP / LIVESTOCK", "crop", "e.g. Maize, Cattle, Tomatoes"], ["QUANTITY", "quantity", "e.g. 10 tonnes, 5 head"], ["PRICE", "price", "e.g. USD 280/tonne"]].map(([label, key, ph]) => (
+
+        {/* Fields */}
+        {[
+          ["YOUR NAME", "farmerName", "e.g. Tendai Moyo", "text"],
+          ["YOUR WHATSAPP NUMBER", "phone", "+263 77X XXX XXX", "tel"],
+          ["LOCATION", "location", "e.g. Mazowe, Mashonaland Central", "text"],
+          ["CROP / LIVESTOCK", "crop", "e.g. Maize, Cattle, Tomatoes", "text"],
+          ["QUANTITY", "quantity", "e.g. 10 tonnes, 5 head", "text"],
+          ["PRICE", "price", "e.g. USD 280/tonne", "text"],
+        ].map(([label, key, ph, type]) => (
           <div key={key} style={{ marginBottom: 12 }}>
             <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 5 }}>{label}</label>
-            <input className="input-field" value={fields[key]} onChange={e => set(key, e.target.value)} placeholder={ph} />
+            <input className="input-field" type={type} value={fields[key]} onChange={e => set(key, e.target.value)} placeholder={ph} />
           </div>
         ))}
-        <button className="btn-primary" onClick={handleSave} style={{ opacity: valid ? 1 : 0.4, marginTop: 8 }}>{saving ? "Uploading & Saving..." : "Post Listing ✓"}</button>
+
+        {/* Description */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 5 }}>DESCRIPTION — OPTIONAL</label>
+          <textarea className="input-field" value={fields.description} onChange={e => set("description", e.target.value)}
+            placeholder="Describe your produce — variety, quality, storage, delivery options..." rows={3} style={{ resize: "none" }} />
+        </div>
+
+        <button className="btn-primary" onClick={handleSave} style={{ opacity: valid ? 1 : 0.4 }}>
+          {saving ? "Uploading & Saving..." : "Post Listing ✓"}
+        </button>
       </div>
     </div>
+  );
   );
 }
 
