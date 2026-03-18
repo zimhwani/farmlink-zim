@@ -316,9 +316,9 @@ export default function FarmLinkZim() {
     { id: "market", icon: "🛒", label: "Marketplace" },
     { id: "diary", icon: "📓", label: "Farm Diary" },
     { id: "advisory", icon: "🤖", label: "AI Advisor" },
+    { id: "insights", icon: "📊", label: "Insights" },
     { id: "prices", icon: "📈", label: "Price Feeds" },
     { id: "calendar", icon: "🗓️", label: "Planting Calendar" },
-    { id: "insights", icon: "📊", label: "Insights" },
     { id: "register", icon: "📍", label: "Register Farm" },
     { id: "admin", icon: "⚙️", label: "Admin" },
   ];
