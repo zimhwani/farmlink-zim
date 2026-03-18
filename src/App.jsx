@@ -336,18 +336,17 @@ export default function FarmLinkZim() {
 
           {/* Bottom sidebar info */}
           <div style={{ padding: "16px 20px", borderTop: "1px solid #1f3525" }}>
-            <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3d6b4a", marginBottom: 6 }}>PLATFORM STATUS</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ fontSize: 10, color: "#3d6b4a", marginBottom: 6, fontWeight: 600, letterSpacing: "0.08em" }}>PLATFORM STATUS</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#5cd68a" }} className="pulse" />
               <span style={{ fontSize: 11, color: "#5c8f6b" }}>Live · Farmlink connected</span>
-          </div>
-          <div style={{ padding: "12px 20px", borderTop: "1px solid #1a2e1e", marginTop: 8 }}>
-            <div style={{ fontSize: 10, color: "#2d5236", lineHeight: 1.7 }}>
-              © {new Date().getFullYear()} FarmLink Zim<br />
-              <span style={{ color: "#1f3525" }}>All rights reserved.</span>
             </div>
-          </div>
-          <div style={{ display: "none" }}>
+            <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 10 }}>
+              <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
+                <button onClick={() => setActiveTab("legal-tos")} style={{ background: "none", border: "none", color: "#3d6b4a", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Terms of Service</button>
+                <button onClick={() => setActiveTab("legal-pp")} style={{ background: "none", border: "none", color: "#3d6b4a", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Privacy Policy</button>
+              </div>
+              <div style={{ fontSize: 10, color: "#2d5236" }}>© {new Date().getFullYear()} FarmLink Zim</div>
             </div>
           </div>
         </div>
@@ -406,6 +405,8 @@ export default function FarmLinkZim() {
             {activeTab === "calendar" && <CalendarTab />}
             {activeTab === "insights" && <InsightsTab />}
             {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
+            {activeTab === "legal-tos" && <LegalTab page="tos" setActiveTab={setActiveTab} />}
+            {activeTab === "legal-pp" && <LegalTab page="pp" setActiveTab={setActiveTab} />}
           </div>
         </div>
       </div>
@@ -2127,6 +2128,94 @@ function AddDiaryEntryModal({ onClose, onSave }) {
         <button className="btn-primary" onClick={handleSave} disabled={saving || !fields.notes.trim()} style={{ opacity: fields.notes.trim() ? 1 : 0.4 }}>
           {saving ? "Saving..." : "Save Entry ✓"}
         </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── LEGAL TAB ─────────────────────────────────────────────────────────────────
+const TOS_SECTIONS = [
+  { title: "1. Introduction", content: "Welcome to FarmLink Zim. FarmLink Zim is an agricultural marketplace and advisory platform connecting farmers, buyers, and agricultural service providers across Zimbabwe.\n\nBy accessing or using the FarmLink Zim Platform, you agree to be bound by these Terms of Service. If you do not agree to these Terms, please do not use the Platform." },
+  { title: "2. Eligibility", content: "You must be at least 18 years of age to use this Platform. By using FarmLink Zim, you represent that you are a resident of Zimbabwe or conducting agricultural business in Zimbabwe, have the legal capacity to enter into these Terms, and will use the Platform only for lawful purposes." },
+  { title: "3. Account Registration", content: "To access certain features you may register using your email address or mobile phone number. We use one-time passwords (OTP) for verification. You are responsible for maintaining the confidentiality of your credentials and must provide accurate, current information." },
+  { title: "4. Marketplace Listings", content: "Registered farmers may list agricultural produce and livestock for sale. By posting a listing, you represent that you are the legitimate owner of the produce, all information is accurate, the produce meets applicable Zimbabwean food safety standards, and you hold any necessary licences.\n\nProhibited items include stolen produce, products not meeting food safety standards, protected wildlife products, and items whose sale is prohibited under Zimbabwean law." },
+  { title: "5. Transactions and Payments", content: "FarmLink Zim is a marketplace platform. We facilitate connections between buyers and sellers but are not a party to any transaction. Users are responsible for negotiating terms, arranging payment directly, ensuring compliance with tax obligations, and resolving any disputes." },
+  { title: "6. AI Advisory Services", content: "The AI Advisor provides general agricultural guidance only. It does not constitute professional agronomic, veterinary, or legal advice. You should consult qualified professionals before making significant farming decisions. FarmLink Zim is not liable for losses arising from reliance on AI-generated advice." },
+  { title: "7. Farm Diary and Personal Data", content: "The Farm Diary feature allows you to record your agricultural activities. Data you enter is stored on our servers and may be used to improve our services and provide personalised recommendations. Please refer to our Privacy Policy for full details." },
+  { title: "8. Intellectual Property", content: `The FarmLink Zim name, logo, platform design, and all content created by FarmLink Zim are protected by copyright. © ${new Date().getFullYear()} FarmLink Zim. All rights reserved.\n\nUser-generated content remains the intellectual property of the respective user. By posting content, you grant FarmLink Zim a non-exclusive, royalty-free licence to use and display such content for the purposes of operating the Platform.` },
+  { title: "9. Prohibited Conduct", content: "Users must not post false or fraudulent listings, harass or abuse other users, attempt unauthorised access to the Platform, distribute spam or malware, scrape Platform data without consent, or use the Platform in violation of Zimbabwean laws." },
+  { title: "10. Limitation of Liability", content: "To the maximum extent permitted by Zimbabwean law, FarmLink Zim shall not be liable for indirect or consequential damages, losses from transactions between users, inaccuracies in market data or AI content, or Platform unavailability. Our total liability shall not exceed amounts paid to us in the preceding 12 months." },
+  { title: "11. Governing Law", content: "These Terms shall be governed by the laws of Zimbabwe. Any disputes shall be subject to the exclusive jurisdiction of the courts of Zimbabwe." },
+  { title: "12. Changes to These Terms", content: "We reserve the right to update these Terms at any time. We will notify registered users of material changes via email or in-app notification. Continued use of the Platform following notification constitutes acceptance of the updated Terms." },
+  { title: "13. Contact Us", content: "For questions about these Terms, contact us at:\n\nFarmLink Zim\nEmail: legal@farmlinkzim.com\nPlatform: farmlink-zim-vm8p.vercel.app\nZimbabwe" },
+];
+
+const PP_SECTIONS = [
+  { title: "1. Introduction", content: "FarmLink Zim is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect data in accordance with Zimbabwe's Cyber and Data Protection Act, 2021." },
+  { title: "2. Information We Collect", content: "We collect information you provide (name, email, phone, farm location, crops, livestock, listings, diary entries, messages) and information collected automatically (device type, IP address, pages visited, access times). We use Open-Meteo for weather data using your province location." },
+  { title: "3. How We Use Your Information", content: "We use your information to create and manage your account, display marketplace listings, provide personalised AI agricultural advice, send notifications about prices and alerts, generate anonymised agricultural insights, improve the Platform, and comply with legal obligations." },
+  { title: "4. Sharing Your Information", content: "We do not sell your personal information. Marketplace listings are visible to all Platform users. Farm diary entries are private.\n\nWe use the following services: Supabase (database, EU servers), Vercel (hosting), Anthropic Claude AI (advisory queries), and Open-Meteo (weather). We may disclose information if required by Zimbabwean law." },
+  { title: "5. Data Security", content: "We implement encrypted data transmission (HTTPS/TLS), secure OTP authentication, database-level row security policies, and regular security reviews. However, no internet transmission is 100% secure. Please notify us immediately if you suspect unauthorised account access." },
+  { title: "6. Data Retention", content: "We retain your personal information for as long as your account is active. You may request deletion at any time by contacting us. We will process deletion requests within 30 days, except where retention is required by law." },
+  { title: "7. Your Rights", content: "Under Zimbabwe's Cyber and Data Protection Act, 2021, you have the right to access your personal information, correct inaccurate data, request deletion, object to certain processing, and withdraw consent. Contact legal@farmlinkzim.com to exercise these rights." },
+  { title: "8. Children's Privacy", content: "FarmLink Zim is not directed at children under 18. We do not knowingly collect information from children. If we discover we have inadvertently done so, we will delete it promptly." },
+  { title: "9. Cookies and Storage", content: "The Platform uses browser local storage to maintain your login session and user preferences. We do not use advertising or tracking cookies. You may clear your browser storage at any time, which will log you out." },
+  { title: "10. International Data Transfers", content: "Your data may be processed on servers outside Zimbabwe (including the EU via Supabase). We ensure appropriate safeguards are in place for such transfers in accordance with applicable data protection laws." },
+  { title: "11. Changes to This Policy", content: "We may update this Privacy Policy from time to time. We will notify you of significant changes via email or in-app notification. The updated policy will be effective from the date shown at the top." },
+  { title: "12. Contact Us", content: "For privacy questions or to exercise your data rights:\n\nFarmLink Zim — Data Controller\nEmail: legal@farmlinkzim.com\nPlatform: farmlink-zim-vm8p.vercel.app\nZimbabwe\n\nYou also have the right to lodge a complaint with POTRAZ if you believe your data protection rights have been violated." },
+];
+
+function LegalTab({ page, setActiveTab }) {
+  const isTos = page === "tos";
+  const sections = isTos ? TOS_SECTIONS : PP_SECTIONS;
+  const [expanded, setExpanded] = useState(null);
+  const effectiveDate = new Date().toLocaleDateString("en-ZW", { day: "numeric", month: "long", year: "numeric" });
+
+  return (
+    <div className="fade-in single-col">
+      {/* Header */}
+      <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #2d5a36", borderRadius: 16, padding: "24px 20px", marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: "#5cd68a", fontWeight: 600, letterSpacing: "0.1em", marginBottom: 8 }}>
+          🌿 FARMLINK ZIM · LEGAL
+        </div>
+        <div style={{ fontSize: 24, fontWeight: 700, color: "#c8e8d4", marginBottom: 6 }}>
+          {isTos ? "Terms of Service" : "Privacy Policy"}
+        </div>
+        <div style={{ fontSize: 12, color: "#5c8f6b" }}>Effective: {effectiveDate}</div>
+      </div>
+
+      {/* Toggle between docs */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        {[["tos", "Terms of Service"], ["pp", "Privacy Policy"]].map(([id, label]) => (
+          <button key={id} onClick={() => setActiveTab(`legal-${id}`)}
+            style={{ flex: 1, background: page === id ? "#2d7a4f" : "#152218", border: `1px solid ${page === id ? "#3a9962" : "#1f3525"}`, borderRadius: 8, padding: "10px", color: page === id ? "#e8f5ed" : "#5c8f6b", fontSize: 12, cursor: "pointer", fontWeight: page === id ? 600 : 400 }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Accordion sections */}
+      {sections.map((s, i) => (
+        <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, marginBottom: 8, overflow: "hidden" }}>
+          <button onClick={() => setExpanded(expanded === i ? null : i)}
+            style={{ width: "100%", background: "none", border: "none", padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", textAlign: "left" }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{s.title}</span>
+            <span style={{ fontSize: 16, color: "#4a7a5a", flexShrink: 0, marginLeft: 8 }}>{expanded === i ? "−" : "+"}</span>
+          </button>
+          {expanded === i && (
+            <div style={{ padding: "0 16px 16px", borderTop: "1px solid #1a2e1e" }}>
+              {s.content.split("\n\n").map((para, j) => (
+                <p key={j} style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.7, marginTop: 12, marginBottom: 0 }}>{para}</p>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+
+      {/* Footer */}
+      <div style={{ marginTop: 24, padding: "16px", background: "#0f2218", borderRadius: 12, border: "1px solid #1f3525", textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: "#3d6b4a", marginBottom: 4 }}>© {new Date().getFullYear()} FarmLink Zim. All rights reserved.</div>
+        <div style={{ fontSize: 11, color: "#2d5236" }}>Questions? Email legal@farmlinkzim.com</div>
       </div>
     </div>
   );
