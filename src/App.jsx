@@ -340,6 +340,14 @@ export default function FarmLinkZim() {
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#5cd68a" }} className="pulse" />
               <span style={{ fontSize: 11, color: "#5c8f6b" }}>Live · Farmlink connected</span>
+          </div>
+          <div style={{ padding: "12px 20px", borderTop: "1px solid #1a2e1e", marginTop: 8 }}>
+            <div style={{ fontSize: 10, color: "#2d5236", lineHeight: 1.7 }}>
+              © {new Date().getFullYear()} FarmLink Zim<br />
+              <span style={{ color: "#1f3525" }}>All rights reserved.</span>
+            </div>
+          </div>
+          <div style={{ display: "none" }}>
             </div>
           </div>
         </div>
