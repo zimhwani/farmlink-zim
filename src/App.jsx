@@ -376,17 +376,19 @@ export default function FarmLinkZim() {
               </div>
               {/* Desktop spacer */}
               <div style={{ flex: 1 }} />
-              <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ position: "relative", zIndex: showNotifications ? 500 : "auto" }}>
-                  <div onClick={() => { setShowNotifications(v => !v); if (!showNotifications) loadNotifications(); }}
-                    style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", position: "relative" }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                {/* Notification bell */}
+                <div style={{ position: "relative" }}>
+                  <button
+                    onClick={() => { setShowNotifications(v => !v); if (!showNotifications) loadNotifications(); }}
+                    style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", position: "relative", color: "#e8dfc8" }}>
                     🔔
                     {notifications.filter(n => !n.read).length > 0 && (
-                      <span style={{ position: "absolute", top: -4, right: -4, background: "#e07060", borderRadius: "50%", width: 16, height: 16, fontSize: 9, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Space Mono', monospace", fontWeight: 700 }}>
+                      <span style={{ position: "absolute", top: -4, right: -4, background: "#e07060", borderRadius: "50%", width: 16, height: 16, fontSize: 9, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
                         {notifications.filter(n => !n.read).length}
                       </span>
                     )}
-                  </div>
+                  </button>
                   {showNotifications && (
                     <NotificationPanel
                       notifications={notifications}
@@ -396,14 +398,18 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <button onClick={(e) => { e.stopPropagation(); setShowAuthModal(true); }} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
+                {/* Login button */}
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
                   {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.name?.split(" ")[0] || "Profile"}</span></> : "👤 Login"}
                 </button>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Page content */}
+        {/* Page content */}
           <div className="page-content">
             {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
             {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} authUser={authUser} loadListings={loadListings} />}
