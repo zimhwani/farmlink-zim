@@ -407,9 +407,6 @@ export default function FarmLinkZim() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Page content */}
           <div className="page-content">
             {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
             {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} authUser={authUser} loadListings={loadListings} />}
@@ -424,7 +421,6 @@ export default function FarmLinkZim() {
             {activeTab === "legal-pp" && <LegalTab page="pp" setActiveTab={setActiveTab} />}
           </div>
         </div>
-      </div>
 
       {/* MOBILE BOTTOM NAV */}
       <div className="bottom-nav">
