@@ -1478,14 +1478,13 @@ function monthsInRange(start, end) {
   else { for (let m = start; m <= 12; m++) months.push(m); for (let m = 1; m <= end; m++) months.push(m); }
   return months;
 }
-
 function CalendarTab() {
   const [calData, setCalData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedZone, setSelectedZone] = useState("all");
   const [selectedCat, setSelectedCat] = useState("all");
   const [selectedCrop, setSelectedCrop] = useState(null);
-  const currentMonth = new Date().getMonth() + 1; // 1-12
+  const currentMonth = new Date().getMonth() + 1;
 
   useEffect(() => {
     db.get("planting_calendar", "?order=category,crop_name").then(data => {
@@ -1499,7 +1498,6 @@ function CalendarTab() {
     (selectedCat === "all" || c.category === selectedCat)
   );
 
-  // Group by crop_name, merge zones
   const grouped = {};
   filtered.forEach(c => {
     if (!grouped[c.crop_name]) grouped[c.crop_name] = { ...c, zones: [c.province_zone] };
@@ -1507,42 +1505,79 @@ function CalendarTab() {
   });
   const crops = Object.values(grouped);
 
+  // Get all activity months for a crop (handles both crop and livestock)
+  const getActivityMonths = (c) => {
+    const isLivestock = c.category === "livestock";
+    if (isLivestock) {
+      return {
+        breeding: c.breeding_month_start ? monthsInRange(c.breeding_month_start, c.breeding_month_end) : [],
+        birthing: c.birthing_month_start ? monthsInRange(c.birthing_month_start, c.birthing_month_end) : [],
+        dipping: c.dipping_month_start ? monthsInRange(c.dipping_month_start, c.dipping_month_end) : [],
+        slaughter: c.slaughter_month_start ? monthsInRange(c.slaughter_month_start, c.slaughter_month_end) : [],
+      };
+    }
+    return {
+      plant: c.plant_month_start ? monthsInRange(c.plant_month_start, c.plant_month_end) : [],
+      fertilise: c.fertilise_month_start ? monthsInRange(c.fertilise_month_start, c.fertilise_month_end) : [],
+      harvest: c.harvest_month_start ? monthsInRange(c.harvest_month_start, c.harvest_month_end) : [],
+    };
+  };
+
   // What's active this month
   const activeNow = calData.filter(c => {
-    const planting = monthsInRange(c.plant_month_start, c.plant_month_end);
-    const harvesting = monthsInRange(c.harvest_month_start, c.harvest_month_end);
-    const fertilising = c.fertilise_month_start ? monthsInRange(c.fertilise_month_start, c.fertilise_month_end) : [];
-    return planting.includes(currentMonth) || harvesting.includes(currentMonth) || fertilising.includes(currentMonth);
+    const acts = getActivityMonths(c);
+    return Object.values(acts).some(months => months.includes(currentMonth));
   });
+
+  // Cell colour and emoji for each month
+  const getCellStyle = (c, m) => {
+    const acts = getActivityMonths(c);
+    if (c.category === "livestock") {
+      if (acts.birthing?.includes(m)) return { bg: "rgba(212,160,23,0.5)", emoji: "🐣" };
+      if (acts.breeding?.includes(m)) return { bg: "rgba(204,128,224,0.45)", emoji: "❤️" };
+      if (acts.dipping?.includes(m)) return { bg: "rgba(90,143,212,0.4)", emoji: "🪣" };
+      if (acts.slaughter?.includes(m)) return { bg: "rgba(224,112,96,0.3)", emoji: "🥩" };
+    } else {
+      if (acts.harvest?.includes(m)) return { bg: "rgba(212,160,23,0.5)", emoji: "🌾" };
+      if (acts.plant?.includes(m)) return { bg: `${CAT_COLORS[c.category]?.border || "#2d7a4f"}60`, emoji: "🌱" };
+      if (acts.fertilise?.includes(m)) return { bg: "rgba(90,143,200,0.3)", emoji: "🧪" };
+    }
+    return { bg: "transparent", emoji: null };
+  };
 
   return (
     <div className="fade-in single-col">
       <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Planting Calendar</div>
-      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>AGRITEX seasonal guide for Zimbabwe 2025/26</div>
+      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>AGRITEX seasonal guide · Zimbabwe 2025/26</div>
 
       {/* This month banner */}
       <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 14, padding: 16, marginBottom: 20 }}>
-        <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5cd68a", marginBottom: 8 }}>
+        <div style={{ fontSize: 10, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, color: "#5cd68a", marginBottom: 8, letterSpacing: "0.1em" }}>
           🗓️ {MONTHS[currentMonth - 1].toUpperCase()} — WHAT TO DO NOW
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {activeNow.length === 0 ? <div style={{ fontSize: 12, color: "#4a7a5a" }}>No activities this month for selected filters.</div> :
-            [...new Set(activeNow.map(c => c.crop_name))].map(name => {
-              const c = activeNow.find(x => x.crop_name === name);
-              const isPlanting = monthsInRange(c.plant_month_start, c.plant_month_end).includes(currentMonth);
-              const isHarvesting = monthsInRange(c.harvest_month_start, c.harvest_month_end).includes(currentMonth);
-              const isFertilising = c.fertilise_month_start && monthsInRange(c.fertilise_month_start, c.fertilise_month_end).includes(currentMonth);
-              const col = CAT_COLORS[c.category] || CAT_COLORS.grain;
-              return (
-                <div key={name} onClick={() => setSelectedCrop(c)} style={{ background: col.bg, border: `1px solid ${col.border}`, borderRadius: 8, padding: "6px 10px", cursor: "pointer" }}>
-                  <div style={{ fontSize: 12, color: col.text, fontWeight: 600 }}>{CAT_ICONS[c.category]} {name}</div>
-                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: col.dot, marginTop: 2 }}>
-                    {[isPlanting && "🌱 PLANT", isFertilising && "🧪 FERTILISE", isHarvesting && "🌾 HARVEST"].filter(Boolean).join(" · ")}
-                  </div>
-                </div>
-              );
-            })
-          }
+          {[...new Set(activeNow.map(c => c.crop_name))].map(name => {
+            const c = activeNow.find(x => x.crop_name === name);
+            const acts = getActivityMonths(c);
+            const col = CAT_COLORS[c.category] || CAT_COLORS.grain;
+            const isLivestock = c.category === "livestock";
+            const tags = isLivestock ? [
+              acts.breeding?.includes(currentMonth) && "❤️ BREEDING",
+              acts.birthing?.includes(currentMonth) && "🐣 BIRTHING",
+              acts.dipping?.includes(currentMonth) && "🪣 DIPPING",
+              acts.slaughter?.includes(currentMonth) && "🥩 SLAUGHTER",
+            ].filter(Boolean) : [
+              acts.plant?.includes(currentMonth) && "🌱 PLANT",
+              acts.fertilise?.includes(currentMonth) && "🧪 FERTILISE",
+              acts.harvest?.includes(currentMonth) && "🌾 HARVEST",
+            ].filter(Boolean);
+            return (
+              <div key={name} onClick={() => setSelectedCrop(c)} style={{ background: col.bg, border: `1px solid ${col.border}`, borderRadius: 8, padding: "6px 10px", cursor: "pointer" }}>
+                <div style={{ fontSize: 12, color: col.text, fontWeight: 600 }}>{CAT_ICONS[c.category]} {name}</div>
+                <div style={{ fontSize: 9, color: col.dot, marginTop: 2 }}>{tags.join(" · ")}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -1560,23 +1595,20 @@ function CalendarTab() {
         </select>
       </div>
 
-      {/* Gantt-style calendar grid */}
+      {/* Gantt grid */}
       {loading ? <div className="skeleton" style={{ height: 300, borderRadius: 12 }} /> : (
         <div className="card" style={{ overflowX: "auto", padding: "16px 12px" }}>
-          {/* Month header */}
+          {/* Month headers */}
           <div style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, marginBottom: 8 }}>
             <div />
             {MONTHS.map((m, i) => (
-              <div key={m} style={{ textAlign: "center", fontSize: 9, fontFamily: "'Space Mono', monospace", color: i + 1 === currentMonth ? "#7ec99a" : "#3d6b4a", fontWeight: i + 1 === currentMonth ? 700 : 400, background: i + 1 === currentMonth ? "rgba(45,122,79,0.15)" : "transparent", borderRadius: 4, padding: "3px 0" }}>{m}</div>
+              <div key={m} style={{ textAlign: "center", fontSize: 9, color: i + 1 === currentMonth ? "#7ec99a" : "#3d6b4a", fontWeight: i + 1 === currentMonth ? 700 : 400, background: i + 1 === currentMonth ? "rgba(45,122,79,0.15)" : "transparent", borderRadius: 4, padding: "3px 0" }}>{m}</div>
             ))}
           </div>
 
-          {/* Crop rows */}
+          {/* Rows */}
           {crops.map((c, idx) => {
             const col = CAT_COLORS[c.category] || CAT_COLORS.grain;
-            const plantMonths = monthsInRange(c.plant_month_start, c.plant_month_end);
-            const harvestMonths = monthsInRange(c.harvest_month_start, c.harvest_month_end);
-            const fertiliseMonths = c.fertilise_month_start ? monthsInRange(c.fertilise_month_start, c.fertilise_month_end) : [];
             return (
               <div key={idx} style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, marginBottom: 3, cursor: "pointer" }} onClick={() => setSelectedCrop(c)}>
                 <div style={{ fontSize: 11, color: col.text, display: "flex", alignItems: "center", gap: 4, paddingRight: 8, overflow: "hidden" }}>
@@ -1585,15 +1617,8 @@ function CalendarTab() {
                 </div>
                 {MONTHS.map((_, mi) => {
                   const m = mi + 1;
-                  const isPlant = plantMonths.includes(m);
-                  const isHarvest = harvestMonths.includes(m);
-                  const isFert = fertiliseMonths.includes(m);
+                  const { bg, emoji } = getCellStyle(c, m);
                   const isCurrent = m === currentMonth;
-                  let bg = "transparent";
-                  let emoji = null;
-                  if (isHarvest) { bg = "rgba(212,160,23,0.5)"; emoji = "🌾"; }
-                  else if (isPlant) { bg = `${col.border}60`; emoji = "🌱"; }
-                  else if (isFert) { bg = "rgba(90,143,200,0.3)"; emoji = "🧪"; }
                   return (
                     <div key={m} style={{ height: 22, borderRadius: 3, background: bg, border: isCurrent ? "1px solid #7ec99a" : "1px solid transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>
                       {emoji}
@@ -1605,60 +1630,91 @@ function CalendarTab() {
           })}
 
           {/* Legend */}
-          <div style={{ display: "flex", gap: 16, marginTop: 16, flexWrap: "wrap" }}>
-            {[["🌱", "rgba(45,122,79,0.4)", "Plant"], ["🧪", "rgba(90,143,200,0.3)", "Fertilise"], ["🌾", "rgba(212,160,23,0.5)", "Harvest"]].map(([icon, bg, label]) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
-                <span style={{ fontSize: 10, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>{label}</span>
-              </div>
-            ))}
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 20, height: 14, borderRadius: 3, border: "1px solid #7ec99a" }} />
-              <span style={{ fontSize: 10, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>Current month</span>
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #1a2e1e" }}>
+            <div style={{ fontSize: 10, color: "#3d6b4a", marginBottom: 8, fontWeight: 600 }}>CROPS</div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+              {[["🌱", "rgba(45,122,79,0.4)", "Plant"], ["🧪", "rgba(90,143,200,0.3)", "Fertilise"], ["🌾", "rgba(212,160,23,0.5)", "Harvest"]].map(([icon, bg, label]) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
+                  <span style={{ fontSize: 10, color: "#5c8f6b" }}>{label}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 10, color: "#3d6b4a", marginBottom: 8, fontWeight: 600 }}>LIVESTOCK</div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              {[["❤️", "rgba(204,128,224,0.45)", "Breeding"], ["🐣", "rgba(212,160,23,0.5)", "Birthing/Calving"], ["🪣", "rgba(90,143,212,0.4)", "Dipping/Deworming"], ["🥩", "rgba(224,112,96,0.3)", "Slaughter/Sell"]].map(([icon, bg, label]) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
+                  <span style={{ fontSize: 10, color: "#5c8f6b" }}>{label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* Crop detail modal */}
+      {/* Crop/Livestock detail modal */}
       {selectedCrop && (
         <div className="modal-overlay" onClick={() => setSelectedCrop(null)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>{CAT_ICONS[selectedCrop.category]} {selectedCrop.crop_name}</div>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginTop: 2 }}>{(CAT_COLORS[selectedCrop.category] || CAT_COLORS.grain).text && selectedCrop.category?.replace("_", " ").toUpperCase()} · ZONE {selectedCrop.agro_zone}</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2 }}>{selectedCrop.category?.replace("_", " ").toUpperCase()} · ZONE {selectedCrop.agro_zone}</div>
               </div>
               <button onClick={() => setSelectedCrop(null)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
 
-            {/* Timeline pills */}
-            {[
-              { label: "🌱 PLANT", months: monthsInRange(selectedCrop.plant_month_start, selectedCrop.plant_month_end), color: "#7ec99a" },
-              { label: "🧪 FERTILISE", months: selectedCrop.fertilise_month_start ? monthsInRange(selectedCrop.fertilise_month_start, selectedCrop.fertilise_month_end) : [], color: "#7ab0e0" },
-              { label: "🌾 HARVEST", months: monthsInRange(selectedCrop.harvest_month_start, selectedCrop.harvest_month_end), color: "#d4a017" },
-            ].map(({ label, months, color }) => months.length > 0 && (
-              <div key={label} style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 6 }}>{label}</div>
-                <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                  {months.map(m => (
-                    <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontFamily: "'Space Mono', monospace", fontWeight: m === currentMonth ? 700 : 400 }}>
-                      {MONTHS[m - 1]}
-                    </span>
-                  ))}
+            {selectedCrop.category === "livestock" ? (
+              // Livestock-specific timeline
+              [
+                { label: "❤️ BREEDING SEASON", months: selectedCrop.breeding_month_start ? monthsInRange(selectedCrop.breeding_month_start, selectedCrop.breeding_month_end) : [], color: "#cc80e0" },
+                { label: "🐣 BIRTHING / CALVING", months: selectedCrop.birthing_month_start ? monthsInRange(selectedCrop.birthing_month_start, selectedCrop.birthing_month_end) : [], color: "#d4a017" },
+                { label: "🪣 DIPPING / DEWORMING", months: selectedCrop.dipping_month_start ? monthsInRange(selectedCrop.dipping_month_start, selectedCrop.dipping_month_end) : [], color: "#5a9fd4" },
+                { label: "🥩 SLAUGHTER / SELLING", months: selectedCrop.slaughter_month_start ? monthsInRange(selectedCrop.slaughter_month_start, selectedCrop.slaughter_month_end) : [], color: "#e07060" },
+              ].map(({ label, months, color }) => months.length > 0 && (
+                <div key={label} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {months.map(m => (
+                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
+                        {MONTHS[m - 1]}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              // Crop timeline
+              [
+                { label: "🌱 PLANT", months: selectedCrop.plant_month_start ? monthsInRange(selectedCrop.plant_month_start, selectedCrop.plant_month_end) : [], color: "#7ec99a" },
+                { label: "🧪 FERTILISE", months: selectedCrop.fertilise_month_start ? monthsInRange(selectedCrop.fertilise_month_start, selectedCrop.fertilise_month_end) : [], color: "#7ab0e0" },
+                { label: "🌾 HARVEST", months: selectedCrop.harvest_month_start ? monthsInRange(selectedCrop.harvest_month_start, selectedCrop.harvest_month_end) : [], color: "#d4a017" },
+              ].map(({ label, months, color }) => months.length > 0 && (
+                <div key={label} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {months.map(m => (
+                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
+                        {MONTHS[m - 1]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
 
             {selectedCrop.variety && (
               <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>RECOMMENDED VARIETIES</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 4, fontWeight: 600 }}>
+                  {selectedCrop.category === "livestock" ? "BREEDS" : "RECOMMENDED VARIETIES"}
+                </div>
                 <div style={{ fontSize: 13, color: "#c8e8d4" }}>{selectedCrop.variety}</div>
               </div>
             )}
             {selectedCrop.notes && (
               <div style={{ background: "#1a2e1e", borderRadius: 10, padding: 12, borderLeft: "3px solid #2d7a4f" }}>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>AGRITEX NOTES</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 4, fontWeight: 600 }}>AGRITEX NOTES</div>
                 <div style={{ fontSize: 13, color: "#c8e8d4", lineHeight: 1.6 }}>{selectedCrop.notes}</div>
               </div>
             )}
