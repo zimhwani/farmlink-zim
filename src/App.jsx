@@ -1736,7 +1736,7 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
       } else if (msg.includes("invalid") || msg.includes("email")) {
         setError("Invalid email address. Please check and try again.");
       } else if (msg.includes("not enabled") || msg.includes("disabled")) {
-        setError("Email sign-in is not enabled. Please contact support.");
+        setError(`Supabase error: ${msg}. Go to Supabase → Authentication → Providers → Email → Enable.`);
       } else {
         setError(`Could not send code: ${msg}`);
       }
