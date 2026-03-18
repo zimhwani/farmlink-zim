@@ -6,11 +6,11 @@ const SUPABASE_KEY = "sb_publishable_TJH0e7GMsengGdAUjG5HYg_hkpBrBxA";
 // Auth helpers using Supabase GoTrue
 const auth = {
   async sendOtp(identifier) {
-    // identifier can be email or phone
     const isEmail = identifier.includes("@");
+    // Pass shouldCreateUser and explicitly set no redirect URL to force OTP code mode
     const body = isEmail
-      ? { email: identifier }
-      : { phone: identifier.replace(/\s/g, "") };
+      ? { email: identifier, options: { shouldCreateUser: true, emailRedirectTo: null } }
+      : { phone: identifier.replace(/\s/g, ""), options: { shouldCreateUser: true } };
     const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
       method: "POST",
       headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
@@ -405,7 +405,14 @@ export default function FarmLinkZim() {
       </div>
 
       {/* MOBILE BOTTOM NAV */}
-      <MobileNav TABS={TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div className="bottom-nav">
+        {TABS.map(tab => (
+          <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`} style={{ color: "#3d6b4a" }} onClick={() => setActiveTab(tab.id)}>
+            <span className="tab-icon">{tab.icon}</span>
+            <span className="tab-label">{tab.id === "advisory" ? "AI" : tab.label}</span>
+          </button>
+        ))}
+      </div>
 
       {showListingModal && <ListingModal onClose={() => setShowListingModal(false)} onSave={async (listing) => { await db.post("listings", listing); setShowListingModal(false); loadListings(); loadCounts(); }} />}
       {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); await db.post("notifications", { type: "message", title: "New buyer enquiry", body: `${msg.sender_name} is interested in your ${showContactModal.crop} listing (${showContactModal.quantity} at ${showContactModal.price})`, read: false }); loadNotifications(); setShowContactModal(null); }} />}
@@ -497,7 +504,7 @@ function MobileNav({ TABS, activeTab, setActiveTab }) {
         {PRIMARY.map(tab => (
           <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
             style={{ color: "#3d6b4a" }} onClick={() => { setActiveTab(tab.id); setShowMore(false); }}>
-            <span className="tab-icon">{tab.icon}</span><span className="tab-label">{tab.label}</span>
+            <span className="tab-icon">{tab.icon}</span>
           </button>
         ))}
         {/* More button */}
