@@ -3302,3 +3302,4 @@ function InsightsTab() {
     </div>
   );
 }
+}
