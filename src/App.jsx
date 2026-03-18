@@ -141,6 +141,7 @@ export default function FarmLinkZim() {
   const [farmSize, setFarmSize] = useState("");
   const [farmerName, setFarmerName] = useState("");
   const [farmerPhone, setFarmerPhone] = useState("");
+  const [cropDetails, setCropDetails] = useState({});
   const [chatMessages, setChatMessages] = useState([
     { role: "ai", text: "Mhoro! I'm FarmLink AI — your local agricultural advisor. Ask me anything about crops, livestock, weather, or markets in Zimbabwe. 🌱" }
   ]);
@@ -204,7 +205,7 @@ export default function FarmLinkZim() {
 
   const loadFarmers = async () => {
     try {
-      const data = await db.get("farmers", "?select=id,name,province,district,ward,latitude,longitude,farmer_crops(crop_name,type)&order=created_at.desc");
+      const data = await db.get("farmers", "?select=id,name,province,district,ward,latitude,longitude,farmer_crops(id,crop_name,type,hectares,head_count,crop_stage)&order=created_at.desc");
       setFarmers(Array.isArray(data) ? data : []);
     } catch (e) { console.error(e); }
   };
@@ -254,8 +255,16 @@ export default function FarmLinkZim() {
       });
       if (farmer?.id) {
         const cropRows = [
-          ...selectedCrops.map(c => ({ farmer_id: farmer.id, crop_name: c, type: "crop" })),
-          ...selectedLivestock.map(l => ({ farmer_id: farmer.id, crop_name: l, type: "livestock" })),
+          ...selectedCrops.map(c => ({
+            farmer_id: farmer.id, crop_name: c, type: "crop",
+            hectares: cropDetails[c]?.hectares ? parseFloat(cropDetails[c].hectares) : null,
+            crop_stage: cropDetails[c]?.stage || null,
+          })),
+          ...selectedLivestock.map(l => ({
+            farmer_id: farmer.id, crop_name: l, type: "livestock",
+            head_count: cropDetails[l]?.head_count ? parseInt(cropDetails[l].head_count) : null,
+            crop_stage: cropDetails[l]?.stage || null,
+          })),
         ];
         if (cropRows.length > 0) await db.post("farmer_crops", cropRows);
         setRegisteredFarmer(farmer);
@@ -399,7 +408,7 @@ export default function FarmLinkZim() {
             {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
             {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} authUser={authUser} loadListings={loadListings} />}
             {activeTab === "diary" && <FarmDiaryTab authUser={authUser} setActiveTab={setActiveTab} />}
-            {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
+            {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} cropDetails={cropDetails} setCropDetails={setCropDetails} />}
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
             {activeTab === "prices" && <PriceFeedsTab />}
             {activeTab === "calendar" && <CalendarTab />}
@@ -590,64 +599,75 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
 function CropHectareRow({ crop, onUpdate }) {
   const isLivestock = crop.type === "livestock";
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(
-    isLivestock ? (crop.head_count ?? "") : (crop.hectares ?? "")
-  );
+  const [value, setValue] = useState(isLivestock ? (crop.head_count ?? "") : (crop.hectares ?? ""));
+  const [stage, setStage] = useState(crop.crop_stage || "");
   const [saving, setSaving] = useState(false);
 
   const currentVal = isLivestock ? crop.head_count : crop.hectares;
   const unit = isLivestock ? "head" : "ha";
   const placeholder = isLivestock ? "e.g. 24" : "e.g. 5.5";
 
+  const CROP_STAGES = ["land_prep","seeding","germination","vegetative","flowering","grain_fill","harvesting","post_harvest","fallow"];
+  const CROP_STAGE_LABELS = { land_prep:"🚜 Land Prep", seeding:"🌱 Seeding", germination:"🌿 Germination", vegetative:"🌾 Vegetative", flowering:"🌸 Flowering", grain_fill:"🫘 Grain Fill", harvesting:"🌾 Harvesting", post_harvest:"📦 Post Harvest", fallow:"🟫 Fallow" };
+  const LIVE_STAGES = ["breeding","pregnant","lactating","growing","fattening","selling"];
+  const LIVE_STAGE_LABELS = { breeding:"❤️ Breeding", pregnant:"🐣 Pregnant", lactating:"🍼 Lactating", growing:"📈 Growing", fattening:"🥩 Fattening", selling:"💰 Ready to Sell" };
+
+  const stages = isLivestock ? LIVE_STAGES : CROP_STAGES;
+  const stageLabels = isLivestock ? LIVE_STAGE_LABELS : CROP_STAGE_LABELS;
+
   const handleSave = async () => {
     setSaving(true);
     const parsed = value !== "" ? (isLivestock ? parseInt(value) : parseFloat(value)) : null;
-    const updateData = isLivestock ? { head_count: parsed } : { hectares: parsed };
+    const updateData = isLivestock
+      ? { head_count: parsed, crop_stage: stage || null }
+      : { hectares: parsed, crop_stage: stage || null };
     await onUpdate(crop.id, updateData);
     setSaving(false);
     setEditing(false);
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-      <span style={{
-        fontSize: 10, padding: "2px 8px", borderRadius: 10,
-        background: isLivestock ? "rgba(90,143,163,0.2)" : "rgba(45,122,79,0.2)",
-        color: isLivestock ? "#5a9fd4" : "#7ec99a",
-        fontFamily: "'Space Mono', monospace", flexShrink: 0,
-      }}>
-        {isLivestock ? "🐄" : "🌾"} {crop.crop_name}
-      </span>
-
-      {editing ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <input
-            type="number"
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            placeholder={placeholder}
-            style={{
-              width: 64, background: "#1a2e1e", border: "1px solid #4aad72",
-              borderRadius: 6, padding: "2px 6px", color: "#e8dfc8",
-              fontSize: 11, fontFamily: "'Space Mono', monospace", outline: "none",
-            }}
-            autoFocus
-            onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
-          />
-          <span style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{unit}</span>
-          <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 8px", color: "#e8dfc8", fontSize: 10, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
-            {saving ? "..." : "✓"}
-          </button>
-          <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer" }}>✕</button>
-        </div>
-      ) : (
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 10, color: currentVal ? "#c8b43c" : "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>
-            {currentVal != null ? `${currentVal} ${unit}` : `— ${unit}`}
+    <div style={{ marginBottom: 8, background: "#0f2218", borderRadius: 8, padding: "8px 10px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: editing ? 8 : 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: isLivestock ? "rgba(90,143,163,0.2)" : "rgba(45,122,79,0.2)", color: isLivestock ? "#5a9fd4" : "#7ec99a", flexShrink: 0 }}>
+            {isLivestock ? "🐄" : "🌾"} {crop.crop_name}
           </span>
-          <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 6px", color: "#4a7a5a", fontSize: 9, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
-            edit
-          </button>
+          {!editing && (
+            <span style={{ fontSize: 10, color: currentVal ? "#c8b43c" : "#3d6b4a" }}>
+              {currentVal != null ? `${currentVal} ${unit}` : `— ${unit}`}
+            </span>
+          )}
+          {!editing && stage && (
+            <span style={{ fontSize: 10, color: "#5c8f6b" }}>{stageLabels[stage]}</span>
+          )}
+        </div>
+        {!editing ? (
+          <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 8px", color: "#4a7a5a", fontSize: 9, cursor: "pointer" }}>edit</button>
+        ) : (
+          <div style={{ display: "flex", gap: 4 }}>
+            <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 10px", color: "#e8dfc8", fontSize: 10, cursor: "pointer" }}>{saving ? "..." : "✓"}</button>
+            <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer" }}>✕</button>
+          </div>
+        )}
+      </div>
+
+      {editing && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+          <div>
+            <label style={{ fontSize: 9, color: "#4a7a5a", display: "block", marginBottom: 3 }}>{isLivestock ? "HEAD COUNT" : "HECTARES"}</label>
+            <input type="number" value={value} onChange={e => setValue(e.target.value)} placeholder={placeholder}
+              style={{ width: "100%", background: "#1a2e1e", border: "1px solid #4aad72", borderRadius: 6, padding: "4px 8px", color: "#e8dfc8", fontSize: 11, outline: "none" }}
+              autoFocus onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }} />
+          </div>
+          <div>
+            <label style={{ fontSize: 9, color: "#4a7a5a", display: "block", marginBottom: 3 }}>CURRENT STAGE</label>
+            <select value={stage} onChange={e => setStage(e.target.value)}
+              style={{ width: "100%", background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 6px", color: "#e8dfc8", fontSize: 11, outline: "none" }}>
+              <option value="">Select stage</option>
+              {stages.map(s => <option key={s} value={s}>{stageLabels[s]}</option>)}
+            </select>
+          </div>
         </div>
       )}
     </div>
@@ -961,15 +981,6 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
     // Featured listings appear first
     .sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
 
-  const handleFeatureListing = async (weeks, ref, method) => {
-    if (!featuringListing) return;
-    const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
-    await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
-    await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
-    setFeaturingListing(null);
-    loadListings();
-  };
-
   const deleteListing = async (id) => {
     if (!window.confirm("Remove this listing?")) return;
     await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${id}`, {
@@ -1081,7 +1092,13 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
       </div>
       {/* Edit listing modal */}
       {editingListing && <EditListingModal listing={editingListing} onClose={() => setEditingListing(null)} onSave={async (updates) => { await db.patch("listings", editingListing.id, updates); setEditingListing(null); loadListings(); }} />}
-      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={handleFeatureListing} />}
+      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={async (weeks, ref, method) => {
+        const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
+        await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
+        await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
+        setFeaturingListing(null);
+        loadListings();
+      }} />
     </div>
   );
 }
@@ -1347,7 +1364,32 @@ function ContactModal({ listing, onClose, onSend }) {
 }
 
 // ─── REGISTER TAB ──────────────────────────────────────────────────────────────
-function RegisterTab({ wizardStep, setWizardStep, province, setProvince, district, setDistrict, ward, setWard, selectedCrops, setSelectedCrops, selectedLivestock, setSelectedLivestock, farmSize, setFarmSize, farmerName, setFarmerName, farmerPhone, setFarmerPhone, toggleItem, registrationDone, registeredFarmer, registerFarmer, resetRegistration }) {
+function RegisterTab({ wizardStep, setWizardStep, province, setProvince, district, setDistrict, ward, setWard, selectedCrops, setSelectedCrops, selectedLivestock, setSelectedLivestock, farmSize, setFarmSize, farmerName, setFarmerName, farmerPhone, setFarmerPhone, toggleItem, registrationDone, registeredFarmer, registerFarmer, resetRegistration, cropDetails, setCropDetails }) {
+
+  const updateCropDetail = (name, field, value) => {
+    setCropDetails(prev => ({ ...prev, [name]: { ...(prev[name] || {}), [field]: value } }));
+  };
+
+  const CROP_STAGES = [
+    { id: "land_prep", label: "Land Preparation", icon: "🚜" },
+    { id: "seeding", label: "Seeding / Planting", icon: "🌱" },
+    { id: "germination", label: "Germination", icon: "🌿" },
+    { id: "vegetative", label: "Vegetative Growth", icon: "🌾" },
+    { id: "flowering", label: "Flowering / Tasselling", icon: "🌸" },
+    { id: "grain_fill", label: "Grain Fill / Podding", icon: "🫘" },
+    { id: "harvesting", label: "Harvesting", icon: "🌾" },
+    { id: "post_harvest", label: "Post Harvest", icon: "📦" },
+    { id: "fallow", label: "Fallow / Resting", icon: "🟫" },
+  ];
+
+  const LIVESTOCK_STAGES = [
+    { id: "breeding", label: "Breeding Season", icon: "❤️" },
+    { id: "pregnant", label: "Pregnant", icon: "🐣" },
+    { id: "lactating", label: "Lactating / Nursing", icon: "🍼" },
+    { id: "growing", label: "Growing", icon: "📈" },
+    { id: "fattening", label: "Fattening", icon: "🥩" },
+    { id: "selling", label: "Ready to Sell", icon: "💰" },
+  ];
   const wards = Array.from({ length: 10 }, (_, i) => `Ward ${i + 1}`);
   const [saving, setSaving] = useState(false);
   const handleRegister = async () => { setSaving(true); await registerFarmer(); setSaving(false); };
@@ -1409,18 +1451,82 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
       )}
       {wizardStep === 2 && (
         <div className="fade-in">
+          {/* Crop selection */}
           <div className="card" style={{ marginBottom: 12 }}>
             <div className="section-title">Crops Being Grown</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
               {CROPS.map(c => <span key={c} className={`chip ${selectedCrops.includes(c) ? "active" : ""}`} style={{ fontSize: 11 }} onClick={() => toggleItem(selectedCrops, setSelectedCrops, c)}>{selectedCrops.includes(c) ? "✓ " : ""}{c}</span>)}
             </div>
+
+            {/* Per-crop hectares and stage */}
+            {selectedCrops.length > 0 && (
+              <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 12 }}>
+                <div style={{ fontSize: 10, color: "#5c8f6b", fontWeight: 600, marginBottom: 10 }}>CROP DETAILS</div>
+                {selectedCrops.map(crop => (
+                  <div key={crop} style={{ background: "#1a2e1e", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4", marginBottom: 10 }}>🌾 {crop}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>HECTARES</label>
+                        <input type="number" className="input-field" style={{ padding: "8px 10px" }}
+                          placeholder="e.g. 2.5"
+                          value={cropDetails[crop]?.hectares || ""}
+                          onChange={e => updateCropDetail(crop, "hectares", e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
+                        <select className="select-field" style={{ padding: "8px 10px" }}
+                          value={cropDetails[crop]?.stage || ""}
+                          onChange={e => updateCropDetail(crop, "stage", e.target.value)}>
+                          <option value="">Select stage</option>
+                          {CROP_STAGES.map(s => <option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Livestock selection */}
           <div className="card" style={{ marginBottom: 16 }}>
             <div className="section-title">Livestock Raised</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
               {LIVESTOCK.map(l => <span key={l} className={`chip ${selectedLivestock.includes(l) ? "active" : ""}`} style={{ fontSize: 11 }} onClick={() => toggleItem(selectedLivestock, setSelectedLivestock, l)}>{selectedLivestock.includes(l) ? "✓ " : ""}{l}</span>)}
             </div>
+
+            {/* Per-livestock head count and stage */}
+            {selectedLivestock.length > 0 && (
+              <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 12 }}>
+                <div style={{ fontSize: 10, color: "#5c8f6b", fontWeight: 600, marginBottom: 10 }}>LIVESTOCK DETAILS</div>
+                {selectedLivestock.map(animal => (
+                  <div key={animal} style={{ background: "#1a2e1e", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4", marginBottom: 10 }}>🐄 {animal}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>HEAD COUNT</label>
+                        <input type="number" className="input-field" style={{ padding: "8px 10px" }}
+                          placeholder="e.g. 12"
+                          value={cropDetails[animal]?.head_count || ""}
+                          onChange={e => updateCropDetail(animal, "head_count", e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
+                        <select className="select-field" style={{ padding: "8px 10px" }}
+                          value={cropDetails[animal]?.stage || ""}
+                          onChange={e => updateCropDetail(animal, "stage", e.target.value)}>
+                          <option value="">Select stage</option>
+                          {LIVESTOCK_STAGES.map(s => <option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
           <div style={{ display: "flex", gap: 8 }}>
             <button className="btn-secondary" style={{ width: "auto", padding: "12px 20px" }} onClick={() => setWizardStep(1)}>← Back</button>
             <button className="btn-primary" onClick={() => { if (selectedCrops.length > 0 || selectedLivestock.length > 0) setWizardStep(3); }} style={{ opacity: (selectedCrops.length > 0 || selectedLivestock.length > 0) ? 1 : 0.4 }}>Continue →</button>
@@ -1443,8 +1549,22 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
             {farmerPhone && <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 4 }}>📱 {farmerPhone}</div>}
             <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 10 }}>📍 {province} › {district} › {ward}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-              {selectedCrops.map(c => <span key={c} style={{ background: "rgba(45,122,79,0.2)", color: "#7ec99a", fontSize: 10, padding: "3px 8px", borderRadius: 8, fontFamily: "'Space Mono', monospace" }}>🌾 {c}</span>)}
-              {selectedLivestock.map(l => <span key={l} style={{ background: "rgba(90,143,163,0.2)", color: "#5a9fd4", fontSize: 10, padding: "3px 8px", borderRadius: 8, fontFamily: "'Space Mono', monospace" }}>🐄 {l}</span>)}
+              {selectedCrops.map(c => (
+                <div key={c} style={{ background: "rgba(45,122,79,0.15)", border: "1px solid rgba(45,122,79,0.3)", borderRadius: 8, padding: "6px 10px", marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: "#7ec99a", fontWeight: 600 }}>🌾 {c}</div>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2 }}>
+                    {cropDetails[c]?.hectares ? `${cropDetails[c].hectares} ha` : "— ha"} · {cropDetails[c]?.stage ? CROP_STAGES.find(s => s.id === cropDetails[c].stage)?.label : "Stage not set"}
+                  </div>
+                </div>
+              ))}
+              {selectedLivestock.map(l => (
+                <div key={l} style={{ background: "rgba(90,143,163,0.15)", border: "1px solid rgba(90,143,163,0.3)", borderRadius: 8, padding: "6px 10px", marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: "#5a9fd4", fontWeight: 600 }}>🐄 {l}</div>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2 }}>
+                    {cropDetails[l]?.head_count ? `${cropDetails[l].head_count} head` : "— head"} · {cropDetails[l]?.stage ? LIVESTOCK_STAGES.find(s => s.id === cropDetails[l].stage)?.label : "Stage not set"}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
@@ -3178,5 +3298,4 @@ function InsightsTab() {
       ))}
     </div>
   );
-}
 }
