@@ -377,7 +377,7 @@ export default function FarmLinkZim() {
               {/* Desktop spacer */}
               <div style={{ flex: 1 }} />
               <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ position: "relative" }}>
+                <div style={{ position: "relative", zIndex: showNotifications ? 500 : "auto" }}>
                   <div onClick={() => { setShowNotifications(v => !v); if (!showNotifications) loadNotifications(); }}
                     style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", position: "relative" }}>
                     🔔
