@@ -3,6 +3,47 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const SUPABASE_URL = "https://buyvgrxgseubplqesvjp.supabase.co";
 const SUPABASE_KEY = "sb_publishable_TJH0e7GMsengGdAUjG5HYg_hkpBrBxA";
 
+// Auth helpers using Supabase GoTrue
+const auth = {
+  async sendOtp(identifier) {
+    // identifier can be email or phone
+    const isEmail = identifier.includes("@");
+    const body = isEmail
+      ? { email: identifier }
+      : { phone: identifier.replace(/\s/g, "") };
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ ...body, create_user: true }),
+    });
+    return res.ok ? { error: null } : { error: await res.json() };
+  },
+  async verifyOtp(identifier, token) {
+    const isEmail = identifier.includes("@");
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/verify`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: isEmail ? "email" : "sms",
+        [isEmail ? "email" : "phone"]: identifier.replace(/\s/g, ""),
+        token,
+      }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      localStorage.setItem("fl_token", data.access_token);
+      localStorage.setItem("fl_user", JSON.stringify(data.user));
+      return { user: data.user, error: null };
+    }
+    return { user: null, error: data };
+  },
+  getUser() {
+    try { return JSON.parse(localStorage.getItem("fl_user")); } catch { return null; }
+  },
+  getToken() { return localStorage.getItem("fl_token"); },
+  signOut() { localStorage.removeItem("fl_token"); localStorage.removeItem("fl_user"); },
+};
+
 const db = {
   async get(table, params = "") {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
@@ -127,12 +168,10 @@ export default function FarmLinkZim() {
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
   useEffect(() => { loadListings(); loadCounts(); loadFarmers(); fetchWeather(); checkAuth(); loadNotifications(); }, []);
 
-  const checkAuth = async () => {
+  const checkAuth = () => {
     try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${localStorage.getItem("sb_token") || ""}` }
-      });
-      if (res.ok) { const u = await res.json(); if (u.id) setAuthUser(u); }
+      const user = auth.getUser();
+      if (user) setAuthUser(user);
     } catch (e) {}
   };
 
@@ -342,8 +381,8 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <div onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a" }}>
-                  {authUser ? "✓ Logged in" : "👤 Login"}
+                <div onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
+                  {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.name?.split(" ")[0] || "Profile"}</span></> : "👤 Login"}
                 </div>
               </div>
             </div>
@@ -379,7 +418,7 @@ export default function FarmLinkZim() {
       {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); await db.post("notifications", { type: "message", title: "New buyer enquiry", body: `${msg.sender_name} is interested in your ${showContactModal.crop} listing (${showContactModal.quantity} at ${showContactModal.price})`, read: false }); loadNotifications(); setShowContactModal(null); }} />}
       {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} loadFarmers={loadFarmers} />}
       {showListingDetail && <ListingDetailModal listing={showListingDetail} onClose={() => setShowListingDetail(null)} onContact={() => { setShowContactModal(showListingDetail); setShowListingDetail(null); }} />}
-      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} onAuth={(user) => { setAuthUser(user); setShowAuthModal(false); }} />}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} authUser={authUser} onAuth={(user) => { setAuthUser(user); setShowAuthModal(false); }} onLogout={() => { auth.signOut(); setAuthUser(null); setShowAuthModal(false); }} />}
     </div>
   );
 }
@@ -1628,95 +1667,134 @@ function AdminTab({ farmers, listings }) {
 }
 
 // ─── AUTH MODAL ────────────────────────────────────────────────────────────────
-function AuthModal({ onClose, onAuth }) {
-  const [step, setStep] = useState("phone"); // phone | otp | done
-  const [phone, setPhone] = useState("");
+function AuthModal({ onClose, authUser, onAuth, onLogout }) {
+  const [step, setStep] = useState("input"); // input | verify | profile
+  const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [sentTo, setSentTo] = useState("");
+  const isEmail = identifier.includes("@");
 
-  const sendOTP = async () => {
-    if (!phone.trim()) return;
+  const handleSendOtp = async () => {
+    if (!identifier.trim()) return;
     setLoading(true); setError("");
-    const formatted = phone.startsWith("+") ? phone : `+263${phone.replace(/^0/, "")}`;
-    try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
-        method: "POST",
-        headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: formatted, channel: "sms" }),
-      });
-      if (res.ok) { setStep("otp"); }
-      else { const d = await res.json(); setError(d.msg || "Failed to send OTP"); }
-    } catch (e) { setError("Network error"); }
+    const { error: err } = await auth.sendOtp(identifier.trim());
     setLoading(false);
+    if (err) { setError(err.message || "Failed to send code. Check your email or phone."); return; }
+    setSentTo(identifier.trim());
+    setStep("verify");
   };
 
-  const verifyOTP = async () => {
-    if (!otp.trim()) return;
+  const handleVerify = async () => {
+    if (otp.length < 6) return;
     setLoading(true); setError("");
-    const formatted = phone.startsWith("+") ? phone : `+263${phone.replace(/^0/, "")}`;
-    try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=phone_otp`, {
-        method: "POST",
-        headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: formatted, token: otp, type: "sms" }),
-      });
-      const data = await res.json();
-      if (data.access_token) {
-        localStorage.setItem("sb_token", data.access_token);
-        onAuth(data.user);
-      } else { setError(data.msg || "Invalid code"); }
-    } catch (e) { setError("Network error"); }
+    const { user, error: err } = await auth.verifyOtp(sentTo, otp.trim());
     setLoading(false);
+    if (err || !user) { setError("Invalid or expired code. Please try again."); return; }
+    onAuth(user);
   };
+
+  // Show profile if already logged in
+  if (authUser) {
+    const email = authUser.email || "";
+    const phone = authUser.phone || "";
+    return (
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal" onClick={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>My Profile</div>
+            <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>✕</button>
+          </div>
+          <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16, marginBottom: 20, textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 8 }}>👩🏾‍🌾</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>{email || phone}</div>
+            <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>VERIFIED FARMER</div>
+          </div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+            {email && <div style={{ flex: 1, background: "#152218", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>EMAIL</div>
+              <div style={{ fontSize: 12, color: "#c8e8d4" }}>{email}</div>
+            </div>}
+            {phone && <div style={{ flex: 1, background: "#152218", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>PHONE</div>
+              <div style={{ fontSize: 12, color: "#c8e8d4" }}>{phone}</div>
+            </div>}
+          </div>
+          <button onClick={onLogout} className="btn-secondary" style={{ width: "100%", color: "#e07060", borderColor: "#5a2020" }}>Sign Out</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>Farmer Login</div>
-            <div style={{ fontSize: 11, color: "#4a7a5a", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>Secure phone verification</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>
+              {step === "input" ? "Sign In / Register" : "Enter Your Code"}
+            </div>
+            <div style={{ fontSize: 11, color: "#4a7a5a", marginTop: 3 }}>
+              {step === "input" ? "Enter your email or phone number" : `Code sent to ${sentTo}`}
+            </div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>✕</button>
         </div>
 
-        {step === "phone" && (
+        {step === "input" && (
           <>
-            <div style={{ fontSize: 36, textAlign: "center", marginBottom: 16 }}>📱</div>
-            <div style={{ fontSize: 14, color: "#8aaa94", textAlign: "center", marginBottom: 20, lineHeight: 1.6 }}>
-              Enter your mobile number to receive a one-time code. Your data stays private and secure.
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 6 }}>EMAIL OR PHONE NUMBER</label>
+              <input className="input-field" value={identifier} onChange={e => { setIdentifier(e.target.value); setError(""); }}
+                placeholder="email@example.com or +263771234567"
+                onKeyDown={e => e.key === "Enter" && handleSendOtp()} autoFocus />
+              <div style={{ fontSize: 10, color: "#3d6b4a", marginTop: 6, fontFamily: "'Space Mono', monospace" }}>
+                {identifier.includes("@") ? "📧 We'll send a code to this email" : "📱 We'll send a code via SMS"}
+              </div>
             </div>
-            <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 6 }}>MOBILE NUMBER</label>
-            <input className="input-field" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+263 77X XXX XXX" style={{ marginBottom: 12 }} onKeyDown={e => e.key === "Enter" && sendOTP()} />
-            {error && <div style={{ color: "#e07060", fontSize: 12, marginBottom: 12 }}>{error}</div>}
-            <button className="btn-primary" onClick={sendOTP} style={{ opacity: phone.trim() ? 1 : 0.4 }}>
-              {loading ? "Sending..." : "Send Verification Code →"}
+
+            {error && <div style={{ background: "rgba(224,112,96,0.15)", border: "1px solid #5a2020", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#e07060", marginBottom: 12 }}>{error}</div>}
+
+            <button className="btn-primary" onClick={handleSendOtp} disabled={loading || !identifier.trim()} style={{ opacity: identifier.trim() ? 1 : 0.4 }}>
+              {loading ? "Sending code..." : `Send Code ${identifier.includes("@") ? "📧" : "📱"}`}
             </button>
+
+            <div style={{ textAlign: "center", marginTop: 16, fontSize: 11, color: "#3d6b4a" }}>
+              New farmers are automatically registered on first login.
+            </div>
           </>
         )}
 
-        {step === "otp" && (
+        {step === "verify" && (
           <>
-            <div style={{ fontSize: 36, textAlign: "center", marginBottom: 16 }}>🔐</div>
-            <div style={{ fontSize: 14, color: "#8aaa94", textAlign: "center", marginBottom: 20, lineHeight: 1.6 }}>
-              Enter the 6-digit code sent to <strong style={{ color: "#7ec99a" }}>{phone}</strong>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <div style={{ fontSize: 48, marginBottom: 8 }}>{sentTo.includes("@") ? "📧" : "📱"}</div>
+              <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.5 }}>
+                Enter the 6-digit code sent to<br />
+                <span style={{ color: "#c8e8d4", fontFamily: "'Space Mono', monospace" }}>{sentTo}</span>
+              </div>
             </div>
-            <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 6 }}>VERIFICATION CODE</label>
-            <input className="input-field" value={otp} onChange={e => setOtp(e.target.value)} placeholder="123456" maxLength={6} style={{ marginBottom: 12, fontSize: 24, letterSpacing: "0.3em", textAlign: "center" }} onKeyDown={e => e.key === "Enter" && verifyOTP()} />
-            {error && <div style={{ color: "#e07060", fontSize: 12, marginBottom: 12 }}>{error}</div>}
-            <button className="btn-primary" onClick={verifyOTP} style={{ opacity: otp.length === 6 ? 1 : 0.4, marginBottom: 10 }}>
-              {loading ? "Verifying..." : "Verify & Login ✓"}
+
+            <div style={{ marginBottom: 16 }}>
+              <input className="input-field" value={otp} onChange={e => { setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
+                placeholder="000000" maxLength={6} autoFocus
+                style={{ textAlign: "center", fontSize: 28, letterSpacing: "0.3em", fontFamily: "'Space Mono', monospace" }}
+                onKeyDown={e => e.key === "Enter" && handleVerify()} />
+            </div>
+
+            {error && <div style={{ background: "rgba(224,112,96,0.15)", border: "1px solid #5a2020", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#e07060", marginBottom: 12 }}>{error}</div>}
+
+            <button className="btn-primary" onClick={handleVerify} disabled={loading || otp.length < 6} style={{ opacity: otp.length === 6 ? 1 : 0.4 }}>
+              {loading ? "Verifying..." : "Verify & Sign In ✓"}
             </button>
-            <button onClick={() => { setStep("phone"); setError(""); }} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer", width: "100%", fontFamily: "'Space Mono', monospace" }}>
-              ← Use different number
+
+            <button onClick={() => { setStep("input"); setOtp(""); setError(""); }}
+              style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer", width: "100%", marginTop: 12, textAlign: "center" }}>
+              ← Change email or phone
             </button>
           </>
         )}
-
-        <div style={{ marginTop: 20, padding: "12px", background: "#1a2e1e", borderRadius: 8, fontSize: 11, color: "#4a7a5a", lineHeight: 1.6 }}>
-          🔒 Your number is only used for login. We never share it with buyers or third parties.
-        </div>
       </div>
     </div>
   );
