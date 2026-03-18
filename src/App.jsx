@@ -497,7 +497,7 @@ function MobileNav({ TABS, activeTab, setActiveTab }) {
         {PRIMARY.map(tab => (
           <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
             style={{ color: "#3d6b4a" }} onClick={() => { setActiveTab(tab.id); setShowMore(false); }}>
-            <span className="tab-icon">{tab.icon}</span>
+            <span className="tab-icon">{tab.icon}</span><span className="tab-label">{tab.label}</span>
           </button>
         ))}
         {/* More button */}
