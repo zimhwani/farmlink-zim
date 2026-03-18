@@ -504,7 +504,7 @@ function MobileNav({ TABS, activeTab, setActiveTab }) {
       {/* More drawer backdrop */}
       {showMore && (
         <div onClick={() => setShowMore(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 98, background: "rgba(0,0,0,0.5)" }} />
+          style={{ position: "fixed", inset: 0, zIndex: 198, background: "rgba(0,0,0,0.5)" }} />
       )}
 
       {/* More drawer */}
@@ -557,7 +557,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
   return (
     <>
       {/* Backdrop */}
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 150 }} />
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 300 }} />
       {/* Panel */}
       <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 200, overflow: "hidden" }}>
         {/* Header */}
