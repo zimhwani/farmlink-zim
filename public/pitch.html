@@ -72,10 +72,38 @@
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   @media (max-width: 768px) {
     .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
-    .slide { padding: 40px 24px; }
+    .slide { padding: 80px 20px 40px; }
+    h1 { font-size: 36px; }
+    h2 { font-size: 28px; }
+    .deck-header { padding: 10px 16px; }
+    .deck-header-name { font-size: 14px; }
+    .deck-header-slide { font-size: 10px; }
+    .nav-dots { right: 10px; }
+    .stat-number { font-size: 32px; }
   }
-  @media (max-width: 480px) {
+  @media (max-width: 540px) {
+    .grid-2 { grid-template-columns: 1fr; }
     .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+    .slide { padding: 75px 16px 40px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 24px; }
+    p { font-size: 14px; }
+    .card { padding: 16px; }
+    .feature-row { gap: 10px; }
+    .feature-icon { width: 36px; height: 36px; font-size: 18px; }
+    .stat-number { font-size: 28px; }
+    .tag { font-size: 10px; padding: 3px 10px; }
+    .timeline-item { gap: 10px; }
+    .phone { display: none; }
+    .deck-header-sub { display: none; }
+  }
+  @media (max-width: 540px) {
+    .biz-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 380px) {
+    .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    h2 { font-size: 22px; }
+    .grid-2 { grid-template-columns: 1fr; }
   }
 
   /* DIVIDER */
@@ -167,7 +195,7 @@
     <p style="font-size:20px;max-width:600px;color:var(--text-secondary);margin-bottom:40px;" class="animate delay-3">
       Connecting 300,000+ smallholder farmers to markets, prices, buyers and expert advice — all from a mobile phone.
     </p>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;" class="animate delay-4">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;" class="animate delay-4">
       <span class="tag">🌍 Zimbabwe First</span>
       <span class="tag">📱 Mobile-First Platform</span>
       <span class="tag tag-gold">💰 Revenue-Ready</span>
@@ -339,7 +367,7 @@
     <div class="eyebrow animate delay-1">Business Model</div>
     <h2 class="animate delay-2">Multiple revenue streams, <span class="accent">low friction</span></h2>
     <div class="divider animate delay-2"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;" class="animate delay-3">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;" class="animate delay-3 biz-grid">
       <div style="display:flex;flex-direction:column;gap:14px;">
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
@@ -551,7 +579,7 @@
     <p style="font-size:18px;max-width:560px;margin:0 auto 40px;text-align:center;" class="animate delay-3">
       We're seeking strategic partners and investors who believe in transforming African agriculture through technology.
     </p>
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;" class="animate delay-4">
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:40px;" class="animate delay-4">
       <a href="https://farmlink-zim-vm8p.vercel.app" target="_blank" class="btn">View Live Platform →</a>
       <a href="mailto:hello@farmlinkzim.com" class="btn btn-gold">Get in Touch →</a>
     </div>
