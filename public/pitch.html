@@ -103,6 +103,15 @@
   .timeline-dot::after { content: ''; position: absolute; left: 5px; top: 14px; width: 2px; height: calc(100% + 12px); background: #1f3525; }
   .timeline-item:last-child .timeline-dot::after { display: none; }
 
+  /* FIXED HEADER */
+  .deck-header { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 12px 32px; background: rgba(10,26,12,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(45,122,79,0.2); }
+  .deck-header-logo { display: flex; align-items: center; gap: 10px; }
+  .deck-header-icon { width: 32px; height: 32px; background: linear-gradient(135deg,#2d7a4f,#1a5c36); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+  .deck-header-name { font-size: 16px; font-weight: 700; color: var(--green-light); }
+  .deck-header-name span { color: var(--green-bright); }
+  .deck-header-sub { font-size: 8px; color: var(--text-muted); letter-spacing: 0.15em; }
+  .deck-header-slide { font-size: 11px; color: var(--text-muted); }
+  .slide { padding-top: 100px; }
   /* ANIMATIONS */
   @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -124,6 +133,16 @@
 </head>
 <body>
 
+<header class="deck-header">
+  <div class="deck-header-logo">
+    <div class="deck-header-icon">🌿</div>
+    <div>
+      <div class="deck-header-name">FarmLink <span>Zim</span></div>
+      <div class="deck-header-sub">AGRICULTURAL MARKETPLACE</div>
+    </div>
+  </div>
+  <div class="deck-header-slide" id="slideLabel">Introduction · 1 / 8</div>
+</header>
 <div class="progress" id="progress"></div>
 <nav class="nav-dots" id="navDots"></nav>
 
@@ -568,6 +587,8 @@ const observer = new IntersectionObserver((entries) => {
       const idx = Array.from(slides).indexOf(entry.target);
       dots.forEach((d, i) => d.classList.toggle('active', i === idx));
       progress.style.width = ((idx + 1) / total * 100) + '%';
+      const titles = ['Introduction','The Problem','The Solution','Traction','Business Model','Market Opportunity','Roadmap','Get In Touch'];
+      document.getElementById('slideLabel').textContent = titles[idx] + ' · ' + (idx+1) + ' / ' + total;
       entry.target.querySelectorAll('.animate').forEach(el => {
         el.style.animationPlayState = 'running';
       });
