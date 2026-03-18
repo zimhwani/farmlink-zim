@@ -2793,8 +2793,6 @@ function AuthModal({ onClose, authUser, onAuth, onLogout, setActiveTab }) {
 // ─── INPUT SUPPLIERS TAB ───────────────────────────────────────────────────────
 
 // ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
-}
-}
 
 function InsightsTab() {
   const [cropData, setCropData] = useState([]);
