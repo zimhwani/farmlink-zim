@@ -304,7 +304,7 @@ export default function FarmLinkZim() {
     { id: "calendar", icon: "🗓️", label: "Planting Calendar" },
     { id: "suppliers", icon: "🏪", label: "Input Suppliers" },
     { id: "insights", icon: "📊", label: "Insights" },
-    { id: "calendar", icon: "🗓️", label: "Calendar" },
+    { id: "calendar", icon: "🗓️", label: "Cal" },
     { id: "admin", icon: "⚙️", label: "Admin" },
   ];
 
