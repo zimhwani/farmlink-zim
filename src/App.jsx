@@ -1024,7 +1024,7 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
                 <img
                   src={l.media_urls?.[0] || l.image_url}
                   alt={l.crop}
-                  style={{ width: "100%", height: 160, objectFit: "contain", borderRadius: 8, marginBottom: 10, background: "#0f2218" }}
+                  style={{ width: "100%", height: 160, objectFit: "cover", objectPosition: "top", borderRadius: 8, marginBottom: 10 }}
                 />
               ) : (
                 <div style={{ width: "100%", height: 100, background: "#1a2e1e", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 10 }}>
@@ -1111,7 +1111,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
               {allMedia[mediaIdx]?.match(/\.(mp4|mov|webm)$/i) || l.video_url === allMedia[mediaIdx] ? (
                 <video src={allMedia[mediaIdx]} controls style={{ width: "100%", maxHeight: 280, objectFit: "cover" }} />
               ) : (
-                <img src={allMedia[mediaIdx]} alt={l.crop} style={{ width: "100%", height: 260, objectFit: "contain", background: "#080f09" }} />
+                <img src={allMedia[mediaIdx]} alt={l.crop} style={{ width: "100%", height: 260, objectFit: "cover", objectPosition: "top" }} />
               )}
               {/* Navigation dots */}
               {allMedia.length > 1 && (
