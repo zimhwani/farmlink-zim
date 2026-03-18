@@ -124,6 +124,13 @@ const CROP_EMOJIS = {
 
 // Zimbabwe map districts with approximate SVG path positions (lat/lng to rough x/y on Zimbabwe bounding box)
 // Zimbabwe bounds: lat -15.6 to -22.4, lng 25.2 to 33.1
+const maskName = (name) => {
+  if (!name) return name;
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return name;
+  return parts[0] + " " + parts.slice(1).map(p => "*".repeat(p.length)).join(" ");
+};
+
 function latLngToSVG(lat, lng, w = 340, h = 280) {
   const x = ((lng - 25.2) / (33.1 - 25.2)) * w;
   const y = ((lat - (-15.6)) / ((-22.4) - (-15.6))) * h;
@@ -788,7 +795,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   <div style={{ fontSize: 20 }}>👩🏾‍🌾</div>
                   <div>
-                    <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600 }}>{f.name}</div>
+                    <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600 }}>{maskName(f.name)}</div>
                     <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.ward}</div>
                   </div>
                 </div>
@@ -870,8 +877,8 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
             <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>Farmers</div>
             <div style={{ fontSize: 8, color: "#2d7a4f", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>TAP MAP ↗</div>
           </div>
-          {[{ label: "Listings", value: listingCount, icon: "🛒" }, { label: "Districts", value: "60+", icon: "📍" }].map(s => (
-            <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
+          {[{ label: "Listings", value: listingCount, icon: "🛒", tab: "market" }, { label: "Districts", value: "60+", icon: "📍", tab: "register" }].map(s => (
+            <div key={s.label} onClick={() => setActiveTab(s.tab)} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>
               <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#7ec99a", fontWeight: 700 }}>{s.value}</div>
               <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>{s.label}</div>
@@ -1119,7 +1126,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
   ].filter(Boolean);
 
   const waNumber = l.phone ? l.phone.replace(/\D/g, '') : null;
-  const waMsg = encodeURIComponent(`Hi ${l.farmer_name}, I saw your listing on FarmLink Zim for ${l.crop} (${l.quantity} at ${l.price}). I'm interested, please contact me.`);
+  const waMsg = encodeURIComponent(`Hi ${maskName(l.farmer_name)}, I saw your listing on FarmLink Zim for ${l.crop} (${l.quantity} at ${l.price}). I'm interested, please contact me.`);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -1179,7 +1186,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
             <div>
               <div style={{ fontSize: 22, fontWeight: 700, color: "#c8e8d4" }}>{l.crop}</div>
-              <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>👩🏾‍🌾 {l.farmer_name} · 📍 {l.location}</div>
+              <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>👩🏾‍🌾 {maskName(l.farmer_name)} · 📍 {l.location}</div>
             </div>
             <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer", flexShrink: 0 }}>✕</button>
           </div>
@@ -2553,7 +2560,7 @@ function AdminTab({ farmers, listings }) {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
               <div style={{ fontSize: 22 }}>👩🏾‍🌾</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, color: "#c8e8d4" }}>{f.name}</div>
+                <div style={{ fontSize: 13, color: "#c8e8d4" }}>{maskName(f.name)}</div>
                 <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.district}, {f.province}</div>
               </div>
               {f.phone && <div style={{ fontSize: 11, color: "#5c8f6b" }}>{f.phone}</div>}
