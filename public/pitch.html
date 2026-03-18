@@ -81,8 +81,6 @@
     .nav-dots { right: 10px; }
     .stat-number { font-size: 32px; }
   }
-  @media (max-width: 540px) {
-    .grid-2 { grid-template-columns: 1fr !important; }
     [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
     [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
     .market-grid { grid-template-columns: 1fr !important; }
@@ -102,14 +100,28 @@
     .phone { display: none; }
     .deck-header-sub { display: none; }
   }
+    .roadmap-grid { grid-template-columns: 1fr !important; }
+    .roadmap-grid .card { padding: 12px; }
+    .roadmap-grid .card div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
+    .roadmap-grid { grid-template-columns: 1fr !important; }
+    .roadmap-grid .card { padding: 12px; }
+    .roadmap-grid .card div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
+  }
+
   @media (max-width: 540px) {
-    .biz-grid { grid-template-columns: 1fr !important; }
-    .roadmap-grid { grid-template-columns: 1fr !important; }
-    .roadmap-grid .card { padding: 12px; }
-    .roadmap-grid .card div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
-    .roadmap-grid { grid-template-columns: 1fr !important; }
-    .roadmap-grid .card { padding: 12px; }
-    .roadmap-grid .card div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
+    .grid-2, .grid-3, .grid-4, .biz-grid, .roadmap-grid, .market-grid { grid-template-columns: 1fr !important; }
+    [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+    .slide { padding: 75px 16px 40px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 24px; }
+    p { font-size: 14px; }
+    .card { padding: 16px; }
+    .feature-row { gap: 10px; }
+    .feature-icon { width: 36px; height: 36px; font-size: 18px; }
+    .stat-number { font-size: 28px; }
+    .tag { font-size: 10px; padding: 3px 10px; }
+    .deck-header-sub { display: none; }
   }
   @media (max-width: 380px) {
     .grid-3, .grid-4 { grid-template-columns: 1fr; }
