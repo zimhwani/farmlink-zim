@@ -981,15 +981,6 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
     // Featured listings appear first
     .sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
 
-  const handleFeatureListing = async (weeks, ref, method) => {
-    if (!featuringListing) return;
-    const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
-    await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
-    await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
-    setFeaturingListing(null);
-    loadListings();
-  };
-
   const deleteListing = async (id) => {
     if (!window.confirm("Remove this listing?")) return;
     await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${id}`, {
@@ -1101,7 +1092,13 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
       </div>
       {/* Edit listing modal */}
       {editingListing && <EditListingModal listing={editingListing} onClose={() => setEditingListing(null)} onSave={async (updates) => { await db.patch("listings", editingListing.id, updates); setEditingListing(null); loadListings(); }} />}
-      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={handleFeatureListing} />}
+      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={async (weeks, ref, method) => {
+        const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
+        await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
+        await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
+        setFeaturingListing(null);
+        loadListings();
+      }} />
     </div>
   );
 }
@@ -2796,6 +2793,9 @@ function AuthModal({ onClose, authUser, onAuth, onLogout, setActiveTab }) {
 // ─── INPUT SUPPLIERS TAB ───────────────────────────────────────────────────────
 
 // ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
+}
+}
+
 function InsightsTab() {
   const [cropData, setCropData] = useState([]);
   const [livestockData, setLivestockData] = useState([]);
@@ -3031,5 +3031,4 @@ function InsightsTab() {
       ))}
     </div>
   );
-}
 }
