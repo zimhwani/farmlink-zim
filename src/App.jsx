@@ -339,7 +339,7 @@ export default function FarmLinkZim() {
             <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3d6b4a", marginBottom: 6 }}>PLATFORM STATUS</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#5cd68a" }} className="pulse" />
-              <span style={{ fontSize: 11, color: "#5c8f6b" }}>Live · Supabase connected</span>
+              <span style={{ fontSize: 11, color: "#5c8f6b" }}>Live · Farmlink connected</span>
             </div>
           </div>
         </div>
