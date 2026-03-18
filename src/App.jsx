@@ -298,13 +298,12 @@ export default function FarmLinkZim() {
   const TABS = [
     { id: "home", icon: "🛖", label: "Home" },
     { id: "market", icon: "🛒", label: "Marketplace" },
-    { id: "register", icon: "📍", label: "Register Farm" },
+    { id: "diary", icon: "📓", label: "Farm Diary" },
     { id: "advisory", icon: "🤖", label: "AI Advisor" },
     { id: "prices", icon: "📈", label: "Price Feeds" },
     { id: "calendar", icon: "🗓️", label: "Planting Calendar" },
-    { id: "suppliers", icon: "🏪", label: "Input Suppliers" },
     { id: "insights", icon: "📊", label: "Insights" },
-    { id: "calendar", icon: "🗓️", label: "Calendar" },
+    { id: "register", icon: "📍", label: "Register Farm" },
     { id: "admin", icon: "⚙️", label: "Admin" },
   ];
 
@@ -391,14 +390,13 @@ export default function FarmLinkZim() {
           {/* Page content */}
           <div className="page-content">
             {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
-            {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} />}
+            {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} authUser={authUser} loadListings={loadListings} />}
+            {activeTab === "diary" && <FarmDiaryTab authUser={authUser} setActiveTab={setActiveTab} />}
             {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
             {activeTab === "prices" && <PriceFeedsTab />}
-            {activeTab === "calendar" && <PlantingCalendarTab />}
-            {activeTab === "suppliers" && <InputSuppliersTab />}
-            {activeTab === "insights" && <InsightsTab />}
             {activeTab === "calendar" && <CalendarTab />}
+            {activeTab === "insights" && <InsightsTab />}
             {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
           </div>
         </div>
@@ -801,6 +799,23 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
 // ─── HOME TAB ──────────────────────────────────────────────────────────────────
 function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherIcon, onFarmerMapClick }) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const [prices, setPrices] = useState(PRICE_ALERTS);
+  const [pricesLoading, setPricesLoading] = useState(true);
+
+  useEffect(() => {
+    db.get("price_feed", "?order=created_at.desc&limit=4").then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        setPrices(data.map(p => ({
+          crop: p.crop,
+          change: `${p.change_pct > 0 ? "+" : ""}${p.change_pct}%`,
+          price: `USD ${p.price_usd}/${p.unit}`,
+          trend: p.trend === "up" ? "up" : "down",
+          region: p.source,
+        })));
+      }
+      setPricesLoading(false);
+    }).catch(() => setPricesLoading(false));
+  }, []);
   return (
     <div className="fade-in two-col">
       {/* LEFT COLUMN */}
@@ -879,15 +894,19 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
         </div>
 
         {/* Price Alerts */}
-        <div className="section-title">Live Price Alerts</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <div className="section-title" style={{ margin: 0 }}>📈 Live Market Prices</div>
+          <button onClick={() => setActiveTab("prices")} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 11, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>See all →</button>
+        </div>
         <div style={{ display: "grid", gap: 8, marginBottom: 16 }} className="price-grid">
-          {PRICE_ALERTS.map((p, i) => (
-            <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px" }}>
+          {pricesLoading ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 70, borderRadius: 10 }} />) :
+          prices.map((p, i) => (
+            <div key={i} style={{ background: "#152218", border: `1px solid ${p.trend === "up" ? "#1f3a25" : "#3a1f1f"}`, borderRadius: 10, padding: "12px", cursor: "pointer" }} onClick={() => setActiveTab("prices")}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{p.crop}</div>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060" }}>{p.change}</div>
+                <div style={{ fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060", fontWeight: 600 }}>{p.trend === "up" ? "▲" : "▼"} {p.change}</div>
               </div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#7ec99a", margin: "6px 0 4px" }}>{p.price}</div>
+              <div style={{ fontSize: 12, color: "#7ec99a", margin: "6px 0 4px", fontWeight: 600 }}>{p.price}</div>
               <div style={{ fontSize: 10, color: "#4a7a5a" }}>{p.region}</div>
             </div>
           ))}
@@ -911,13 +930,31 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
 }
 
 // ─── MARKET TAB ────────────────────────────────────────────────────────────────
-function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setShowListingModal, setShowContactModal, setShowListingDetail }) {
+function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setShowListingModal, setShowContactModal, setShowListingDetail, authUser, loadListings }) {
   const filters = ["All", "Grain", "Livestock", "Horticulture", "Cash Crops"];
   const filterMap = { "Grain": ["Maize", "Wheat", "Sorghum"], "Livestock": ["Cattle", "Goats", "Sheep", "Pigs", "Poultry"], "Horticulture": ["Tomatoes", "Vegetables", "Sweet Potatoes"], "Cash Crops": ["Tobacco", "Cotton", "Coffee", "Soya", "Sunflower", "Groundnuts"] };
   const [search, setSearch] = useState("");
-  const filtered = listings
+  const [editingListing, setEditingListing] = useState(null);
+  const [myTab, setMyTab] = useState("all"); // 'all' | 'mine'
+
+  const myListings = authUser ? listings.filter(l =>
+    l.auth_user_id === authUser.id ||
+    l.farmer_name?.toLowerCase() === authUser.email?.split("@")[0]?.toLowerCase()
+  ) : [];
+
+  const filtered = (myTab === "mine" ? myListings : listings)
     .filter(l => filterCrop === "All" || (filterMap[filterCrop] || []).some(f => l.crop?.toLowerCase().includes(f.toLowerCase())))
     .filter(l => !search || l.crop?.toLowerCase().includes(search.toLowerCase()) || l.location?.toLowerCase().includes(search.toLowerCase()) || l.farmer_name?.toLowerCase().includes(search.toLowerCase()));
+
+  const deleteListing = async (id) => {
+    if (!window.confirm("Remove this listing?")) return;
+    await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${id}`, {
+      method: "PATCH",
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ active: false }),
+    });
+    loadListings();
+  };
 
   return (
     <div className="fade-in single-col">
@@ -926,8 +963,17 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
           <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Marketplace</div>
           <div style={{ fontSize: 12, color: "#4a7a5a" }}>{listings.length} active listings</div>
         </div>
-        <button onClick={() => setShowListingModal(true)} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#7ec99a", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", whiteSpace: "nowrap" }}>+ List Produce</button>
+        <button onClick={() => setShowListingModal(true)} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#7ec99a", fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>+ List Produce</button>
       </div>
+
+      {/* My Listings / All toggle */}
+      {authUser && myListings.length > 0 && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+          {[["all", "All Listings"], ["mine", `My Listings (${myListings.length})`]].map(([v, label]) => (
+            <button key={v} onClick={() => setMyTab(v)} style={{ background: myTab === v ? "#2d7a4f" : "#152218", border: `1px solid ${myTab === v ? "#3a9962" : "#1f3525"}`, borderRadius: 8, padding: "7px 14px", color: myTab === v ? "#e8f5ed" : "#5c8f6b", fontSize: 12, cursor: "pointer" }}>{label}</button>
+          ))}
+        </div>
+      )}
 
       {/* Search */}
       <div style={{ position: "relative", marginBottom: 12 }}>
@@ -971,10 +1017,17 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
               {l.description && <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{l.description}</div>}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#7ec99a" }}>{l.price}</span>
+                  <span style={{ fontSize: 12, color: "#7ec99a" }}>{l.price}</span>
                   <span style={{ fontSize: 11, color: "#4a7a5a", marginLeft: 6 }}>{l.quantity}</span>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
+                  {/* Edit/Delete for own listings */}
+                  {authUser && (l.auth_user_id === authUser.id) && (<>
+                    <button onClick={e => { e.stopPropagation(); setEditingListing(l); }}
+                      style={{ background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>✏️ Edit</button>
+                    <button onClick={e => { e.stopPropagation(); deleteListing(l.id); }}
+                      style={{ background: "#2a1a1a", border: "1px solid #5a2020", borderRadius: 6, padding: "4px 8px", color: "#e07060", fontSize: 11, cursor: "pointer" }}>🗑</button>
+                  </>)}
                   {l.phone && (
                     <a href={`https://wa.me/${l.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
@@ -992,6 +1045,8 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
           ))
         }
       </div>
+      {/* Edit listing modal */}
+      {editingListing && <EditListingModal listing={editingListing} onClose={() => setEditingListing(null)} onSave={async (updates) => { await db.patch("listings", editingListing.id, updates); setEditingListing(null); loadListings(); }} />}
     </div>
   );
 }
@@ -1614,6 +1669,405 @@ function CalendarTab() {
   );
 }
 
+// ─── EDIT LISTING MODAL ────────────────────────────────────────────────────────
+function EditListingModal({ listing, onClose, onSave }) {
+  const [fields, setFields] = useState({
+    crop: listing.crop || "",
+    quantity: listing.quantity || "",
+    price: listing.price || "",
+    location: listing.location || "",
+    description: listing.description || "",
+    phone: listing.phone || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const set = (k, v) => setFields(f => ({ ...f, [k]: v }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    await onSave({ ...fields, updated_at: new Date().toISOString() });
+    setSaving(false);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>Edit Listing</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
+        </div>
+        {[
+          ["CROP / PRODUCE", "crop", "e.g. Maize, Cattle"],
+          ["QUANTITY", "quantity", "e.g. 10 tonnes"],
+          ["PRICE", "price", "e.g. USD 298/tonne"],
+          ["LOCATION", "location", "e.g. Mazowe"],
+          ["WHATSAPP NUMBER", "phone", "+263 77X XXX XXX"],
+        ].map(([label, key, ph]) => (
+          <div key={key} style={{ marginBottom: 12 }}>
+            <label style={{ fontSize: 10, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#5c8f6b", display: "block", marginBottom: 5 }}>{label}</label>
+            <input className="input-field" value={fields[key]} onChange={e => set(key, e.target.value)} placeholder={ph} />
+          </div>
+        ))}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>DESCRIPTION</label>
+          <textarea className="input-field" value={fields.description} onChange={e => set("description", e.target.value)} rows={3} style={{ resize: "none" }} placeholder="Describe your produce..." />
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="btn-secondary" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
+          <button className="btn-primary" style={{ flex: 2 }} onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save Changes ✓"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── PRICE FEEDS TAB ───────────────────────────────────────────────────────────
+function PriceFeedsTab() {
+  const [prices, setPrices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+
+  useEffect(() => {
+    db.get("price_feed", "?order=crop").then(data => {
+      setPrices(Array.isArray(data) ? data : []);
+      setLoading(false);
+    });
+  }, []);
+
+  const categories = ["All", "Grains", "Cash Crops", "Livestock", "Horticulture"];
+  const catMap = {
+    "Grains": ["Maize", "Wheat", "Sorghum", "Soya Beans", "Groundnuts", "Pearl Millet"],
+    "Cash Crops": ["Tobacco", "Cotton", "Sunflower", "Sugar Cane"],
+    "Livestock": ["Cattle", "Goats", "Pigs", "Poultry"],
+    "Horticulture": ["Tomatoes", "Potatoes", "Onions", "Butternut", "Cabbage"],
+  };
+
+  const filtered = filter === "All" ? prices : prices.filter(p =>
+    (catMap[filter] || []).some(c => p.crop?.toLowerCase().includes(c.toLowerCase()))
+  );
+
+  const updatedDate = prices[0]?.created_at ? new Date(prices[0].created_at).toLocaleDateString("en-ZW", { day: "numeric", month: "short", year: "numeric" }) : "—";
+
+  return (
+    <div className="fade-in single-col">
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Market Prices</div>
+      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>Live prices from GMB, Cottco, ZFU and Mbare Musika · Updated {updatedDate}</div>
+
+      {/* Summary strip */}
+      <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 20 }}>
+        {[
+          { label: "Maize", icon: "🌽" }, { label: "Tobacco", icon: "🍂" },
+          { label: "Cattle", icon: "🐄" }, { label: "Tomatoes", icon: "🍅" },
+        ].map(({ label, icon }) => {
+          const p = prices.find(x => x.crop === label);
+          if (!p) return null;
+          return (
+            <div key={label} style={{ background: "#152218", border: `1px solid ${p.trend === "up" ? "#2d5a36" : "#5a2020"}`, borderRadius: 12, padding: "10px 14px", flexShrink: 0, minWidth: 110 }}>
+              <div style={{ fontSize: 18, marginBottom: 4 }}>{icon}</div>
+              <div style={{ fontSize: 11, color: "#8aaa94", marginBottom: 2 }}>{label}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#c8e8d4" }}>USD {p.price_usd}/{p.unit}</div>
+              <div style={{ fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060", marginTop: 2 }}>
+                {p.trend === "up" ? "▲" : "▼"} {p.change_pct > 0 ? "+" : ""}{p.change_pct}%
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Category filter */}
+      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
+        {categories.map(c => (
+          <span key={c} className={`chip ${filter === c ? "active" : ""}`} onClick={() => setFilter(c)} style={{ fontSize: 11 }}>{c}</span>
+        ))}
+      </div>
+
+      {/* Full price table */}
+      <div className="card">
+        {/* Header */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "8px 0 12px", borderBottom: "1px solid #1a2e1e", marginBottom: 4 }}>
+          {["COMMODITY", "PRICE", "SOURCE", "CHANGE"].map(h => (
+            <div key={h} style={{ fontSize: 9, color: "#3d6b4a", fontWeight: 600, letterSpacing: "0.1em" }}>{h}</div>
+          ))}
+        </div>
+        {loading ? [1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: 44, borderRadius: 8, marginBottom: 6 }} />) :
+          filtered.map((p, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "12px 0", borderBottom: i < filtered.length - 1 ? "1px solid #1a2e1e" : "none", alignItems: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{p.crop}</div>
+              <div>
+                <div style={{ fontSize: 13, color: "#7ec99a", fontWeight: 700 }}>USD {p.price_usd}</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a" }}>/{p.unit}</div>
+              </div>
+              <div style={{ fontSize: 11, color: "#5c8f6b" }}>{p.source}</div>
+              <div style={{ textAlign: "right" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: p.trend === "up" ? "#5cd68a" : p.trend === "down" ? "#e07060" : "#8aaa94" }}>
+                  {p.trend === "up" ? "▲" : p.trend === "down" ? "▼" : "—"} {Math.abs(p.change_pct)}%
+                </span>
+                {p.previous_price && (
+                  <div style={{ fontSize: 10, color: "#3d6b4a" }}>was {p.previous_price}</div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div style={{ marginTop: 16, background: "#1a2e1e", borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#5c8f6b", borderLeft: "3px solid #2d7a4f" }}>
+        💡 Prices are updated weekly from GMB, Cottco, ZFU and Mbare Musika. Use the AI Advisor for personalised price strategy.
+      </div>
+    </div>
+  );
+}
+
+// ─── FARM DIARY TAB ────────────────────────────────────────────────────────────
+const ACTIVITY_TYPES = [
+  { id: "planting", icon: "🌱", label: "Planting", color: "#5cd68a" },
+  { id: "fertilising", icon: "🧪", label: "Fertilising", color: "#7ab0e0" },
+  { id: "spraying", icon: "💧", label: "Spraying", color: "#5a9fd4" },
+  { id: "irrigation", icon: "🚿", label: "Irrigation", color: "#5a9fd4" },
+  { id: "harvesting", icon: "🌾", label: "Harvesting", color: "#d4a017" },
+  { id: "selling", icon: "💰", label: "Selling", color: "#7ec99a" },
+  { id: "livestock", icon: "🐄", label: "Livestock", color: "#cc80e0" },
+  { id: "other", icon: "📝", label: "Other", color: "#8aaa94" },
+];
+const WEATHER_OPTIONS = [
+  { id: "sunny", icon: "☀️", label: "Sunny" },
+  { id: "cloudy", icon: "⛅", label: "Cloudy" },
+  { id: "rainy", icon: "🌧️", label: "Rainy" },
+  { id: "dry", icon: "🌵", label: "Dry" },
+];
+
+function FarmDiaryTab({ authUser, setActiveTab }) {
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const [filter, setFilter] = useState("all");
+
+  const loadEntries = async () => {
+    setLoading(true);
+    const data = await db.get("farm_diary", "?order=activity_date.desc&limit=50");
+    setEntries(Array.isArray(data) ? data : []);
+    setLoading(false);
+  };
+
+  useEffect(() => { loadEntries(); }, []);
+
+  const filtered = filter === "all" ? entries : entries.filter(e => e.activity_type === filter);
+
+  // Group by date
+  const grouped = {};
+  filtered.forEach(e => {
+    const d = e.activity_date;
+    if (!grouped[d]) grouped[d] = [];
+    grouped[d].push(e);
+  });
+
+  const formatDate = (d) => {
+    const date = new Date(d + "T00:00:00");
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    if (d === today.toISOString().split("T")[0]) return "Today";
+    if (d === yesterday.toISOString().split("T")[0]) return "Yesterday";
+    return date.toLocaleDateString("en-ZW", { weekday: "short", day: "numeric", month: "short" });
+  };
+
+  // Stats
+  const thisWeek = entries.filter(e => {
+    const d = new Date(e.activity_date);
+    const now = new Date();
+    const weekAgo = new Date(now.setDate(now.getDate() - 7));
+    return d >= weekAgo;
+  });
+
+  return (
+    <div className="fade-in single-col">
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Farm Diary</div>
+          <div style={{ fontSize: 12, color: "#4a7a5a" }}>{entries.length} activities logged</div>
+        </div>
+        <button onClick={() => setShowAdd(true)} style={{ background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "10px 16px", color: "#e8dfc8", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+          + Log Activity
+        </button>
+      </div>
+
+      {/* Weekly stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, margin: "16px 0" }}>
+        {[
+          { label: "This Week", value: thisWeek.length, icon: "📅" },
+          { label: "Plantings", value: entries.filter(e => e.activity_type === "planting").length, icon: "🌱" },
+          { label: "Harvests", value: entries.filter(e => e.activity_type === "harvesting").length, icon: "🌾" },
+          { label: "Livestock", value: entries.filter(e => e.activity_type === "livestock").length, icon: "🐄" },
+        ].map(s => (
+          <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+            <div style={{ fontSize: 18, marginBottom: 4 }}>{s.icon}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#7ec99a" }}>{s.value}</div>
+            <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Activity type filter */}
+      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
+        <span className={`chip ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")} style={{ fontSize: 11 }}>All</span>
+        {ACTIVITY_TYPES.map(a => (
+          <span key={a.id} className={`chip ${filter === a.id ? "active" : ""}`} onClick={() => setFilter(a.id)} style={{ fontSize: 11 }}>{a.icon} {a.label}</span>
+        ))}
+      </div>
+
+      {/* Entries grouped by date */}
+      {loading ? [1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12, marginBottom: 10 }} />) :
+        Object.keys(grouped).length === 0 ? (
+          <div style={{ textAlign: "center", padding: "48px 20px" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>📓</div>
+            <div style={{ fontSize: 14, color: "#5c8f6b", marginBottom: 8 }}>No activities logged yet</div>
+            <div style={{ fontSize: 12, color: "#3d6b4a", marginBottom: 20 }}>Start tracking your farm activities daily to build a record of your season.</div>
+            <button onClick={() => setShowAdd(true)} className="btn-primary" style={{ width: "auto", padding: "10px 24px" }}>Log Your First Activity</button>
+          </div>
+        ) : (
+          Object.entries(grouped).map(([date, dayEntries]) => (
+            <div key={date} style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#4a7a5a", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                {formatDate(date)}
+              </div>
+              {dayEntries.map((e, i) => {
+                const type = ACTIVITY_TYPES.find(a => a.id === e.activity_type) || ACTIVITY_TYPES[7];
+                const weather = WEATHER_OPTIONS.find(w => w.id === e.weather);
+                return (
+                  <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "14px", marginBottom: 8, borderLeft: `3px solid ${type.color}` }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <div style={{ width: 36, height: 36, background: `${type.color}20`, border: `1px solid ${type.color}40`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+                        {type.icon}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{type.label}{e.crop_name ? ` — ${e.crop_name}` : ""}</div>
+                          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                            {weather && <span style={{ fontSize: 14 }}>{weather.icon}</span>}
+                            {e.cost_usd && <span style={{ fontSize: 10, color: "#d4a017", background: "rgba(212,160,23,0.15)", padding: "2px 7px", borderRadius: 8 }}>USD {e.cost_usd}</span>}
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 13, color: "#8aaa94", marginTop: 4, lineHeight: 1.5 }}>{e.notes}</div>
+                        {e.quantity && <div style={{ fontSize: 11, color: "#5c8f6b", marginTop: 4 }}>📦 {e.quantity}</div>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        )
+      }
+
+      {/* Add Activity Modal */}
+      {showAdd && <AddDiaryEntryModal onClose={() => setShowAdd(false)} onSave={async (entry) => { await db.post("farm_diary", entry); setShowAdd(false); loadEntries(); }} />}
+    </div>
+  );
+}
+
+function AddDiaryEntryModal({ onClose, onSave }) {
+  const today = new Date().toISOString().split("T")[0];
+  const [fields, setFields] = useState({
+    activity_date: today,
+    activity_type: "planting",
+    crop_name: "",
+    notes: "",
+    quantity: "",
+    cost_usd: "",
+    weather: "sunny",
+  });
+  const [saving, setSaving] = useState(false);
+  const set = (k, v) => setFields(f => ({ ...f, [k]: v }));
+
+  const handleSave = async () => {
+    if (!fields.notes.trim()) return;
+    setSaving(true);
+    await onSave({
+      ...fields,
+      cost_usd: fields.cost_usd ? parseFloat(fields.cost_usd) : null,
+      crop_name: fields.crop_name || null,
+      quantity: fields.quantity || null,
+    });
+    setSaving(false);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxHeight: "92vh", overflowY: "auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>Log Activity</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
+        </div>
+
+        {/* Activity type selector */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8 }}>ACTIVITY TYPE</label>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6 }}>
+            {ACTIVITY_TYPES.map(a => (
+              <button key={a.id} onClick={() => set("activity_type", a.id)}
+                style={{ background: fields.activity_type === a.id ? `${a.color}25` : "#1a2e1e", border: `1px solid ${fields.activity_type === a.id ? a.color : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: 18, marginBottom: 3 }}>{a.icon}</div>
+                <div style={{ fontSize: 9, color: fields.activity_type === a.id ? a.color : "#5c8f6b" }}>{a.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Date */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>DATE</label>
+          <input type="date" className="input-field" value={fields.activity_date} onChange={e => set("activity_date", e.target.value)} />
+        </div>
+
+        {/* Crop */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>CROP / LIVESTOCK</label>
+          <input className="input-field" value={fields.crop_name} onChange={e => set("crop_name", e.target.value)} placeholder="e.g. Maize, Cattle, Tomatoes" />
+        </div>
+
+        {/* Notes */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>NOTES *</label>
+          <textarea className="input-field" value={fields.notes} onChange={e => set("notes", e.target.value)}
+            placeholder="What did you do today? Include any observations, problems or results..." rows={3} style={{ resize: "none" }} />
+        </div>
+
+        {/* Quantity + Cost side by side */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+          <div>
+            <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>QUANTITY</label>
+            <input className="input-field" value={fields.quantity} onChange={e => set("quantity", e.target.value)} placeholder="e.g. 2 bags, 5 head" />
+          </div>
+          <div>
+            <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>COST (USD)</label>
+            <input type="number" className="input-field" value={fields.cost_usd} onChange={e => set("cost_usd", e.target.value)} placeholder="0.00" />
+          </div>
+        </div>
+
+        {/* Weather */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8 }}>WEATHER</label>
+          <div style={{ display: "flex", gap: 8 }}>
+            {WEATHER_OPTIONS.map(w => (
+              <button key={w.id} onClick={() => set("weather", w.id)}
+                style={{ flex: 1, background: fields.weather === w.id ? "#1a3d24" : "#1a2e1e", border: `1px solid ${fields.weather === w.id ? "#2d7a4f" : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: 20 }}>{w.icon}</div>
+                <div style={{ fontSize: 9, color: fields.weather === w.id ? "#7ec99a" : "#4a7a5a", marginTop: 3 }}>{w.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button className="btn-primary" onClick={handleSave} disabled={saving || !fields.notes.trim()} style={{ opacity: fields.notes.trim() ? 1 : 0.4 }}>
+          {saving ? "Saving..." : "Save Entry ✓"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── ADMIN DASHBOARD ───────────────────────────────────────────────────────────
 function AdminTab({ farmers, listings }) {
   const [messages, setMessages] = useState([]);
@@ -1861,148 +2315,6 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
 }
 
 // ─── PRICE FEEDS TAB ───────────────────────────────────────────────────────────
-function PriceFeedsTab() {
-  const [prices, setPrices] = useState([]);
-  const [selected, setSelected] = useState("Maize");
-  const [loading, setLoading] = useState(true);
-  const crops = ["Maize", "Tobacco", "Soya Beans", "Cotton", "Wheat", "Groundnuts"];
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      const data = await db.get("price_feeds", "?order=recorded_date.asc&limit=200");
-      setPrices(Array.isArray(data) ? data : []);
-      setLoading(false);
-    };
-    load();
-  }, []);
-
-  const cropPrices = prices.filter(p => p.crop_name === selected);
-  const latest = cropPrices[cropPrices.length - 1];
-  const prev = cropPrices[cropPrices.length - 2];
-  const change = latest && prev ? ((latest.price_usd - prev.price_usd) / prev.price_usd * 100).toFixed(1) : null;
-
-  // SVG line chart
-  const chartW = 340, chartH = 100;
-  const vals = cropPrices.map(p => p.price_usd);
-  const minV = Math.min(...vals) * 0.97;
-  const maxV = Math.max(...vals) * 1.03;
-  const points = cropPrices.map((p, i) => {
-    const x = (i / (cropPrices.length - 1)) * chartW;
-    const y = chartH - ((p.price_usd - minV) / (maxV - minV)) * chartH;
-    return `${x},${y}`;
-  }).join(" ");
-  const areaPoints = `0,${chartH} ${points} ${chartW},${chartH}`;
-
-  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-  // All latest prices for the summary table
-  const latestByAgg = {};
-  prices.forEach(p => {
-    if (!latestByAgg[p.crop_name] || p.recorded_date > latestByAgg[p.crop_name].recorded_date) {
-      latestByAgg[p.crop_name] = p;
-    }
-  });
-
-  return (
-    <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Price Feeds</div>
-      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>Live commodity prices — GMB, Cottco & Auction Floors</div>
-
-      {/* Latest prices grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 20 }}>
-        {Object.values(latestByAgg).map((p, i) => {
-          const hist = prices.filter(x => x.crop_name === p.crop_name);
-          const prev = hist[hist.length - 2];
-          const chg = prev ? ((p.price_usd - prev.price_usd) / prev.price_usd * 100).toFixed(1) : null;
-          return (
-            <div key={i} onClick={() => setSelected(p.crop_name)}
-              style={{ background: selected === p.crop_name ? "#1a3d24" : "#152218", border: `1px solid ${selected === p.crop_name ? "#2d7a4f" : "#1f3525"}`, borderRadius: 10, padding: "10px 8px", cursor: "pointer", transition: "all 0.2s" }}>
-              <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 4, fontFamily: "'Space Mono', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.crop_name}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#7ec99a", fontFamily: "'Space Mono', monospace" }}>{p.price_usd < 10 ? `$${p.price_usd}` : `$${p.price_usd}`}</div>
-              <div style={{ fontSize: 9, color: "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>/{p.unit}</div>
-              {chg && <div style={{ fontSize: 10, color: parseFloat(chg) >= 0 ? "#5cd68a" : "#e07060", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>{parseFloat(chg) >= 0 ? "▲" : "▼"} {Math.abs(chg)}%</div>}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Price chart */}
-      {loading ? <div className="skeleton" style={{ height: 180, borderRadius: 12, marginBottom: 16 }} /> : (
-        <div className="card" style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#c8e8d4" }}>{selected}</div>
-              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>{latest?.source} · 6 Month Trend</div>
-            </div>
-            {latest && (
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#7ec99a", fontFamily: "'Space Mono', monospace" }}>${latest.price_usd}/{latest.unit}</div>
-                {change && <div style={{ fontSize: 11, color: parseFloat(change) >= 0 ? "#5cd68a" : "#e07060", fontFamily: "'Space Mono', monospace" }}>{parseFloat(change) >= 0 ? "▲" : "▼"} {Math.abs(change)}% vs last month</div>}
-              </div>
-            )}
-          </div>
-
-          {cropPrices.length > 1 && (
-            <svg viewBox={`0 0 ${chartW} ${chartH + 20}`} style={{ width: "100%", height: "auto", overflow: "visible" }}>
-              {/* Grid lines */}
-              {[0, 0.25, 0.5, 0.75, 1].map((t, i) => (
-                <line key={i} x1="0" y1={chartH * t} x2={chartW} y2={chartH * t} stroke="#1a2e1e" strokeWidth="1" />
-              ))}
-              {/* Area fill */}
-              <polygon points={areaPoints} fill="rgba(45,122,79,0.15)" />
-              {/* Line */}
-              <polyline points={points} fill="none" stroke="#2d7a4f" strokeWidth="2.5" strokeLinejoin="round" />
-              {/* Dots */}
-              {cropPrices.map((p, i) => {
-                const x = (i / (cropPrices.length - 1)) * chartW;
-                const y = chartH - ((p.price_usd - minV) / (maxV - minV)) * chartH;
-                return <circle key={i} cx={x} cy={y} r="4" fill={i === cropPrices.length - 1 ? "#5cd68a" : "#2d7a4f"} stroke="#0d1a0f" strokeWidth="1.5" />;
-              })}
-              {/* X labels */}
-              {cropPrices.map((p, i) => {
-                const x = (i / (cropPrices.length - 1)) * chartW;
-                const d = new Date(p.recorded_date);
-                return <text key={i} x={x} y={chartH + 14} textAnchor="middle" fill="#4a7a5a" fontSize="9" fontFamily="monospace">{MONTHS[d.getMonth()]}</text>;
-              })}
-              {/* Y labels */}
-              <text x="-4" y="10" textAnchor="end" fill="#4a7a5a" fontSize="8" fontFamily="monospace">${maxV.toFixed(0)}</text>
-              <text x="-4" y={chartH} textAnchor="end" fill="#4a7a5a" fontSize="8" fontFamily="monospace">${minV.toFixed(0)}</text>
-            </svg>
-          )}
-        </div>
-      )}
-
-      {/* Sources info */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="section-title">Data Sources</div>
-        {[
-          { name: "GMB", full: "Grain Marketing Board", crops: "Maize, Wheat, Sorghum", update: "Weekly" },
-          { name: "Cottco", full: "Cotton Company of Zimbabwe", crops: "Cotton", update: "Seasonal" },
-          { name: "Auction Floors", full: "Zimbabwe Tobacco Auction", crops: "Tobacco", update: "Daily (season)" },
-          { name: "Commodity Exchange", full: "ZSE Commodity Exchange", crops: "Soya, Groundnuts", update: "Weekly" },
-        ].map((s, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < 3 ? "1px solid #1a2e1e" : "none" }}>
-            <div>
-              <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600 }}>{s.name}</div>
-              <div style={{ fontSize: 11, color: "#4a7a5a" }}>{s.crops}</div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 10, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>{s.update}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Price alert subscription */}
-      <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#c8e8d4", marginBottom: 6 }}>📲 Price Alerts</div>
-        <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 12 }}>Get SMS alerts when prices move more than 5% in your crops.</div>
-        <button className="btn-primary" style={{ fontSize: 11 }}>Enable Price Alerts</button>
-      </div>
-    </div>
-  );
-}
 
 // ─── PLANTING CALENDAR TAB ─────────────────────────────────────────────────────
 function PlantingCalendarTab() {
