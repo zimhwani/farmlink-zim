@@ -82,6 +82,9 @@
     .stat-number { font-size: 32px; }
   }
   @media (max-width: 540px) {
+    .grid-2 { grid-template-columns: 1fr !important; }
+    [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
     .market-grid { grid-template-columns: 1fr !important; }
     .market-grid { grid-template-columns: 1fr !important; }
     .grid-2 { grid-template-columns: 1fr; }
