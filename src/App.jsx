@@ -403,9 +403,9 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <div onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
+                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
                   {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.name?.split(" ")[0] || "Profile"}</span></> : "👤 Login"}
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -419,7 +419,7 @@ export default function FarmLinkZim() {
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
             {activeTab === "prices" && <PriceFeedsTab />}
             {activeTab === "calendar" && <CalendarTab />}
-            {activeTab === "insights" && <InsightsTab />}
+            {activeTab === "insights" && <div style={{ background: "#0d1a0f", minHeight: "100vh", color: "#e8dfc8" }}><InsightsTab /></div>}
             {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
             {activeTab === "legal-tos" && <LegalTab page="tos" setActiveTab={setActiveTab} />}
             {activeTab === "legal-pp" && <LegalTab page="pp" setActiveTab={setActiveTab} />}
@@ -3075,6 +3075,8 @@ function InputSuppliersTab() {
 // ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
 function InsightsTab() {
   const [cropData, setCropData] = useState([]);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [livestockData, setLivestockData] = useState([]);
   const [loading, setLoading] = useState(true);
 
