@@ -559,7 +559,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
       {/* Backdrop */}
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 300 }} />
       {/* Panel */}
-      <div style={{ position: "fixed", right: 16, top: 70, width: "min(320px, calc(100vw - 32px))", background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 500, overflow: "hidden" }}>
+      <div style={{ position: "fixed", right: 0, left: 0, top: 70, margin: "0 16px", width: "auto", maxWidth: 400, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 500, overflow: "hidden" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #1f3525" }}>
           <div>
@@ -573,7 +573,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
           )}
         </div>
         {/* List */}
-        <div style={{ maxHeight: 420, overflowY: "auto" }}>
+        <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
           {notifications.length === 0 ? (
             <div style={{ padding: "32px 16px", textAlign: "center", color: "#3d6b4a", fontSize: 12 }}>No notifications yet</div>
           ) : notifications.map(n => (
@@ -1590,7 +1590,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
 // ─── ADVISORY TAB ──────────────────────────────────────────────────────────────
 function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping, chatEndRef }) {
   return (
-    <div className="fade-in chat-col">
+    <div className="fade-in single-col">
       <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #1f3525" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
