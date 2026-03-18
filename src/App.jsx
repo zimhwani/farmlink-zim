@@ -10,7 +10,7 @@ const auth = {
     // Pass shouldCreateUser and explicitly set no redirect URL to force OTP code mode
     const body = isEmail
       ? { email: identifier, options: { shouldCreateUser: true, emailRedirectTo: null } }
-      : { phone: identifier.replace(/\s/g, ""), options: { shouldCreateUser: true } };
+      : { phone: identifier.replace(/ /g, ""), options: { shouldCreateUser: true } };
     const res = await fetch(`${SUPABASE_URL}/auth/v1/otp`, {
       method: "POST",
       headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
@@ -25,7 +25,7 @@ const auth = {
       headers: { apikey: SUPABASE_KEY, "Content-Type": "application/json" },
       body: JSON.stringify({
         type: isEmail ? "email" : "sms",
-        [isEmail ? "email" : "phone"]: identifier.replace(/\s/g, ""),
+        [isEmail ? "email" : "phone"]: identifier.replace(/ /g, ""),
         token,
       }),
     });
@@ -921,6 +921,9 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
           ))}
         </div>
 
+        {/* Sponsored */}
+        <SponsorCard />
+
         {/* Pest Alerts */}
         <div className="section-title">🚨 Pest & Disease Alerts</div>
         {[{ name: "Fall Armyworm", risk: "High", regions: "Mash West, Mash Central", action: "Apply chlorpyrifos immediately" }, { name: "Stalk Borer", risk: "Medium", regions: "Midlands, Masvingo", action: "Monitor trap counts weekly" }, { name: "Tick Season", risk: "High", regions: "Matabeleland", action: "Dip cattle weekly with Triatix" }].map((p, i) => (
@@ -944,7 +947,8 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
   const filterMap = { "Grain": ["Maize", "Wheat", "Sorghum"], "Livestock": ["Cattle", "Goats", "Sheep", "Pigs", "Poultry"], "Horticulture": ["Tomatoes", "Vegetables", "Sweet Potatoes"], "Cash Crops": ["Tobacco", "Cotton", "Coffee", "Soya", "Sunflower", "Groundnuts"] };
   const [search, setSearch] = useState("");
   const [editingListing, setEditingListing] = useState(null);
-  const [myTab, setMyTab] = useState("all"); // 'all' | 'mine'
+  const [featuringListing, setFeaturingListing] = useState(null);
+  const [myTab, setMyTab] = useState("all");
 
   const myListings = authUser ? listings.filter(l =>
     l.auth_user_id === authUser.id ||
@@ -953,7 +957,17 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
 
   const filtered = (myTab === "mine" ? myListings : listings)
     .filter(l => filterCrop === "All" || (filterMap[filterCrop] || []).some(f => l.crop?.toLowerCase().includes(f.toLowerCase())))
-    .filter(l => !search || l.crop?.toLowerCase().includes(search.toLowerCase()) || l.location?.toLowerCase().includes(search.toLowerCase()) || l.farmer_name?.toLowerCase().includes(search.toLowerCase()));
+    .filter(l => !search || l.crop?.toLowerCase().includes(search.toLowerCase()) || l.location?.toLowerCase().includes(search.toLowerCase()) || l.farmer_name?.toLowerCase().includes(search.toLowerCase()))
+    // Featured listings appear first
+    .sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
+
+  const handleFeatureListing = async (weeks, ref, method) => {
+    const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
+    await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
+    await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
+    setFeaturingListing(null);
+    loadListings();
+  };
 
   const deleteListing = async (id) => {
     if (!window.confirm("Remove this listing?")) return;
@@ -1020,7 +1034,10 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                 <div style={{ fontSize: 15, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
-                <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, fontFamily: "'Space Mono', monospace", padding: "2px 7px", borderRadius: 10, flexShrink: 0 }}>{l.badge}</span>
+                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                  {l.is_featured && <span style={{ fontSize: 9, background: "rgba(212,160,23,0.2)", color: "#d4a017", border: "1px solid #d4a01740", padding: "2px 7px", borderRadius: 10, fontWeight: 700 }}>⭐ FEATURED</span>}
+                  <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, padding: "2px 7px", borderRadius: 10 }}>{l.badge}</span>
+                </div>
               </div>
               <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 6 }}>📍 {l.location}</div>
               {l.description && <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{l.description}</div>}
@@ -1032,13 +1049,20 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
                 <div style={{ display: "flex", gap: 6 }}>
                   {/* Edit/Delete for own listings */}
                   {authUser && (l.auth_user_id === authUser.id) && (<>
+                    {!l.is_featured && (
+                      <button onClick={e => { e.stopPropagation(); setFeaturingListing(l); }}
+                        style={{ background: "rgba(212,160,23,0.15)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#d4a017", fontSize: 11, cursor: "pointer" }}>⭐ Feature</button>
+                    )}
+                    {l.is_featured && (
+                      <span style={{ background: "rgba(212,160,23,0.2)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#d4a017", fontSize: 10 }}>⭐ Featured</span>
+                    )}
                     <button onClick={e => { e.stopPropagation(); setEditingListing(l); }}
-                      style={{ background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>✏️ Edit</button>
+                      style={{ background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>✏️</button>
                     <button onClick={e => { e.stopPropagation(); deleteListing(l.id); }}
                       style={{ background: "#2a1a1a", border: "1px solid #5a2020", borderRadius: 6, padding: "4px 8px", color: "#e07060", fontSize: 11, cursor: "pointer" }}>🗑</button>
                   </>)}
                   {l.phone && (
-                    <a href={`https://wa.me/${l.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
+                    <a href={`https://wa.me/${l.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
                       style={{ background: "#1a5c2a", border: "1px solid #25a244", borderRadius: 6, padding: "4px 8px", color: "#4cd964", fontSize: 11, textDecoration: "none", display: "flex", alignItems: "center", gap: 3 }}>
                       <span style={{ fontSize: 13 }}>💬</span> WA
@@ -1056,6 +1080,7 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
       </div>
       {/* Edit listing modal */}
       {editingListing && <EditListingModal listing={editingListing} onClose={() => setEditingListing(null)} onSave={async (updates) => { await db.patch("listings", editingListing.id, updates); setEditingListing(null); loadListings(); }} />}
+      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={handleFeatureListing} />}
     </div>
   );
 }
@@ -1072,7 +1097,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
     ...(l.image_url ? [l.image_url] : []),
   ].filter(Boolean);
 
-  const waNumber = l.phone ? l.phone.replace(/\D/g, '') : null;
+  const waNumber = l.phone ? l.phone.replace(/[^0-9]/g, '') : null;
   const waMsg = encodeURIComponent(`Hi ${l.farmer_name}, I saw your listing on FarmLink Zim for ${l.crop} (${l.quantity} at ${l.price}). I'm interested, please contact me.`);
 
   return (
@@ -2133,6 +2158,128 @@ function AddDiaryEntryModal({ onClose, onSave }) {
   );
 }
 
+// ─── SPONSOR CARD ──────────────────────────────────────────────────────────────
+function SponsorCard() {
+  const [sponsor, setSponsor] = useState(null);
+
+  useEffect(() => {
+    db.get("sponsors", "?active=eq.true&limit=1").then(data => {
+      if (Array.isArray(data) && data.length > 0) setSponsor(data[0]);
+    });
+  }, []);
+
+  if (!sponsor) return null;
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 9, color: "#3d6b4a", letterSpacing: "0.1em", marginBottom: 6, textAlign: "right" }}>SPONSORED</div>
+      <a href={sponsor.cta_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+        <div style={{ background: `linear-gradient(135deg, ${sponsor.color}18, #152218)`, border: `1px solid ${sponsor.color}40`, borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 44, height: 44, background: `${sponsor.color}25`, border: `1px solid ${sponsor.color}40`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
+            {sponsor.logo_emoji}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#c8e8d4", marginBottom: 2 }}>{sponsor.name}</div>
+            <div style={{ fontSize: 11, color: "#8aaa94", lineHeight: 1.4 }}>{sponsor.tagline}</div>
+          </div>
+          <div style={{ background: `${sponsor.color}30`, border: `1px solid ${sponsor.color}50`, borderRadius: 8, padding: "6px 10px", color: sponsor.color, fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
+            {sponsor.cta_text} →
+          </div>
+        </div>
+      </a>
+    </div>
+  );
+}
+
+// ─── FEATURE LISTING MODAL ─────────────────────────────────────────────────────
+function FeatureListingModal({ listing, onClose, onSave }) {
+  const [weeks, setWeeks] = useState(1);
+  const [method, setMethod] = useState("ecocash");
+  const [ref, setRef] = useState("");
+  const [saving, setSaving] = useState(false);
+  const price = weeks * 2;
+
+  const METHODS = [
+    { id: "ecocash", label: "EcoCash", icon: "📱", number: "*151*2*1*FARMLINK#" },
+    { id: "onemoney", label: "OneMoney", icon: "💳", number: "*111*FARMLINK#" },
+    { id: "bank", label: "Bank Transfer", icon: "🏦", number: "FBC: 1234567890" },
+  ];
+
+  const selected = METHODS.find(m => m.id === method);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>⭐ Feature This Listing</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
+        </div>
+
+        {/* Listing preview */}
+        <div style={{ background: "#1a2e1e", borderRadius: 10, padding: "10px 14px", marginBottom: 16, border: "1px solid #2d5a36" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{listing.crop}</div>
+          <div style={{ fontSize: 11, color: "#5c8f6b" }}>{listing.location} · {listing.price}</div>
+        </div>
+
+        {/* What you get */}
+        <div style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.3)", borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
+          <div style={{ fontSize: 11, color: "#d4a017", fontWeight: 700, marginBottom: 8 }}>WHAT YOU GET</div>
+          {["⭐ Featured badge on your listing", "📌 Pinned to top of marketplace", "👁 3x more visibility to buyers", "📱 Priority in search results"].map((b, i) => (
+            <div key={i} style={{ fontSize: 12, color: "#c8e8d4", marginBottom: 4 }}>{b}</div>
+          ))}
+        </div>
+
+        {/* Duration picker */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8, fontWeight: 600 }}>HOW LONG?</label>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            {[1, 2, 4].map(w => (
+              <button key={w} onClick={() => setWeeks(w)}
+                style={{ background: weeks === w ? "rgba(212,160,23,0.2)" : "#152218", border: `1px solid ${weeks === w ? "#d4a017" : "#1f3525"}`, borderRadius: 10, padding: "12px 8px", cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: weeks === w ? "#d4a017" : "#c8e8d4" }}>{w} {w === 1 ? "week" : "weeks"}</div>
+                <div style={{ fontSize: 12, color: weeks === w ? "#d4a017" : "#5c8f6b", marginTop: 2 }}>USD {w * 2}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Payment method */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8, fontWeight: 600 }}>PAYMENT METHOD</label>
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+            {METHODS.map(m => (
+              <button key={m.id} onClick={() => setMethod(m.id)}
+                style={{ flex: 1, background: method === m.id ? "#1a3d24" : "#152218", border: `1px solid ${method === m.id ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "8px", cursor: "pointer" }}>
+                <div style={{ fontSize: 18 }}>{m.icon}</div>
+                <div style={{ fontSize: 10, color: method === m.id ? "#7ec99a" : "#4a7a5a", marginTop: 3 }}>{m.label}</div>
+              </button>
+            ))}
+          </div>
+          <div style={{ background: "#1a2e1e", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#8aaa94" }}>
+            Pay <span style={{ color: "#7ec99a", fontWeight: 700 }}>USD {price}</span> to: <span style={{ color: "#c8e8d4" }}>{selected?.number}</span>
+            <div style={{ fontSize: 11, color: "#4a7a5a", marginTop: 4 }}>Reference: FEATURE-{listing.id?.slice(0, 8).toUpperCase()}</div>
+          </div>
+        </div>
+
+        {/* Payment reference */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 6, fontWeight: 600 }}>PAYMENT CONFIRMATION NUMBER</label>
+          <input className="input-field" value={ref} onChange={e => setRef(e.target.value)} placeholder="e.g. ECO1234567890" />
+          <div style={{ fontSize: 10, color: "#3d6b4a", marginTop: 4 }}>Enter the transaction ID from your payment confirmation SMS</div>
+        </div>
+
+        <button className="btn-primary" onClick={async () => { setSaving(true); await onSave(weeks, ref, method); setSaving(false); }}
+          disabled={saving || !ref.trim()} style={{ opacity: ref.trim() ? 1 : 0.4, background: "linear-gradient(135deg, #b8860b, #8b6914)" }}>
+          {saving ? "Activating..." : `Activate Featured Listing — USD ${price} ✓`}
+        </button>
+        <div style={{ fontSize: 10, color: "#3d6b4a", textAlign: "center", marginTop: 8 }}>
+          Your listing will be featured immediately after payment verification
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── LEGAL TAB ─────────────────────────────────────────────────────────────────
 const TOS_SECTIONS = [
   { title: "1. Introduction", content: "Welcome to FarmLink Zim. FarmLink Zim is an agricultural marketplace and advisory platform connecting farmers, buyers, and agricultural service providers across Zimbabwe.\n\nBy accessing or using the FarmLink Zim Platform, you agree to be bound by these Terms of Service. If you do not agree to these Terms, please do not use the Platform." },
@@ -2389,6 +2536,14 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
             </div>}
           </div>
           <button onClick={onLogout} className="btn-secondary" style={{ width: "100%", color: "#e07060", borderColor: "#5a2020" }}>Sign Out</button>
+          <div style={{ marginTop: 16, background: "linear-gradient(135deg, #1e2d18, #152218)", border: "1px solid #d4a017", borderRadius: 12, padding: 14 }}>
+            <div style={{ fontSize: 10, color: "#d4a017", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 6 }}>⭐ FARMLINK PREMIUM</div>
+            <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600, marginBottom: 4 }}>Upgrade for USD 5/month</div>
+            <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 10, lineHeight: 1.5 }}>✓ Verified badge on all listings · ✓ Unlimited listings (free: 2) · ✓ Priority placement · ✓ WhatsApp button</div>
+            <button onClick={() => { onClose(); }} style={{ width: "100%", background: "linear-gradient(135deg, #b8860b, #8b6914)", border: "none", borderRadius: 8, padding: "10px", color: "#fff8e8", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+              Upgrade to Premium →
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -2444,7 +2599,7 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
             </div>
 
             <div style={{ marginBottom: 16 }}>
-              <input className="input-field" value={otp} onChange={e => { setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
+              <input className="input-field" value={otp} onChange={e => { setOtp(e.target.value.replace(/[^0-9]/g, "").slice(0, 6)); setError(""); }}
                 placeholder="000000" maxLength={6} autoFocus
                 style={{ textAlign: "center", fontSize: 28, letterSpacing: "0.3em", fontFamily: "'Space Mono', monospace" }}
                 onKeyDown={e => e.key === "Enter" && handleVerify()} />
@@ -2720,7 +2875,7 @@ function InputSuppliersTab() {
                     </a>
                   )}
                   {s.whatsapp && (
-                    <a href={`https://wa.me/${s.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
+                    <a href={`https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer"
                       style={{ display: "flex", alignItems: "center", gap: 6, background: "#1a5c2a", border: "1px solid #25a244", borderRadius: 8, padding: "8px 14px", color: "#4cd964", textDecoration: "none", fontSize: 12, fontFamily: "'Space Mono', monospace" }}>
                       💬 WhatsApp
                     </a>
