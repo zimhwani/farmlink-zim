@@ -124,13 +124,6 @@ const CROP_EMOJIS = {
 
 // Zimbabwe map districts with approximate SVG path positions (lat/lng to rough x/y on Zimbabwe bounding box)
 // Zimbabwe bounds: lat -15.6 to -22.4, lng 25.2 to 33.1
-const maskName = (name) => {
-  if (!name) return name;
-  const parts = name.trim().split(" ");
-  if (parts.length === 1) return name;
-  return parts[0] + " " + parts.slice(1).map(p => "*".repeat(p.length)).join(" ");
-};
-
 function latLngToSVG(lat, lng, w = 340, h = 280) {
   const x = ((lng - 25.2) / (33.1 - 25.2)) * w;
   const y = ((lat - (-15.6)) / ((-22.4) - (-15.6))) * h;
@@ -316,9 +309,9 @@ export default function FarmLinkZim() {
     { id: "market", icon: "🛒", label: "Marketplace" },
     { id: "diary", icon: "📓", label: "Farm Diary" },
     { id: "advisory", icon: "🤖", label: "AI Advisor" },
-    { id: "insights", icon: "📊", label: "Insights" },
     { id: "prices", icon: "📈", label: "Price Feeds" },
     { id: "calendar", icon: "🗓️", label: "Planting Calendar" },
+    { id: "insights", icon: "📊", label: "Insights" },
     { id: "register", icon: "📍", label: "Register Farm" },
     { id: "admin", icon: "⚙️", label: "Admin" },
   ];
@@ -403,9 +396,9 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
+                <div onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
                   {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.name?.split(" ")[0] || "Profile"}</span></> : "👤 Login"}
-                </button>
+                </div>
               </div>
             </div>
           </div>
@@ -419,7 +412,7 @@ export default function FarmLinkZim() {
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
             {activeTab === "prices" && <PriceFeedsTab />}
             {activeTab === "calendar" && <CalendarTab />}
-            {activeTab === "insights" && <div style={{ background: "#0d1a0f", minHeight: "100vh", color: "#e8dfc8" }}><InsightsTab /></div>}
+            {activeTab === "insights" && <InsightsTab />}
             {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
             {activeTab === "legal-tos" && <LegalTab page="tos" setActiveTab={setActiveTab} />}
             {activeTab === "legal-pp" && <LegalTab page="pp" setActiveTab={setActiveTab} />}
@@ -504,7 +497,7 @@ function MobileNav({ TABS, activeTab, setActiveTab }) {
       {/* More drawer backdrop */}
       {showMore && (
         <div onClick={() => setShowMore(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 198, background: "rgba(0,0,0,0.5)" }} />
+          style={{ position: "fixed", inset: 0, zIndex: 98, background: "rgba(0,0,0,0.5)" }} />
       )}
 
       {/* More drawer */}
@@ -557,9 +550,9 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
   return (
     <>
       {/* Backdrop */}
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 300 }} />
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 150 }} />
       {/* Panel */}
-      <div style={{ position: "fixed", right: 0, left: 0, top: 70, margin: "0 16px", width: "auto", maxWidth: 400, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 500, overflow: "hidden" }}>
+      <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 200, overflow: "hidden" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #1f3525" }}>
           <div>
@@ -573,7 +566,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
           )}
         </div>
         {/* List */}
-        <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
+        <div style={{ maxHeight: 420, overflowY: "auto" }}>
           {notifications.length === 0 ? (
             <div style={{ padding: "32px 16px", textAlign: "center", color: "#3d6b4a", fontSize: 12 }}>No notifications yet</div>
           ) : notifications.map(n => (
@@ -795,7 +788,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   <div style={{ fontSize: 20 }}>👩🏾‍🌾</div>
                   <div>
-                    <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600 }}>{maskName(f.name)}</div>
+                    <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600 }}>{f.name}</div>
                     <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.ward}</div>
                   </div>
                 </div>
@@ -877,8 +870,8 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
             <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>Farmers</div>
             <div style={{ fontSize: 8, color: "#2d7a4f", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>TAP MAP ↗</div>
           </div>
-          {[{ label: "Listings", value: listingCount, icon: "🛒", tab: "market" }, { label: "Districts", value: "60+", icon: "📍", tab: "register" }].map(s => (
-            <div key={s.label} onClick={() => setActiveTab(s.tab)} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>
+          {[{ label: "Listings", value: listingCount, icon: "🛒" }, { label: "Districts", value: "60+", icon: "📍" }].map(s => (
+            <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
               <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#7ec99a", fontWeight: 700 }}>{s.value}</div>
               <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>{s.label}</div>
@@ -987,15 +980,6 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
     .filter(l => !search || l.crop?.toLowerCase().includes(search.toLowerCase()) || l.location?.toLowerCase().includes(search.toLowerCase()) || l.farmer_name?.toLowerCase().includes(search.toLowerCase()))
     // Featured listings appear first
     .sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
-
-  const handleFeatureListing = async (weeks, ref, method) => {
-    if (!featuringListing) return;
-    const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
-    await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
-    await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
-    setFeaturingListing(null);
-    loadListings();
-  };
 
   const deleteListing = async (id) => {
     if (!window.confirm("Remove this listing?")) return;
@@ -1108,7 +1092,13 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
       </div>
       {/* Edit listing modal */}
       {editingListing && <EditListingModal listing={editingListing} onClose={() => setEditingListing(null)} onSave={async (updates) => { await db.patch("listings", editingListing.id, updates); setEditingListing(null); loadListings(); }} />}
-      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={handleFeatureListing} />}
+      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={async (weeks, ref, method) => {
+        const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
+        await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
+        await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
+        setFeaturingListing(null);
+        loadListings();
+      }} />
     </div>
   );
 }
@@ -1126,7 +1116,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
   ].filter(Boolean);
 
   const waNumber = l.phone ? l.phone.replace(/\D/g, '') : null;
-  const waMsg = encodeURIComponent(`Hi ${maskName(l.farmer_name)}, I saw your listing on FarmLink Zim for ${l.crop} (${l.quantity} at ${l.price}). I'm interested, please contact me.`);
+  const waMsg = encodeURIComponent(`Hi ${l.farmer_name}, I saw your listing on FarmLink Zim for ${l.crop} (${l.quantity} at ${l.price}). I'm interested, please contact me.`);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -1186,7 +1176,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
             <div>
               <div style={{ fontSize: 22, fontWeight: 700, color: "#c8e8d4" }}>{l.crop}</div>
-              <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>👩🏾‍🌾 {maskName(l.farmer_name)} · 📍 {l.location}</div>
+              <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>👩🏾‍🌾 {l.farmer_name} · 📍 {l.location}</div>
             </div>
             <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer", flexShrink: 0 }}>✕</button>
           </div>
@@ -1590,7 +1580,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
 // ─── ADVISORY TAB ──────────────────────────────────────────────────────────────
 function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping, chatEndRef }) {
   return (
-    <div className="fade-in single-col">
+    <div className="fade-in chat-col">
       <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #1f3525" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
@@ -2560,7 +2550,7 @@ function AdminTab({ farmers, listings }) {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
               <div style={{ fontSize: 22 }}>👩🏾‍🌾</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, color: "#c8e8d4" }}>{maskName(f.name)}</div>
+                <div style={{ fontSize: 13, color: "#c8e8d4" }}>{f.name}</div>
                 <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{f.district}, {f.province}</div>
               </div>
               {f.phone && <div style={{ fontSize: 11, color: "#5c8f6b" }}>{f.phone}</div>}
@@ -2805,8 +2795,6 @@ function AuthModal({ onClose, authUser, onAuth, onLogout, setActiveTab }) {
 // ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
 function InsightsTab() {
   const [cropData, setCropData] = useState([]);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   const [livestockData, setLivestockData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -3041,5 +3029,3 @@ function InsightsTab() {
     </div>
   );
 }
-}
- 
