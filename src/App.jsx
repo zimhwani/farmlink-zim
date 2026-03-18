@@ -559,7 +559,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
       {/* Backdrop */}
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 300 }} />
       {/* Panel */}
-      <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 200, overflow: "hidden" }}>
+      <div style={{ position: "fixed", right: 16, top: 70, width: "min(320px, calc(100vw - 32px))", background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 500, overflow: "hidden" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #1f3525" }}>
           <div>
