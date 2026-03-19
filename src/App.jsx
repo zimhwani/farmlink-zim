@@ -342,6 +342,7 @@ export default function FarmLinkZim() {
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#5cd68a" }} className="pulse" />
               <span style={{ fontSize: 11, color: "#5c8f6b" }}>Live · Farmlink connected</span>
             </div>
+            <div style={{ fontSize: 10, color: "#2d5236", marginTop: 8 }}>{"© "}{new Date().getFullYear()}{" FarmLink Zim. All rights reserved."}</div>
           </div>
         </div>
 
