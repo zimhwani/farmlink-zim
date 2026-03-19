@@ -390,7 +390,7 @@ export default function FarmLinkZim() {
 
           {/* Page content */}
           <div className="page-content">
-            {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} />}
+            {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} authUser={authUser} />}
             {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} />}
             {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
@@ -799,7 +799,25 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
   );
 }
 // ─── HOME TAB ──────────────────────────────────────────────────────────────────
-function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherIcon, onFarmerMapClick }) {
+
+const getGreeting = (name) => {
+  const hour = new Date().getHours();
+  const firstName = name ? name.split(" ")[0] : null;
+  const greetings = [
+    { morning: "Mangwanani", afternoon: "Masikati", evening: "Manheru" },
+    { morning: "Livukile", afternoon: "Lisaile", evening: "Lihle" },
+    { morning: "Good morning", afternoon: "Good afternoon", evening: "Good evening" },
+    { morning: "Ndeipi", afternoon: "Ndeipi", evening: "Ndeipi" },
+    { morning: "Howzit", afternoon: "Howzit", evening: "Howzit" },
+    { morning: "Wakadii", afternoon: "Wakadii", evening: "Wakadii" },
+  ];
+  const idx = Math.floor(Date.now() / 30000) % greetings.length;
+  const g = greetings[idx];
+  const timeGreet = hour < 12 ? g.morning : hour < 17 ? g.afternoon : g.evening;
+  return firstName ? timeGreet + ", " + firstName : timeGreet;
+};
+
+function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherIcon, onFarmerMapClick, authUser }) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   return (
     <div className="fade-in two-col">
@@ -921,6 +939,15 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
 
   return (
     <div className="fade-in single-col">
+      {authUser && (
+        <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ fontSize: 32 }}>{"👩🏾‍🌾"}</div>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>{getGreeting(authUser.email || authUser.phone)}</div>
+            <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>Welcome to your farm dashboard</div>
+          </div>
+        </div>
+      )}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Marketplace</div>
