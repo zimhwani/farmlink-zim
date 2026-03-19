@@ -821,6 +821,15 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   return (
     <div className="fade-in two-col">
+      {authUser && (
+        <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, gridColumn: "1 / -1" }}>
+          <div style={{ fontSize: 32 }}>{"👩🏾‍🌾"}</div>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>{getGreeting(authUser.email || authUser.phone)}</div>
+            <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>Welcome to your farm dashboard</div>
+          </div>
+        </div>
+      )}
       {/* LEFT COLUMN */}
       <div style={{ padding: "20px 16px" }}>
         {/* Hero */}
@@ -939,15 +948,6 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
 
   return (
     <div className="fade-in single-col">
-      {authUser && (
-        <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ fontSize: 32 }}>{"👩🏾‍🌾"}</div>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>{getGreeting(authUser.email || authUser.phone)}</div>
-            <div style={{ fontSize: 12, color: "#5c8f6b", marginTop: 2 }}>Welcome to your farm dashboard</div>
-          </div>
-        </div>
-      )}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Marketplace</div>
