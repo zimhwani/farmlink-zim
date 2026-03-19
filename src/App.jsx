@@ -802,7 +802,16 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
 
 const getGreeting = (name) => {
   const hour = new Date().getHours();
-  const firstName = name ? name.split(" ")[0] : null;
+  // Extract first name from email (before @) or phone, capitalise it
+  let firstName = null;
+  if (name) {
+    if (name.includes("@")) {
+      firstName = name.split("@")[0].split(".")[0];
+      firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+    } else {
+      firstName = name.split(" ")[0];
+    }
+  }
   const greetings = [
     { morning: "Mangwanani", afternoon: "Masikati", evening: "Manheru" },
     { morning: "Livukile", afternoon: "Lisaile", evening: "Lihle" },
