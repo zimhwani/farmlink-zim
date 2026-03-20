@@ -323,12 +323,12 @@ export default function FarmLinkZim() {
         {/* ── DESKTOP SIDEBAR ── */}
         <div className="sidebar">
           {/* Logo */}
-          <div style={{ padding: "0 20px 24px", borderBottom: "1px solid #1f3525" }}>
+          <div style={{ padding: "0 20px 24px", borderBottom: "none" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
               <div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
-                <div style={{ fontSize: 8, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
+                <div style={{ fontSize: 8, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>GROW · SELL · THRIVE</div>
               </div>
             </div>
           </div>
@@ -373,7 +373,7 @@ export default function FarmLinkZim() {
                 <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#c8e8d4" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
-                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>GROW · SELL · THRIVE</div>
                 </div>
               </div>
               {/* Desktop spacer */}
@@ -556,7 +556,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
       {/* Panel */}
       <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 200, overflow: "hidden" }}>
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #1f3525" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "none" }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: "#c8e8d4" }}>Notifications</div>
             {unreadCount > 0 && <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginTop: 2 }}>{unreadCount} UNREAD</div>}
@@ -1620,7 +1620,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
 function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping, chatEndRef }) {
   return (
     <div className="fade-in chat-col">
-      <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #1f3525" }}>
+      <div style={{ padding: "16px 16px 12px", borderBottom: "none" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
           <div>
@@ -2704,7 +2704,7 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
             </div>
 
             {/* Tabs */}
-            <div style={{ display: "flex", borderBottom: "1px solid #1f3525" }}>
+            <div style={{ display: "flex", borderBottom: "none" }}>
               {[["overview", "Overview"], ["listings", "Listings"], ["diary", "Diary"], ["farm", "Farm"]].map(([id, label]) => (
                 <button key={id} onClick={() => { setProfileTab(id); if (id !== "overview") loadProfileData(); }}
                   style={{ flex: 1, background: "none", border: "none", borderBottom: profileTab === id ? "2px solid #7ec99a" : "2px solid transparent", padding: "10px 4px", color: profileTab === id ? "#7ec99a" : "#4a7a5a", fontSize: 11, cursor: "pointer", fontWeight: profileTab === id ? 600 : 400 }}>
