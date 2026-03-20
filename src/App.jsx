@@ -2455,7 +2455,7 @@ const TOS_SECTIONS = [
   { title: "10. Limitation of Liability", content: "To the maximum extent permitted by Zimbabwean law, FarmLink Zim shall not be liable for indirect or consequential damages, losses from transactions between users, inaccuracies in market data or AI content, or Platform unavailability. Our total liability shall not exceed amounts paid to us in the preceding 12 months." },
   { title: "11. Governing Law", content: "These Terms shall be governed by the laws of Zimbabwe. Any disputes shall be subject to the exclusive jurisdiction of the courts of Zimbabwe." },
   { title: "12. Changes to These Terms", content: "We reserve the right to update these Terms at any time. We will notify registered users of material changes via email or in-app notification. Continued use of the Platform following notification constitutes acceptance of the updated Terms." },
-  { title: "13. Contact Us", content: "For questions about these Terms, contact us at:\n\nFarmLink Zim\nEmail: legal@farmlinkzim.com\nPlatform: farmlink-zim-vm8p.vercel.app\nZimbabwe" },
+  { title: "13. Contact Us", content: "For questions about these Terms, contact us at:\n\nFarmLink Zim\nEmail: legal@farmlinkzim.com\nPlatform: farminglink.app\nZimbabwe" },
 ];
 
 const PP_SECTIONS = [
@@ -2470,7 +2470,7 @@ const PP_SECTIONS = [
   { title: "9. Cookies and Storage", content: "The Platform uses browser local storage to maintain your login session and user preferences. We do not use advertising or tracking cookies. You may clear your browser storage at any time, which will log you out." },
   { title: "10. International Data Transfers", content: "Your data may be processed on servers outside Zimbabwe (including the EU via Supabase). We ensure appropriate safeguards are in place for such transfers in accordance with applicable data protection laws." },
   { title: "11. Changes to This Policy", content: "We may update this Privacy Policy from time to time. We will notify you of significant changes via email or in-app notification. The updated policy will be effective from the date shown at the top." },
-  { title: "12. Contact Us", content: "For privacy questions or to exercise your data rights:\n\nFarmLink Zim — Data Controller\nEmail: legal@farmlinkzim.com\nPlatform: farmlink-zim-vm8p.vercel.app\nZimbabwe\n\nYou also have the right to lodge a complaint with POTRAZ if you believe your data protection rights have been violated." },
+  { title: "12. Contact Us", content: "For privacy questions or to exercise your data rights:\n\nFarmLink Zim — Data Controller\nEmail: legal@farmlinkzim.com\nPlatform: farminglink.app\nZimbabwe\n\nYou also have the right to lodge a complaint with POTRAZ if you believe your data protection rights have been violated." },
 ];
 
 function LegalTab({ page, setActiveTab }) {
