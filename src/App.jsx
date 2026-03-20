@@ -352,7 +352,7 @@ export default function FarmLinkZim() {
             </div>
             <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 6 }}>{"© "}{new Date().getFullYear()}{" FarmLink Zim. All rights reserved."}
             </div>
-            <div style={{ borderTop: "1px solid #E8E0D4", paddingTop: 10 }}>
+            <div style={{ borderTop: "1px solid #1f3525", paddingTop: 10 }}>
               <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
                 <button onClick={() => setActiveTab("legal-tos")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Terms of Service</button>
                 <button onClick={() => setActiveTab("legal-pp")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Privacy Policy</button>
@@ -573,7 +573,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
             <div style={{ padding: "32px 16px", textAlign: "center", color: "#5c8f6b", fontSize: 12 }}>No notifications yet</div>
           ) : notifications.map(n => (
             <div key={n.id} onClick={() => onMarkRead(n.id)}
-              style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: "1px solid #E8E0D4", background: n.read ? "transparent" : "rgba(45,122,79,0.06)", cursor: "pointer", transition: "background 0.2s" }}
+              style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: "1px solid #1f3525", background: n.read ? "transparent" : "rgba(45,122,79,0.06)", cursor: "pointer", transition: "background 0.2s" }}
               onMouseOver={e => e.currentTarget.style.background = "rgba(45,122,79,0.12)"}
               onMouseOut={e => e.currentTarget.style.background = n.read ? "transparent" : "rgba(45,122,79,0.06)"}>
               {/* Icon */}
@@ -786,7 +786,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
               </div>
             </div>
             {selectedDistrict.farmers.map((f, i) => (
-              <div key={i} style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid #E8E0D4" : "none" }}>
+              <div key={i} style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid #1f3525" : "none" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   <div style={{ fontSize: 20 }}>👩🏾‍🌾</div>
                   <div>
@@ -1499,7 +1499,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
 
             {/* Per-crop hectares and stage */}
             {selectedCrops.length > 0 && (
-              <div style={{ borderTop: "1px solid #E8E0D4", paddingTop: 12 }}>
+              <div style={{ borderTop: "1px solid #1f3525", paddingTop: 12 }}>
                 <div style={{ fontSize: 10, color: "#3a9962", fontWeight: 600, marginBottom: 10 }}>CROP DETAILS</div>
                 {selectedCrops.map(crop => (
                   <div key={crop} style={{ background: "#0f2218", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
@@ -1537,7 +1537,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
 
             {/* Per-livestock head count and stage */}
             {selectedLivestock.length > 0 && (
-              <div style={{ borderTop: "1px solid #E8E0D4", paddingTop: 12 }}>
+              <div style={{ borderTop: "1px solid #1f3525", paddingTop: 12 }}>
                 <div style={{ fontSize: 10, color: "#3a9962", fontWeight: 600, marginBottom: 10 }}>LIVESTOCK DETAILS</div>
                 {selectedLivestock.map(animal => (
                   <div key={animal} style={{ background: "#0f2218", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
@@ -1631,7 +1631,7 @@ function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping
           </div>
         </div>
       </div>
-      <div style={{ padding: "10px 16px", borderBottom: "1px solid #E8E0D4" }}>
+      <div style={{ padding: "10px 16px", borderBottom: "1px solid #1f3525" }}>
         <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 }}>
           {CHAT_STARTERS.map((s, i) => <span key={i} className="chip" style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", flexShrink: 0 }} onClick={() => sendChat(s)}>{s}</span>)}
         </div>
@@ -1824,7 +1824,7 @@ function CalendarTab() {
           })}
 
           {/* Legend */}
-          <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #E8E0D4" }}>
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #1f3525" }}>
             <div style={{ fontSize: 10, color: "#5c8f6b", marginBottom: 8, fontWeight: 600 }}>CROPS</div>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
               {[["🌱", "rgba(45,122,79,0.4)", "Plant"], ["🧪", "rgba(90,143,200,0.3)", "Fertilise"], ["🌾", "rgba(212,160,23,0.5)", "Harvest"]].map(([icon, bg, label]) => (
@@ -2035,14 +2035,14 @@ function PriceFeedsTab() {
       {/* Full price table */}
       <div className="card">
         {/* Header */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "8px 0 12px", borderBottom: "1px solid #E8E0D4", marginBottom: 4 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "8px 0 12px", borderBottom: "1px solid #1f3525", marginBottom: 4 }}>
           {["COMMODITY", "PRICE", "SOURCE", "CHANGE"].map(h => (
             <div key={h} style={{ fontSize: 9, color: "#5c8f6b", fontWeight: 600, letterSpacing: "0.1em" }}>{h}</div>
           ))}
         </div>
         {loading ? [1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: 44, borderRadius: 8, marginBottom: 6 }} />) :
           filtered.map((p, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "12px 0", borderBottom: i < filtered.length - 1 ? "1px solid #E8E0D4" : "none", alignItems: "center" }}>
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "12px 0", borderBottom: i < filtered.length - 1 ? "1px solid #1f3525" : "none", alignItems: "center" }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{p.crop}</div>
               <div>
                 <div style={{ fontSize: 13, color: "#2d7a4f", fontWeight: 700 }}>USD {p.price_usd}</div>
@@ -2511,7 +2511,7 @@ function LegalTab({ page, setActiveTab }) {
             <span style={{ fontSize: 16, color: "#8aaa94", flexShrink: 0, marginLeft: 8 }}>{expanded === i ? "−" : "+"}</span>
           </button>
           {expanded === i && (
-            <div style={{ padding: "0 16px 16px", borderTop: "1px solid #E8E0D4" }}>
+            <div style={{ padding: "0 16px 16px", borderTop: "1px solid #1f3525" }}>
               {s.content.split("\n\n").map((para, j) => (
                 <p key={j} style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.7, marginTop: 12, marginBottom: 0 }}>{para}</p>
               ))}
@@ -2586,7 +2586,7 @@ function AdminTab({ farmers, listings }) {
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="section-title">Recent Farmer Registrations</div>
         {farmers.slice(0, 5).map((f, i) => (
-          <div key={i} style={{ padding: "8px 0", borderTop: i > 0 ? "1px solid #E8E0D4" : "none" }}>
+          <div key={i} style={{ padding: "8px 0", borderTop: i > 0 ? "1px solid #1f3525" : "none" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
               <div style={{ fontSize: 22 }}>👩🏾‍🌾</div>
               <div style={{ flex: 1 }}>
@@ -2615,7 +2615,7 @@ function AdminTab({ farmers, listings }) {
         {loadingMsgs ? <div className="skeleton" style={{ height: 60, borderRadius: 8 }} /> :
           messages.length === 0 ? <div style={{ fontSize: 12, color: "#8aaa94", textAlign: "center", padding: "12px 0" }}>No messages yet</div> :
           messages.slice(0, 5).map((m, i) => (
-            <div key={i} style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid #E8E0D4" : "none" }}>
+            <div key={i} style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid #1f3525" : "none" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{m.sender_name}</div>
                 {m.sender_phone && <div style={{ fontSize: 11, color: "#3a9962" }}>{m.sender_phone}</div>}
@@ -2805,7 +2805,7 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
                 ) : myDiary.map((e, i) => {
                   const type = ACTIVITY_TYPES.find(a => a.id === e.activity_type) || ACTIVITY_TYPES[7];
                   return (
-                    <div key={i} style={{ display: "flex", gap: 10, padding: "10px 0", borderBottom: i < myDiary.length - 1 ? "1px solid #E8E0D4" : "none" }}>
+                    <div key={i} style={{ display: "flex", gap: 10, padding: "10px 0", borderBottom: i < myDiary.length - 1 ? "1px solid #1f3525" : "none" }}>
                       <div style={{ width: 34, height: 34, background: type.color + "20", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{type.icon}</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 12, fontWeight: 600, color: "#e8dfc8" }}>{type.label}{e.crop_name ? " — " + e.crop_name : ""}</div>
@@ -2998,7 +2998,7 @@ function InsightsTab() {
               </svg>
 
               {/* Donut chart */}
-              <div style={{ marginTop: 16, borderTop: "1px solid #E8E0D4", paddingTop: 16 }}>
+              <div style={{ marginTop: 16, borderTop: "1px solid #1f3525", paddingTop: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
                   <svg viewBox="0 0 100 100" style={{ width: 100, height: 100, flexShrink: 0 }}>
                     {(() => {
@@ -3078,7 +3078,7 @@ function InsightsTab() {
       )}
 
       {/* AI forecast */}
-      <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #D4C8A0", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
+      <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #2d5a36", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
         <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
           <div style={{ fontSize: 28 }}>🛰️</div>
           <div>
@@ -3093,7 +3093,7 @@ function InsightsTab() {
                 { icon: "💧", label: "Soil Moisture", value: "Above normal", status: "positive", note: "NASA FLDAS data" },
                 { icon: "🌊", label: "La Niña", value: "Active", status: "positive", note: "Through mid-2026" },
               ].map((item, i) => (
-                <div key={i} style={{ background: "#152218", borderRadius: 8, padding: "8px 10px", border: "1px solid #E8E0D4" }}>
+                <div key={i} style={{ background: "#152218", borderRadius: 8, padding: "8px 10px", border: "1px solid #1f3525" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
                     <span style={{ fontSize: 14 }}>{item.icon}</span>
                     <span style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b" }}>{item.label.toUpperCase()}</span>
@@ -3115,7 +3115,7 @@ function InsightsTab() {
         <div className="section-title">2025/26 Regional Yield Forecast</div>
         <div style={{ fontSize: 11, color: "#5c8f6b", fontFamily: "'Space Mono', monospace", marginBottom: 12 }}>SOURCE: GEOGLAM · FEWS NET · NASA FLDAS · La Niña analog years</div>
         {yieldData.map((d, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < yieldData.length - 1 ? "1px solid #E8E0D4" : "none" }}>
+          <div key={i} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < yieldData.length - 1 ? "1px solid #1f3525" : "none" }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
                 <div style={{ fontSize: 13, fontWeight: 500, color: "#e8dfc8" }}>{d.region}</div>
