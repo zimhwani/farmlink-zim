@@ -328,7 +328,7 @@ export default function FarmLinkZim() {
               <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
               <div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
-                <div style={{ fontSize: 8, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>FARMERS · BUYERS · MARKETS</div>
+                <div style={{ fontSize: 8, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
               </div>
             </div>
           </div>
@@ -373,7 +373,7 @@ export default function FarmLinkZim() {
                 <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#c8e8d4" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
-                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>FARMERS · BUYERS · MARKETS</div>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
                 </div>
               </div>
               {/* Desktop spacer */}
@@ -648,7 +648,7 @@ function CropHectareRow({ crop, onUpdate }) {
           <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 8px", color: "#4a7a5a", fontSize: 9, cursor: "pointer" }}>edit</button>
         ) : (
           <div style={{ display: "flex", gap: 4 }}>
-            <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 10px", color: "#c8e8d4", fontSize: 10, cursor: "pointer" }}>{saving ? "..." : "✓"}</button>
+            <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 10px", color: "#e8dfc8", fontSize: 10, cursor: "pointer" }}>{saving ? "..." : "✓"}</button>
             <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer" }}>✕</button>
           </div>
         )}
@@ -659,13 +659,13 @@ function CropHectareRow({ crop, onUpdate }) {
           <div>
             <label style={{ fontSize: 9, color: "#4a7a5a", display: "block", marginBottom: 3 }}>{isLivestock ? "HEAD COUNT" : "HECTARES"}</label>
             <input type="number" value={value} onChange={e => setValue(e.target.value)} placeholder={placeholder}
-              style={{ width: "100%", background: "#152218", border: "1px solid #4aad72", borderRadius: 6, padding: "4px 8px", color: "#c8e8d4", fontSize: 11, outline: "none" }}
+              style={{ width: "100%", background: "#1a2e1e", border: "1px solid #4aad72", borderRadius: 6, padding: "4px 8px", color: "#e8dfc8", fontSize: 11, outline: "none" }}
               autoFocus onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }} />
           </div>
           <div>
             <label style={{ fontSize: 9, color: "#4a7a5a", display: "block", marginBottom: 3 }}>CURRENT STAGE</label>
             <select value={stage} onChange={e => setStage(e.target.value)}
-              style={{ width: "100%", background: "#152218", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 6px", color: "#c8e8d4", fontSize: 11, outline: "none" }}>
+              style={{ width: "100%", background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 6px", color: "#e8dfc8", fontSize: 11, outline: "none" }}>
               <option value="">Select stage</option>
               {stages.map(s => <option key={s} value={s}>{stageLabels[s]}</option>)}
             </select>
@@ -756,7 +756,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
                 <g key={i} onClick={() => setSelectedDistrict(isSelected ? null : d)} style={{ cursor: "pointer" }}>
                   <circle cx={d.x} cy={d.y} r={r + 10} fill="#7ec99a" opacity="0.12"/>
                   <circle cx={d.x} cy={d.y} r={r} fill={isSelected ? "#5cd68a" : "#2d7a4f"} stroke={isSelected ? "#c8e8d4" : "#7ec99a"} strokeWidth="2"/>
-                  <text x={d.x} y={d.y + 1} textAnchor="middle" dominantBaseline="middle" fill="#c8e8d4" fontSize="12" fontWeight="bold" fontFamily="monospace" style={{ pointerEvents: "none" }}>{d.count}</text>
+                  <text x={d.x} y={d.y + 1} textAnchor="middle" dominantBaseline="middle" fill="#e8dfc8" fontSize="12" fontWeight="bold" fontFamily="monospace" style={{ pointerEvents: "none" }}>{d.count}</text>
                 </g>
               );
             })}
@@ -875,7 +875,7 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
   return (
     <div className="fade-in two-col">
       {authUser && (
-        <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 4, display: "flex", alignItems: "center", gap: 12, gridColumn: "1 / -1" }}>
+        <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 4, display: "flex", alignItems: "center", gap: 12, gridColumn: "1 / -1" }}>
           <div style={{ fontSize: 32 }}>{"👩🏾‍🌾"}</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>{getGreeting(authUser.email || authUser.phone)}</div>
@@ -941,10 +941,10 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
               const date = new Date(t);
               const label = i === 0 ? "Today" : days[date.getDay()];
               return (
-                <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#2d7a4f", background: "#152218" } : {}}>
+                <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#2d7a4f", background: "#1a2e1e" } : {}}>
                   <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>{label}</div>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{getWeatherIcon(weather.weathercode[i])}</div>
-                  <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#c8e8d4" }}>{Math.round(weather.temperature_2m_max[i])}°</div>
+                  <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#e8dfc8" }}>{Math.round(weather.temperature_2m_max[i])}°</div>
                   <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>{Math.round(weather.temperature_2m_min[i])}°</div>
                   <div style={{ fontSize: 9, color: "#5a9fd4", marginTop: 4 }}>{weather.precipitation_probability_max[i]}%</div>
                 </div>
@@ -952,7 +952,7 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
             }) : [1,2,3,4,5,6].map(i => <div key={i} className="skeleton weather-day" style={{ height: 80 }} />)}
           </div>
           {weather && weather.precipitation_probability_max[0] > 60 && (
-            <div style={{ marginTop: 10, background: "#152218", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#8aaa94", borderLeft: "3px solid #2d7a4f" }}>
+            <div style={{ marginTop: 10, background: "#1a2e1e", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#8aaa94", borderLeft: "3px solid #2d7a4f" }}>
               ⚠️ High rain probability today. Consider delaying fertiliser application.
             </div>
           )}
@@ -1084,7 +1084,7 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
                   style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 8, marginBottom: 10 }}
                 />
               ) : (
-                <div style={{ width: "100%", height: 100, background: "#152218", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 10 }}>
+                <div style={{ width: "100%", height: 100, background: "#1a2e1e", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 10 }}>
                   {CROP_EMOJIS[l.crop] || l.img || "🌾"}
                 </div>
               )}
@@ -1114,7 +1114,7 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
                       <span style={{ background: "rgba(212,160,23,0.2)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#d4a017", fontSize: 10 }}>⭐ Featured</span>
                     )}
                     <button onClick={e => { e.stopPropagation(); setEditingListing(l); }}
-                      style={{ background: "#152218", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>✏️</button>
+                      style={{ background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>✏️</button>
                     <button onClick={e => { e.stopPropagation(); deleteListing(l.id); }}
                       style={{ background: "#2a1a1a", border: "1px solid #5a2020", borderRadius: 6, padding: "4px 8px", color: "#e07060", fontSize: 11, cursor: "pointer" }}>🗑</button>
                   </>)}
@@ -1256,7 +1256,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
               </a>
             )}
             {/* In-app message */}
-            <button onClick={onContact} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "14px", color: "#c8e8d4", fontFamily: "'Space Mono', monospace", fontSize: 13, cursor: "pointer" }}>
+            <button onClick={onContact} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "14px", color: "#e8dfc8", fontFamily: "'Space Mono', monospace", fontSize: 13, cursor: "pointer" }}>
               <span style={{ fontSize: 18 }}>✉️</span> Send In-App Message
             </button>
           </div>
@@ -1322,13 +1322,13 @@ function ListingModal({ onClose, onSave }) {
             {mediaPreviews.map((p, i) => (
               <div key={i} style={{ position: "relative", width: 72, height: 72, borderRadius: 8, overflow: "hidden", flexShrink: 0 }}>
                 {p.type.startsWith("video/")
-                  ? <div style={{ width: "100%", height: "100%", background: "#152218", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎥</div>
+                  ? <div style={{ width: "100%", height: "100%", background: "#1a2e1e", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎥</div>
                   : <img src={p.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 }
                 <button onClick={() => removeMedia(i)} style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.7)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
               </div>
             ))}
-            <label style={{ width: 72, height: 72, background: "#152218", border: "2px dashed #2d5a36", borderRadius: 8, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+            <label style={{ width: 72, height: 72, background: "#1a2e1e", border: "2px dashed #2d5a36", borderRadius: 8, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
               <input type="file" accept="image/*,video/*" multiple onChange={handleMedia} style={{ display: "none" }} />
               <div style={{ fontSize: 22 }}>📷</div>
               <div style={{ fontSize: 9, color: "#4a7a5a", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>ADD</div>
@@ -1381,7 +1381,7 @@ function ContactModal({ listing, onClose, onSend }) {
         </div>
         {sent ? <div style={{ textAlign: "center", padding: "24px 0" }}><div style={{ fontSize: 40, marginBottom: 12 }}>✅</div><div style={{ fontSize: 16, color: "#7ec99a", fontWeight: 600 }}>Message Sent!</div></div> : (
           <>
-            <div style={{ background: "#152218", borderRadius: 10, padding: "10px 12px", marginBottom: 16, fontSize: 13, color: "#8aaa94" }}>
+            <div style={{ background: "#1a2e1e", borderRadius: 10, padding: "10px 12px", marginBottom: 16, fontSize: 13, color: "#8aaa94" }}>
               <strong style={{ color: "#c8e8d4" }}>{listing.crop}</strong> · {listing.quantity} · {listing.price}
             </div>
             {[["YOUR NAME", name, setName, "Full name", "text"], ["PHONE", phone, setPhone, "+263 77X XXX XXX", "tel"]].map(([l, v, s, p, t]) => (
@@ -1502,7 +1502,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
               <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 12 }}>
                 <div style={{ fontSize: 10, color: "#5c8f6b", fontWeight: 600, marginBottom: 10 }}>CROP DETAILS</div>
                 {selectedCrops.map(crop => (
-                  <div key={crop} style={{ background: "#152218", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                  <div key={crop} style={{ background: "#1a2e1e", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4", marginBottom: 10 }}>🌾 {crop}</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
                       <div>
@@ -1540,7 +1540,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
               <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 12 }}>
                 <div style={{ fontSize: 10, color: "#5c8f6b", fontWeight: 600, marginBottom: 10 }}>LIVESTOCK DETAILS</div>
                 {selectedLivestock.map(animal => (
-                  <div key={animal} style={{ background: "#152218", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                  <div key={animal} style={{ background: "#1a2e1e", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4", marginBottom: 10 }}>🐄 {animal}</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div>
@@ -1639,7 +1639,7 @@ function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping
       <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: 12 }}>
         {chatMessages.map((m, i) => (
           <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-            <div className={m.role === "ai" ? "chat-bubble-ai" : "chat-bubble-user"} style={{ color: "#c8e8d4" }}>{m.text}</div>
+            <div className={m.role === "ai" ? "chat-bubble-ai" : "chat-bubble-user"} style={{ color: "#e8dfc8" }}>{m.text}</div>
           </div>
         ))}
         {isTyping && (
@@ -1745,7 +1745,7 @@ function CalendarTab() {
       <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>AGRITEX seasonal guide · Zimbabwe 2025/26</div>
 
       {/* This month banner */}
-      <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #2d7a4f", borderRadius: 14, padding: 16, marginBottom: 20 }}>
+      <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 14, padding: 16, marginBottom: 20 }}>
         <div style={{ fontSize: 10, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, color: "#5cd68a", marginBottom: 8, letterSpacing: "0.1em" }}>
           🗓️ {MONTHS[currentMonth - 1].toUpperCase()} — WHAT TO DO NOW
         </div>
@@ -1907,7 +1907,7 @@ function CalendarTab() {
               </div>
             )}
             {selectedCrop.notes && (
-              <div style={{ background: "#152218", borderRadius: 10, padding: 12, borderLeft: "3px solid #2d7a4f" }}>
+              <div style={{ background: "#1a2e1e", borderRadius: 10, padding: 12, borderLeft: "3px solid #2d7a4f" }}>
                 <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 4, fontWeight: 600 }}>AGRITEX NOTES</div>
                 <div style={{ fontSize: 13, color: "#c8e8d4", lineHeight: 1.6 }}>{selectedCrop.notes}</div>
               </div>
@@ -2062,7 +2062,7 @@ function PriceFeedsTab() {
         }
       </div>
 
-      <div style={{ marginTop: 16, background: "#152218", borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#5c8f6b", borderLeft: "3px solid #2d7a4f" }}>
+      <div style={{ marginTop: 16, background: "#1a2e1e", borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#5c8f6b", borderLeft: "3px solid #2d7a4f" }}>
         💡 Prices are updated weekly from GMB, Cottco, ZFU and Mbare Musika. Use the AI Advisor for personalised price strategy.
       </div>
     </div>
@@ -2095,7 +2095,8 @@ function FarmDiaryTab({ authUser, setActiveTab }) {
 
   const loadEntries = async () => {
     setLoading(true);
-    const data = await db.get("farm_diary", "?order=activity_date.desc&limit=50");
+    const query = authUser ? `?auth_user_id=eq.${authUser.id}&order=activity_date.desc&limit=50` : "?order=activity_date.desc&limit=0";
+    const data = await db.get("farm_diary", query);
     setEntries(Array.isArray(data) ? data : []);
     setLoading(false);
   };
@@ -2138,7 +2139,7 @@ function FarmDiaryTab({ authUser, setActiveTab }) {
           <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Farm Diary</div>
           <div style={{ fontSize: 12, color: "#4a7a5a" }}>{entries.length} activities logged</div>
         </div>
-        <button onClick={() => setShowAdd(true)} style={{ background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "10px 16px", color: "#c8e8d4", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+        <button onClick={() => setShowAdd(true)} style={{ background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "10px 16px", color: "#e8dfc8", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
           + Log Activity
         </button>
       </div>
@@ -2257,7 +2258,7 @@ function AddDiaryEntryModal({ onClose, onSave }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6 }}>
             {ACTIVITY_TYPES.map(a => (
               <button key={a.id} onClick={() => set("activity_type", a.id)}
-                style={{ background: fields.activity_type === a.id ? `${a.color}25` : "#152218", border: `1px solid ${fields.activity_type === a.id ? a.color : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                style={{ background: fields.activity_type === a.id ? `${a.color}25` : "#1a2e1e", border: `1px solid ${fields.activity_type === a.id ? a.color : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
                 <div style={{ fontSize: 18, marginBottom: 3 }}>{a.icon}</div>
                 <div style={{ fontSize: 9, color: fields.activity_type === a.id ? a.color : "#5c8f6b" }}>{a.label}</div>
               </button>
@@ -2302,7 +2303,7 @@ function AddDiaryEntryModal({ onClose, onSave }) {
           <div style={{ display: "flex", gap: 8 }}>
             {WEATHER_OPTIONS.map(w => (
               <button key={w.id} onClick={() => set("weather", w.id)}
-                style={{ flex: 1, background: fields.weather === w.id ? "#1a3d24" : "#152218", border: `1px solid ${fields.weather === w.id ? "#2d7a4f" : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                style={{ flex: 1, background: fields.weather === w.id ? "#1a3d24" : "#1a2e1e", border: `1px solid ${fields.weather === w.id ? "#2d7a4f" : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
                 <div style={{ fontSize: 20 }}>{w.icon}</div>
                 <div style={{ fontSize: 9, color: fields.weather === w.id ? "#7ec99a" : "#4a7a5a", marginTop: 3 }}>{w.label}</div>
               </button>
@@ -2376,7 +2377,7 @@ function FeatureListingModal({ listing, onClose, onSave }) {
         </div>
 
         {/* Listing preview */}
-        <div style={{ background: "#152218", borderRadius: 10, padding: "10px 14px", marginBottom: 16, border: "1px solid #2d5a36" }}>
+        <div style={{ background: "#1a2e1e", borderRadius: 10, padding: "10px 14px", marginBottom: 16, border: "1px solid #2d5a36" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{listing.crop}</div>
           <div style={{ fontSize: 11, color: "#5c8f6b" }}>{listing.location} · {listing.price}</div>
         </div>
@@ -2415,7 +2416,7 @@ function FeatureListingModal({ listing, onClose, onSave }) {
               </button>
             ))}
           </div>
-          <div style={{ background: "#152218", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#8aaa94" }}>
+          <div style={{ background: "#1a2e1e", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#8aaa94" }}>
             Pay <span style={{ color: "#7ec99a", fontWeight: 700 }}>USD {price}</span> to: <span style={{ color: "#c8e8d4" }}>{selected?.number}</span>
             <div style={{ fontSize: 11, color: "#4a7a5a", marginTop: 4 }}>Reference: FEATURE-{listing.id?.slice(0, 8).toUpperCase()}</div>
           </div>
@@ -2670,7 +2671,7 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
     setLoadingData(true);
     const [listings, diary] = await Promise.all([
       db.get("listings", "?active=eq.true&order=created_at.desc"),
-      db.get("farm_diary", "?order=activity_date.desc&limit=20"),
+      db.get("farm_diary", `?auth_user_id=eq.${authUser?.id}&order=activity_date.desc&limit=20`),
     ]);
     setMyListings(Array.isArray(listings) ? listings.filter(l => l.auth_user_id === authUser?.id) : []);
     setMyDiary(Array.isArray(diary) ? diary.filter(e => e.auth_user_id === authUser?.id) : []);
@@ -2774,7 +2775,7 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
                     <button onClick={onClose} className="btn-primary" style={{ width: "auto", padding: "8px 20px" }}>Go to Marketplace</button>
                   </div>
                 ) : myListings.map((l, i) => (
-                  <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", marginBottom: 8 }}>
+                  <div key={i} style={{ background: "#1a2e1e", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", marginBottom: 8 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
                       {l.is_featured && <span style={{ fontSize: 9, background: "rgba(212,160,23,0.2)", color: "#d4a017", padding: "2px 7px", borderRadius: 8 }}>{"⭐"} FEATURED</span>}
@@ -2822,12 +2823,12 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
             {profileTab === "farm" && (
               <div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4", marginBottom: 16 }}>Farm Details</div>
-                <div style={{ background: "#152218", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+                <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16, marginBottom: 12 }}>
                   <div style={{ fontSize: 11, color: "#4a7a5a", marginBottom: 8, fontWeight: 600 }}>UPDATE FARM REGISTRATION</div>
                   <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update your province, district, crops and livestock through the Register Farm tab.</div>
                   <button onClick={onClose} className="btn-primary">Go to Register Farm {"→"}</button>
                 </div>
-                <div style={{ background: "#152218", borderRadius: 12, padding: 16 }}>
+                <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16 }}>
                   <div style={{ fontSize: 11, color: "#4a7a5a", marginBottom: 8, fontWeight: 600 }}>CROP AND LIVESTOCK TRACKING</div>
                   <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update hectares, headcount and crop stage on the interactive farmer map.</div>
                   <button onClick={onClose} className="btn-secondary" style={{ width: "100%" }}>Open Farmer Map {"→"}</button>
@@ -2979,7 +2980,7 @@ function InsightsTab() {
                       <text x="0" y={y + 12} fill="#c8e8d4" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
                       <text x="0" y={y + 24} fill="#4a7a5a" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
                       {/* Background track */}
-                      <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#152218" />
+                      <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2e1e" />
                       {/* Bar */}
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
                       {/* Value - inside bar if wide, outside if narrow */}
@@ -3079,7 +3080,7 @@ function InsightsTab() {
           <div style={{ fontSize: 28 }}>🛰️</div>
           <div>
             <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5cd68a", marginBottom: 4 }}>AI SATELLITE FORECAST · 2024/25 SEASON</div>
-            <div style={{ fontSize: 15, color: "#c8e8d4", lineHeight: 1.5 }}>Mashonaland maize yield expected to drop <strong style={{ color: "#e07060" }}>12–15%</strong> due to reduced rainfall. Manicaland tobacco shows strong recovery.</div>
+            <div style={{ fontSize: 15, color: "#e8dfc8", lineHeight: 1.5 }}>Mashonaland maize yield expected to drop <strong style={{ color: "#e07060" }}>12–15%</strong> due to reduced rainfall. Manicaland tobacco shows strong recovery.</div>
           </div>
         </div>
       </div>
