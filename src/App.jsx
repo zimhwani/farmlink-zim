@@ -141,6 +141,7 @@ export default function FarmLinkZim() {
   const [farmSize, setFarmSize] = useState("");
   const [farmerName, setFarmerName] = useState("");
   const [farmerPhone, setFarmerPhone] = useState("");
+  const [cropDetails, setCropDetails] = useState({});
   const [chatMessages, setChatMessages] = useState([
     { role: "ai", text: "Mhoro! I'm FarmLink AI — your local agricultural advisor. Ask me anything about crops, livestock, weather, or markets in Zimbabwe. 🌱" }
   ]);
@@ -204,7 +205,7 @@ export default function FarmLinkZim() {
 
   const loadFarmers = async () => {
     try {
-      const data = await db.get("farmers", "?select=id,name,province,district,ward,latitude,longitude,farmer_crops(crop_name,type)&order=created_at.desc");
+      const data = await db.get("farmers", "?select=id,name,province,district,ward,latitude,longitude,farmer_crops(id,crop_name,type,hectares,head_count,crop_stage)&order=created_at.desc");
       setFarmers(Array.isArray(data) ? data : []);
     } catch (e) { console.error(e); }
   };
@@ -254,8 +255,16 @@ export default function FarmLinkZim() {
       });
       if (farmer?.id) {
         const cropRows = [
-          ...selectedCrops.map(c => ({ farmer_id: farmer.id, crop_name: c, type: "crop" })),
-          ...selectedLivestock.map(l => ({ farmer_id: farmer.id, crop_name: l, type: "livestock" })),
+          ...selectedCrops.map(c => ({
+            farmer_id: farmer.id, crop_name: c, type: "crop",
+            hectares: cropDetails[c]?.hectares ? parseFloat(cropDetails[c].hectares) : null,
+            crop_stage: cropDetails[c]?.stage || null,
+          })),
+          ...selectedLivestock.map(l => ({
+            farmer_id: farmer.id, crop_name: l, type: "livestock",
+            head_count: cropDetails[l]?.head_count ? parseInt(cropDetails[l].head_count) : null,
+            crop_stage: cropDetails[l]?.stage || null,
+          })),
         ];
         if (cropRows.length > 0) await db.post("farmer_crops", cropRows);
         setRegisteredFarmer(farmer);
@@ -298,13 +307,12 @@ export default function FarmLinkZim() {
   const TABS = [
     { id: "home", icon: "🛖", label: "Home" },
     { id: "market", icon: "🛒", label: "Marketplace" },
-    { id: "register", icon: "📍", label: "Register Farm" },
+    { id: "diary", icon: "📓", label: "Farm Diary" },
     { id: "advisory", icon: "🤖", label: "AI Advisor" },
     { id: "prices", icon: "📈", label: "Price Feeds" },
     { id: "calendar", icon: "🗓️", label: "Planting Calendar" },
-    { id: "suppliers", icon: "🏪", label: "Input Suppliers" },
     { id: "insights", icon: "📊", label: "Insights" },
-    { id: "calendar", icon: "🗓️", label: "Calendar" },
+    { id: "register", icon: "📍", label: "Register Farm" },
     { id: "admin", icon: "⚙️", label: "Admin" },
   ];
 
@@ -337,12 +345,20 @@ export default function FarmLinkZim() {
 
           {/* Bottom sidebar info */}
           <div style={{ padding: "16px 20px", borderTop: "1px solid #1f3525" }}>
-            <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3d6b4a", marginBottom: 6 }}>PLATFORM STATUS</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ fontSize: 10, color: "#3d6b4a", marginBottom: 6, fontWeight: 600, letterSpacing: "0.08em" }}>PLATFORM STATUS</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#5cd68a" }} className="pulse" />
               <span style={{ fontSize: 11, color: "#5c8f6b" }}>Live · Farmlink connected</span>
             </div>
-            <div style={{ fontSize: 10, color: "#2d5236", marginTop: 8 }}>{"© "}{new Date().getFullYear()}{" FarmLink Zim. All rights reserved."}</div>
+            <div style={{ fontSize: 10, color: "#2d5236", marginTop: 6 }}>{"© "}{new Date().getFullYear()}{" FarmLink Zim. All rights reserved."}
+            </div>
+            <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 10 }}>
+              <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
+                <button onClick={() => setActiveTab("legal-tos")} style={{ background: "none", border: "none", color: "#3d6b4a", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Terms of Service</button>
+                <button onClick={() => setActiveTab("legal-pp")} style={{ background: "none", border: "none", color: "#3d6b4a", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Privacy Policy</button>
+              </div>
+              <div style={{ fontSize: 10, color: "#2d5236" }}>© {new Date().getFullYear()} FarmLink Zim</div>
+            </div>
           </div>
         </div>
 
@@ -382,9 +398,9 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <div onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5 }}>
-                  {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.name?.split(" ")[0] || "Profile"}</span></> : "👤 Login"}
-                </div>
+                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 10 }}>
+                  {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.email?.split("@")[0] || "Profile"}</span></> : "👤 Login"}
+                </button>
               </div>
             </div>
           </div>
@@ -392,15 +408,16 @@ export default function FarmLinkZim() {
           {/* Page content */}
           <div className="page-content">
             {activeTab === "home" && <HomeTab setActiveTab={setActiveTab} farmerCount={farmerCount} listingCount={listingCount} weather={weather} getWeatherIcon={getWeatherIcon} onFarmerMapClick={() => setShowFarmerMap(true)} authUser={authUser} />}
-            {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} />}
-            {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} />}
+            {activeTab === "market" && <MarketTab listings={listings} loadingListings={loadingListings} filterCrop={filterCrop} setFilterCrop={setFilterCrop} setShowListingModal={setShowListingModal} setShowContactModal={setShowContactModal} setShowListingDetail={setShowListingDetail} authUser={authUser} loadListings={loadListings} />}
+            {activeTab === "diary" && <FarmDiaryTab authUser={authUser} setActiveTab={setActiveTab} />}
+            {activeTab === "register" && <RegisterTab wizardStep={wizardStep} setWizardStep={setWizardStep} province={province} setProvince={setProvince} district={district} setDistrict={setDistrict} ward={ward} setWard={setWard} selectedCrops={selectedCrops} setSelectedCrops={setSelectedCrops} selectedLivestock={selectedLivestock} setSelectedLivestock={setSelectedLivestock} farmSize={farmSize} setFarmSize={setFarmSize} farmerName={farmerName} setFarmerName={setFarmerName} farmerPhone={farmerPhone} setFarmerPhone={setFarmerPhone} toggleItem={toggleItem} registrationDone={registrationDone} registeredFarmer={registeredFarmer} registerFarmer={registerFarmer} resetRegistration={resetRegistration} cropDetails={cropDetails} setCropDetails={setCropDetails} />}
             {activeTab === "advisory" && <AdvisoryTab chatMessages={chatMessages} chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} isTyping={isTyping} chatEndRef={chatEndRef} />}
             {activeTab === "prices" && <PriceFeedsTab />}
-            {activeTab === "calendar" && <PlantingCalendarTab />}
-            {activeTab === "suppliers" && <InputSuppliersTab />}
-            {activeTab === "insights" && <InsightsTab />}
             {activeTab === "calendar" && <CalendarTab />}
+            {activeTab === "insights" && <InsightsTab />}
             {activeTab === "admin" && <AdminTab farmers={farmers} listings={listings} />}
+            {activeTab === "legal-tos" && <LegalTab page="tos" setActiveTab={setActiveTab} />}
+            {activeTab === "legal-pp" && <LegalTab page="pp" setActiveTab={setActiveTab} />}
           </div>
         </div>
       </div>
@@ -419,7 +436,7 @@ export default function FarmLinkZim() {
       {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); await db.post("notifications", { type: "message", title: "New buyer enquiry", body: `${msg.sender_name} is interested in your ${showContactModal.crop} listing (${showContactModal.quantity} at ${showContactModal.price})`, read: false }); loadNotifications(); setShowContactModal(null); }} />}
       {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} loadFarmers={loadFarmers} />}
       {showListingDetail && <ListingDetailModal listing={showListingDetail} onClose={() => setShowListingDetail(null)} onContact={() => { setShowContactModal(showListingDetail); setShowListingDetail(null); }} />}
-      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} authUser={authUser} onAuth={(user) => { setAuthUser(user); setShowAuthModal(false); }} onLogout={() => { auth.signOut(); setAuthUser(null); setShowAuthModal(false); }} />}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} authUser={authUser} onAuth={(user) => { setAuthUser(user); setShowAuthModal(false); }} onLogout={() => { auth.signOut(); setAuthUser(null); setShowAuthModal(false); }} setActiveTab={setActiveTab} />}
     </div>
   );
 }
@@ -584,64 +601,75 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
 function CropHectareRow({ crop, onUpdate }) {
   const isLivestock = crop.type === "livestock";
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(
-    isLivestock ? (crop.head_count ?? "") : (crop.hectares ?? "")
-  );
+  const [value, setValue] = useState(isLivestock ? (crop.head_count ?? "") : (crop.hectares ?? ""));
+  const [stage, setStage] = useState(crop.crop_stage || "");
   const [saving, setSaving] = useState(false);
 
   const currentVal = isLivestock ? crop.head_count : crop.hectares;
   const unit = isLivestock ? "head" : "ha";
   const placeholder = isLivestock ? "e.g. 24" : "e.g. 5.5";
 
+  const CROP_STAGES = ["land_prep","seeding","germination","vegetative","flowering","grain_fill","harvesting","post_harvest","fallow"];
+  const CROP_STAGE_LABELS = { land_prep:"🚜 Land Prep", seeding:"🌱 Seeding", germination:"🌿 Germination", vegetative:"🌾 Vegetative", flowering:"🌸 Flowering", grain_fill:"🫘 Grain Fill", harvesting:"🌾 Harvesting", post_harvest:"📦 Post Harvest", fallow:"🟫 Fallow" };
+  const LIVE_STAGES = ["breeding","pregnant","lactating","growing","fattening","selling"];
+  const LIVE_STAGE_LABELS = { breeding:"❤️ Breeding", pregnant:"🐣 Pregnant", lactating:"🍼 Lactating", growing:"📈 Growing", fattening:"🥩 Fattening", selling:"💰 Ready to Sell" };
+
+  const stages = isLivestock ? LIVE_STAGES : CROP_STAGES;
+  const stageLabels = isLivestock ? LIVE_STAGE_LABELS : CROP_STAGE_LABELS;
+
   const handleSave = async () => {
     setSaving(true);
     const parsed = value !== "" ? (isLivestock ? parseInt(value) : parseFloat(value)) : null;
-    const updateData = isLivestock ? { head_count: parsed } : { hectares: parsed };
+    const updateData = isLivestock
+      ? { head_count: parsed, crop_stage: stage || null }
+      : { hectares: parsed, crop_stage: stage || null };
     await onUpdate(crop.id, updateData);
     setSaving(false);
     setEditing(false);
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
-      <span style={{
-        fontSize: 10, padding: "2px 8px", borderRadius: 10,
-        background: isLivestock ? "rgba(90,143,163,0.2)" : "rgba(45,122,79,0.2)",
-        color: isLivestock ? "#5a9fd4" : "#7ec99a",
-        fontFamily: "'Space Mono', monospace", flexShrink: 0,
-      }}>
-        {isLivestock ? "🐄" : "🌾"} {crop.crop_name}
-      </span>
-
-      {editing ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <input
-            type="number"
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            placeholder={placeholder}
-            style={{
-              width: 64, background: "#1a2e1e", border: "1px solid #4aad72",
-              borderRadius: 6, padding: "2px 6px", color: "#e8dfc8",
-              fontSize: 11, fontFamily: "'Space Mono', monospace", outline: "none",
-            }}
-            autoFocus
-            onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }}
-          />
-          <span style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{unit}</span>
-          <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 8px", color: "#e8dfc8", fontSize: 10, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
-            {saving ? "..." : "✓"}
-          </button>
-          <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer" }}>✕</button>
-        </div>
-      ) : (
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <span style={{ fontSize: 10, color: currentVal ? "#c8b43c" : "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>
-            {currentVal != null ? `${currentVal} ${unit}` : `— ${unit}`}
+    <div style={{ marginBottom: 8, background: "#0f2218", borderRadius: 8, padding: "8px 10px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: editing ? 8 : 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: isLivestock ? "rgba(90,143,163,0.2)" : "rgba(45,122,79,0.2)", color: isLivestock ? "#5a9fd4" : "#7ec99a", flexShrink: 0 }}>
+            {isLivestock ? "🐄" : "🌾"} {crop.crop_name}
           </span>
-          <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 6px", color: "#4a7a5a", fontSize: 9, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
-            edit
-          </button>
+          {!editing && (
+            <span style={{ fontSize: 10, color: currentVal ? "#c8b43c" : "#3d6b4a" }}>
+              {currentVal != null ? `${currentVal} ${unit}` : `— ${unit}`}
+            </span>
+          )}
+          {!editing && stage && (
+            <span style={{ fontSize: 10, color: "#5c8f6b" }}>{stageLabels[stage]}</span>
+          )}
+        </div>
+        {!editing ? (
+          <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 8px", color: "#4a7a5a", fontSize: 9, cursor: "pointer" }}>edit</button>
+        ) : (
+          <div style={{ display: "flex", gap: 4 }}>
+            <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 10px", color: "#e8dfc8", fontSize: 10, cursor: "pointer" }}>{saving ? "..." : "✓"}</button>
+            <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer" }}>✕</button>
+          </div>
+        )}
+      </div>
+
+      {editing && (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+          <div>
+            <label style={{ fontSize: 9, color: "#4a7a5a", display: "block", marginBottom: 3 }}>{isLivestock ? "HEAD COUNT" : "HECTARES"}</label>
+            <input type="number" value={value} onChange={e => setValue(e.target.value)} placeholder={placeholder}
+              style={{ width: "100%", background: "#1a2e1e", border: "1px solid #4aad72", borderRadius: 6, padding: "4px 8px", color: "#e8dfc8", fontSize: 11, outline: "none" }}
+              autoFocus onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }} />
+          </div>
+          <div>
+            <label style={{ fontSize: 9, color: "#4a7a5a", display: "block", marginBottom: 3 }}>CURRENT STAGE</label>
+            <select value={stage} onChange={e => setStage(e.target.value)}
+              style={{ width: "100%", background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 6px", color: "#e8dfc8", fontSize: 11, outline: "none" }}>
+              <option value="">Select stage</option>
+              {stages.map(s => <option key={s} value={s}>{stageLabels[s]}</option>)}
+            </select>
+          </div>
         </div>
       )}
     </div>
@@ -800,10 +828,8 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
   );
 }
 // ─── HOME TAB ──────────────────────────────────────────────────────────────────
-
 const getGreeting = (name) => {
   const hour = new Date().getHours();
-  // Extract first name from email (before @) or phone, capitalise it
   let firstName = null;
   if (name) {
     if (name.includes("@")) {
@@ -829,10 +855,27 @@ const getGreeting = (name) => {
 
 function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherIcon, onFarmerMapClick, authUser }) {
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const [prices, setPrices] = useState(PRICE_ALERTS);
+  const [pricesLoading, setPricesLoading] = useState(true);
+
+  useEffect(() => {
+    db.get("price_feed", "?order=created_at.desc&limit=4").then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        setPrices(data.map(p => ({
+          crop: p.crop,
+          change: `${p.change_pct > 0 ? "+" : ""}${p.change_pct}%`,
+          price: `USD ${p.price_usd}/${p.unit}`,
+          trend: p.trend === "up" ? "up" : "down",
+          region: p.source,
+        })));
+      }
+      setPricesLoading(false);
+    }).catch(() => setPricesLoading(false));
+  }, []);
   return (
     <div className="fade-in two-col">
       {authUser && (
-        <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12, gridColumn: "1 / -1" }}>
+        <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 4, display: "flex", alignItems: "center", gap: 12, gridColumn: "1 / -1" }}>
           <div style={{ fontSize: 32 }}>{"👩🏾‍🌾"}</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>{getGreeting(authUser.email || authUser.phone)}</div>
@@ -916,19 +959,26 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
         </div>
 
         {/* Price Alerts */}
-        <div className="section-title">Live Price Alerts</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <div className="section-title" style={{ margin: 0 }}>📈 Live Market Prices</div>
+          <button onClick={() => setActiveTab("prices")} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 11, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>See all →</button>
+        </div>
         <div style={{ display: "grid", gap: 8, marginBottom: 16 }} className="price-grid">
-          {PRICE_ALERTS.map((p, i) => (
-            <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px" }}>
+          {pricesLoading ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 70, borderRadius: 10 }} />) :
+          prices.map((p, i) => (
+            <div key={i} style={{ background: "#152218", border: `1px solid ${p.trend === "up" ? "#1f3a25" : "#3a1f1f"}`, borderRadius: 10, padding: "12px", cursor: "pointer" }} onClick={() => setActiveTab("prices")}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{p.crop}</div>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060" }}>{p.change}</div>
+                <div style={{ fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060", fontWeight: 600 }}>{p.trend === "up" ? "▲" : "▼"} {p.change}</div>
               </div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#7ec99a", margin: "6px 0 4px" }}>{p.price}</div>
+              <div style={{ fontSize: 12, color: "#7ec99a", margin: "6px 0 4px", fontWeight: 600 }}>{p.price}</div>
               <div style={{ fontSize: 10, color: "#4a7a5a" }}>{p.region}</div>
             </div>
           ))}
         </div>
+
+        {/* Sponsored */}
+        <SponsorCard />
 
         {/* Pest Alerts */}
         <div className="section-title">🚨 Pest & Disease Alerts</div>
@@ -948,13 +998,43 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
 }
 
 // ─── MARKET TAB ────────────────────────────────────────────────────────────────
-function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setShowListingModal, setShowContactModal, setShowListingDetail }) {
+function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setShowListingModal, setShowContactModal, setShowListingDetail, authUser, loadListings }) {
   const filters = ["All", "Grain", "Livestock", "Horticulture", "Cash Crops"];
   const filterMap = { "Grain": ["Maize", "Wheat", "Sorghum"], "Livestock": ["Cattle", "Goats", "Sheep", "Pigs", "Poultry"], "Horticulture": ["Tomatoes", "Vegetables", "Sweet Potatoes"], "Cash Crops": ["Tobacco", "Cotton", "Coffee", "Soya", "Sunflower", "Groundnuts"] };
   const [search, setSearch] = useState("");
-  const filtered = listings
+  const [editingListing, setEditingListing] = useState(null);
+  const [featuringListing, setFeaturingListing] = useState(null);
+  const [myTab, setMyTab] = useState("all");
+
+  const myListings = authUser ? listings.filter(l =>
+    l.auth_user_id === authUser.id ||
+    l.farmer_name?.toLowerCase() === authUser.email?.split("@")[0]?.toLowerCase()
+  ) : [];
+
+  const filtered = (myTab === "mine" ? myListings : listings)
     .filter(l => filterCrop === "All" || (filterMap[filterCrop] || []).some(f => l.crop?.toLowerCase().includes(f.toLowerCase())))
-    .filter(l => !search || l.crop?.toLowerCase().includes(search.toLowerCase()) || l.location?.toLowerCase().includes(search.toLowerCase()) || l.farmer_name?.toLowerCase().includes(search.toLowerCase()));
+    .filter(l => !search || l.crop?.toLowerCase().includes(search.toLowerCase()) || l.location?.toLowerCase().includes(search.toLowerCase()) || l.farmer_name?.toLowerCase().includes(search.toLowerCase()))
+    // Featured listings appear first
+    .sort((a, b) => (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0));
+
+  const handleFeatureListing = async (weeks, ref, method) => {
+    if (!featuringListing) return;
+    const expires = new Date(Date.now() + weeks * 7 * 24 * 60 * 60 * 1000).toISOString();
+    await db.patch("listings", featuringListing.id, { is_featured: true, featured_until: expires });
+    await db.post("featured_listings", { listing_id: featuringListing.id, farmer_name: featuringListing.farmer_name, weeks, amount_usd: weeks * 2, status: "active", expires_at: expires, payment_reference: ref, payment_method: method });
+    setFeaturingListing(null);
+    loadListings();
+  };
+
+  const deleteListing = async (id) => {
+    if (!window.confirm("Remove this listing?")) return;
+    await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${id}`, {
+      method: "PATCH",
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ active: false }),
+    });
+    loadListings();
+  };
 
   return (
     <div className="fade-in single-col">
@@ -963,8 +1043,17 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
           <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Marketplace</div>
           <div style={{ fontSize: 12, color: "#4a7a5a" }}>{listings.length} active listings</div>
         </div>
-        <button onClick={() => setShowListingModal(true)} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#7ec99a", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", whiteSpace: "nowrap" }}>+ List Produce</button>
+        <button onClick={() => setShowListingModal(true)} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#7ec99a", fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>+ List Produce</button>
       </div>
+
+      {/* My Listings / All toggle */}
+      {authUser && myListings.length > 0 && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+          {[["all", "All Listings"], ["mine", `My Listings (${myListings.length})`]].map(([v, label]) => (
+            <button key={v} onClick={() => setMyTab(v)} style={{ background: myTab === v ? "#2d7a4f" : "#152218", border: `1px solid ${myTab === v ? "#3a9962" : "#1f3525"}`, borderRadius: 8, padding: "7px 14px", color: myTab === v ? "#e8f5ed" : "#5c8f6b", fontSize: 12, cursor: "pointer" }}>{label}</button>
+          ))}
+        </div>
+      )}
 
       {/* Search */}
       <div style={{ position: "relative", marginBottom: 12 }}>
@@ -1002,16 +1091,33 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
                 <div style={{ fontSize: 15, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
-                <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, fontFamily: "'Space Mono', monospace", padding: "2px 7px", borderRadius: 10, flexShrink: 0 }}>{l.badge}</span>
+                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                  {l.is_featured && <span style={{ fontSize: 9, background: "rgba(212,160,23,0.2)", color: "#d4a017", border: "1px solid #d4a01740", padding: "2px 7px", borderRadius: 10, fontWeight: 700 }}>⭐ FEATURED</span>}
+                  <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, padding: "2px 7px", borderRadius: 10 }}>{l.badge}</span>
+                </div>
               </div>
               <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 6 }}>📍 {l.location}</div>
               {l.description && <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{l.description}</div>}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#7ec99a" }}>{l.price}</span>
+                  <span style={{ fontSize: 12, color: "#7ec99a" }}>{l.price}</span>
                   <span style={{ fontSize: 11, color: "#4a7a5a", marginLeft: 6 }}>{l.quantity}</span>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
+                  {/* Edit/Delete for own listings */}
+                  {authUser && (l.auth_user_id === authUser.id) && (<>
+                    {!l.is_featured && (
+                      <button onClick={e => { e.stopPropagation(); setFeaturingListing(l); }}
+                        style={{ background: "rgba(212,160,23,0.15)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#d4a017", fontSize: 11, cursor: "pointer" }}>⭐ Feature</button>
+                    )}
+                    {l.is_featured && (
+                      <span style={{ background: "rgba(212,160,23,0.2)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#d4a017", fontSize: 10 }}>⭐ Featured</span>
+                    )}
+                    <button onClick={e => { e.stopPropagation(); setEditingListing(l); }}
+                      style={{ background: "#1a2e1e", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>✏️</button>
+                    <button onClick={e => { e.stopPropagation(); deleteListing(l.id); }}
+                      style={{ background: "#2a1a1a", border: "1px solid #5a2020", borderRadius: 6, padding: "4px 8px", color: "#e07060", fontSize: 11, cursor: "pointer" }}>🗑</button>
+                  </>)}
                   {l.phone && (
                     <a href={`https://wa.me/${l.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
@@ -1029,6 +1135,9 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
           ))
         }
       </div>
+      {/* Edit listing modal */}
+      {editingListing && <EditListingModal listing={editingListing} onClose={() => setEditingListing(null)} onSave={async (updates) => { await db.patch("listings", editingListing.id, updates); setEditingListing(null); loadListings(); }} />}
+      {featuringListing && <FeatureListingModal listing={featuringListing} onClose={() => setFeaturingListing(null)} onSave={handleFeatureListing} />}
     </div>
   );
 }
@@ -1294,7 +1403,32 @@ function ContactModal({ listing, onClose, onSend }) {
 }
 
 // ─── REGISTER TAB ──────────────────────────────────────────────────────────────
-function RegisterTab({ wizardStep, setWizardStep, province, setProvince, district, setDistrict, ward, setWard, selectedCrops, setSelectedCrops, selectedLivestock, setSelectedLivestock, farmSize, setFarmSize, farmerName, setFarmerName, farmerPhone, setFarmerPhone, toggleItem, registrationDone, registeredFarmer, registerFarmer, resetRegistration }) {
+function RegisterTab({ wizardStep, setWizardStep, province, setProvince, district, setDistrict, ward, setWard, selectedCrops, setSelectedCrops, selectedLivestock, setSelectedLivestock, farmSize, setFarmSize, farmerName, setFarmerName, farmerPhone, setFarmerPhone, toggleItem, registrationDone, registeredFarmer, registerFarmer, resetRegistration, cropDetails, setCropDetails }) {
+
+  const updateCropDetail = (name, field, value) => {
+    setCropDetails(prev => ({ ...prev, [name]: { ...(prev[name] || {}), [field]: value } }));
+  };
+
+  const CROP_STAGES = [
+    { id: "land_prep", label: "Land Preparation", icon: "🚜" },
+    { id: "seeding", label: "Seeding / Planting", icon: "🌱" },
+    { id: "germination", label: "Germination", icon: "🌿" },
+    { id: "vegetative", label: "Vegetative Growth", icon: "🌾" },
+    { id: "flowering", label: "Flowering / Tasselling", icon: "🌸" },
+    { id: "grain_fill", label: "Grain Fill / Podding", icon: "🫘" },
+    { id: "harvesting", label: "Harvesting", icon: "🌾" },
+    { id: "post_harvest", label: "Post Harvest", icon: "📦" },
+    { id: "fallow", label: "Fallow / Resting", icon: "🟫" },
+  ];
+
+  const LIVESTOCK_STAGES = [
+    { id: "breeding", label: "Breeding Season", icon: "❤️" },
+    { id: "pregnant", label: "Pregnant", icon: "🐣" },
+    { id: "lactating", label: "Lactating / Nursing", icon: "🍼" },
+    { id: "growing", label: "Growing", icon: "📈" },
+    { id: "fattening", label: "Fattening", icon: "🥩" },
+    { id: "selling", label: "Ready to Sell", icon: "💰" },
+  ];
   const wards = Array.from({ length: 10 }, (_, i) => `Ward ${i + 1}`);
   const [saving, setSaving] = useState(false);
   const handleRegister = async () => { setSaving(true); await registerFarmer(); setSaving(false); };
@@ -1356,18 +1490,82 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
       )}
       {wizardStep === 2 && (
         <div className="fade-in">
+          {/* Crop selection */}
           <div className="card" style={{ marginBottom: 12 }}>
             <div className="section-title">Crops Being Grown</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
               {CROPS.map(c => <span key={c} className={`chip ${selectedCrops.includes(c) ? "active" : ""}`} style={{ fontSize: 11 }} onClick={() => toggleItem(selectedCrops, setSelectedCrops, c)}>{selectedCrops.includes(c) ? "✓ " : ""}{c}</span>)}
             </div>
+
+            {/* Per-crop hectares and stage */}
+            {selectedCrops.length > 0 && (
+              <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 12 }}>
+                <div style={{ fontSize: 10, color: "#5c8f6b", fontWeight: 600, marginBottom: 10 }}>CROP DETAILS</div>
+                {selectedCrops.map(crop => (
+                  <div key={crop} style={{ background: "#1a2e1e", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4", marginBottom: 10 }}>🌾 {crop}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>HECTARES</label>
+                        <input type="number" className="input-field" style={{ padding: "8px 10px" }}
+                          placeholder="e.g. 2.5"
+                          value={cropDetails[crop]?.hectares || ""}
+                          onChange={e => updateCropDetail(crop, "hectares", e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
+                        <select className="select-field" style={{ padding: "8px 10px" }}
+                          value={cropDetails[crop]?.stage || ""}
+                          onChange={e => updateCropDetail(crop, "stage", e.target.value)}>
+                          <option value="">Select stage</option>
+                          {CROP_STAGES.map(s => <option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Livestock selection */}
           <div className="card" style={{ marginBottom: 16 }}>
             <div className="section-title">Livestock Raised</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
               {LIVESTOCK.map(l => <span key={l} className={`chip ${selectedLivestock.includes(l) ? "active" : ""}`} style={{ fontSize: 11 }} onClick={() => toggleItem(selectedLivestock, setSelectedLivestock, l)}>{selectedLivestock.includes(l) ? "✓ " : ""}{l}</span>)}
             </div>
+
+            {/* Per-livestock head count and stage */}
+            {selectedLivestock.length > 0 && (
+              <div style={{ borderTop: "1px solid #1a2e1e", paddingTop: 12 }}>
+                <div style={{ fontSize: 10, color: "#5c8f6b", fontWeight: 600, marginBottom: 10 }}>LIVESTOCK DETAILS</div>
+                {selectedLivestock.map(animal => (
+                  <div key={animal} style={{ background: "#1a2e1e", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4", marginBottom: 10 }}>🐄 {animal}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>HEAD COUNT</label>
+                        <input type="number" className="input-field" style={{ padding: "8px 10px" }}
+                          placeholder="e.g. 12"
+                          value={cropDetails[animal]?.head_count || ""}
+                          onChange={e => updateCropDetail(animal, "head_count", e.target.value)} />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: 10, color: "#4a7a5a", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
+                        <select className="select-field" style={{ padding: "8px 10px" }}
+                          value={cropDetails[animal]?.stage || ""}
+                          onChange={e => updateCropDetail(animal, "stage", e.target.value)}>
+                          <option value="">Select stage</option>
+                          {LIVESTOCK_STAGES.map(s => <option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
           <div style={{ display: "flex", gap: 8 }}>
             <button className="btn-secondary" style={{ width: "auto", padding: "12px 20px" }} onClick={() => setWizardStep(1)}>← Back</button>
             <button className="btn-primary" onClick={() => { if (selectedCrops.length > 0 || selectedLivestock.length > 0) setWizardStep(3); }} style={{ opacity: (selectedCrops.length > 0 || selectedLivestock.length > 0) ? 1 : 0.4 }}>Continue →</button>
@@ -1390,8 +1588,22 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
             {farmerPhone && <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 4 }}>📱 {farmerPhone}</div>}
             <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 10 }}>📍 {province} › {district} › {ward}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-              {selectedCrops.map(c => <span key={c} style={{ background: "rgba(45,122,79,0.2)", color: "#7ec99a", fontSize: 10, padding: "3px 8px", borderRadius: 8, fontFamily: "'Space Mono', monospace" }}>🌾 {c}</span>)}
-              {selectedLivestock.map(l => <span key={l} style={{ background: "rgba(90,143,163,0.2)", color: "#5a9fd4", fontSize: 10, padding: "3px 8px", borderRadius: 8, fontFamily: "'Space Mono', monospace" }}>🐄 {l}</span>)}
+              {selectedCrops.map(c => (
+                <div key={c} style={{ background: "rgba(45,122,79,0.15)", border: "1px solid rgba(45,122,79,0.3)", borderRadius: 8, padding: "6px 10px", marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: "#7ec99a", fontWeight: 600 }}>🌾 {c}</div>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2 }}>
+                    {cropDetails[c]?.hectares ? `${cropDetails[c].hectares} ha` : "— ha"} · {cropDetails[c]?.stage ? CROP_STAGES.find(s => s.id === cropDetails[c].stage)?.label : "Stage not set"}
+                  </div>
+                </div>
+              ))}
+              {selectedLivestock.map(l => (
+                <div key={l} style={{ background: "rgba(90,143,163,0.15)", border: "1px solid rgba(90,143,163,0.3)", borderRadius: 8, padding: "6px 10px", marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: "#5a9fd4", fontWeight: 600 }}>🐄 {l}</div>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2 }}>
+                    {cropDetails[l]?.head_count ? `${cropDetails[l].head_count} head` : "— head"} · {cropDetails[l]?.stage ? LIVESTOCK_STAGES.find(s => s.id === cropDetails[l].stage)?.label : "Stage not set"}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
@@ -1460,14 +1672,13 @@ function monthsInRange(start, end) {
   else { for (let m = start; m <= 12; m++) months.push(m); for (let m = 1; m <= end; m++) months.push(m); }
   return months;
 }
-
 function CalendarTab() {
   const [calData, setCalData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedZone, setSelectedZone] = useState("all");
   const [selectedCat, setSelectedCat] = useState("all");
   const [selectedCrop, setSelectedCrop] = useState(null);
-  const currentMonth = new Date().getMonth() + 1; // 1-12
+  const currentMonth = new Date().getMonth() + 1;
 
   useEffect(() => {
     db.get("planting_calendar", "?order=category,crop_name").then(data => {
@@ -1481,7 +1692,6 @@ function CalendarTab() {
     (selectedCat === "all" || c.category === selectedCat)
   );
 
-  // Group by crop_name, merge zones
   const grouped = {};
   filtered.forEach(c => {
     if (!grouped[c.crop_name]) grouped[c.crop_name] = { ...c, zones: [c.province_zone] };
@@ -1489,42 +1699,79 @@ function CalendarTab() {
   });
   const crops = Object.values(grouped);
 
+  // Get all activity months for a crop (handles both crop and livestock)
+  const getActivityMonths = (c) => {
+    const isLivestock = c.category === "livestock";
+    if (isLivestock) {
+      return {
+        breeding: c.breeding_month_start ? monthsInRange(c.breeding_month_start, c.breeding_month_end) : [],
+        birthing: c.birthing_month_start ? monthsInRange(c.birthing_month_start, c.birthing_month_end) : [],
+        dipping: c.dipping_month_start ? monthsInRange(c.dipping_month_start, c.dipping_month_end) : [],
+        slaughter: c.slaughter_month_start ? monthsInRange(c.slaughter_month_start, c.slaughter_month_end) : [],
+      };
+    }
+    return {
+      plant: c.plant_month_start ? monthsInRange(c.plant_month_start, c.plant_month_end) : [],
+      fertilise: c.fertilise_month_start ? monthsInRange(c.fertilise_month_start, c.fertilise_month_end) : [],
+      harvest: c.harvest_month_start ? monthsInRange(c.harvest_month_start, c.harvest_month_end) : [],
+    };
+  };
+
   // What's active this month
   const activeNow = calData.filter(c => {
-    const planting = monthsInRange(c.plant_month_start, c.plant_month_end);
-    const harvesting = monthsInRange(c.harvest_month_start, c.harvest_month_end);
-    const fertilising = c.fertilise_month_start ? monthsInRange(c.fertilise_month_start, c.fertilise_month_end) : [];
-    return planting.includes(currentMonth) || harvesting.includes(currentMonth) || fertilising.includes(currentMonth);
+    const acts = getActivityMonths(c);
+    return Object.values(acts).some(months => months.includes(currentMonth));
   });
+
+  // Cell colour and emoji for each month
+  const getCellStyle = (c, m) => {
+    const acts = getActivityMonths(c);
+    if (c.category === "livestock") {
+      if (acts.birthing?.includes(m)) return { bg: "rgba(212,160,23,0.5)", emoji: "🐣" };
+      if (acts.breeding?.includes(m)) return { bg: "rgba(204,128,224,0.45)", emoji: "❤️" };
+      if (acts.dipping?.includes(m)) return { bg: "rgba(90,143,212,0.4)", emoji: "🪣" };
+      if (acts.slaughter?.includes(m)) return { bg: "rgba(224,112,96,0.3)", emoji: "🥩" };
+    } else {
+      if (acts.harvest?.includes(m)) return { bg: "rgba(212,160,23,0.5)", emoji: "🌾" };
+      if (acts.plant?.includes(m)) return { bg: `${CAT_COLORS[c.category]?.border || "#2d7a4f"}60`, emoji: "🌱" };
+      if (acts.fertilise?.includes(m)) return { bg: "rgba(90,143,200,0.3)", emoji: "🧪" };
+    }
+    return { bg: "transparent", emoji: null };
+  };
 
   return (
     <div className="fade-in single-col">
       <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Planting Calendar</div>
-      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>AGRITEX seasonal guide for Zimbabwe 2025/26</div>
+      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>AGRITEX seasonal guide · Zimbabwe 2025/26</div>
 
       {/* This month banner */}
       <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 14, padding: 16, marginBottom: 20 }}>
-        <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5cd68a", marginBottom: 8 }}>
+        <div style={{ fontSize: 10, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, color: "#5cd68a", marginBottom: 8, letterSpacing: "0.1em" }}>
           🗓️ {MONTHS[currentMonth - 1].toUpperCase()} — WHAT TO DO NOW
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {activeNow.length === 0 ? <div style={{ fontSize: 12, color: "#4a7a5a" }}>No activities this month for selected filters.</div> :
-            [...new Set(activeNow.map(c => c.crop_name))].map(name => {
-              const c = activeNow.find(x => x.crop_name === name);
-              const isPlanting = monthsInRange(c.plant_month_start, c.plant_month_end).includes(currentMonth);
-              const isHarvesting = monthsInRange(c.harvest_month_start, c.harvest_month_end).includes(currentMonth);
-              const isFertilising = c.fertilise_month_start && monthsInRange(c.fertilise_month_start, c.fertilise_month_end).includes(currentMonth);
-              const col = CAT_COLORS[c.category] || CAT_COLORS.grain;
-              return (
-                <div key={name} onClick={() => setSelectedCrop(c)} style={{ background: col.bg, border: `1px solid ${col.border}`, borderRadius: 8, padding: "6px 10px", cursor: "pointer" }}>
-                  <div style={{ fontSize: 12, color: col.text, fontWeight: 600 }}>{CAT_ICONS[c.category]} {name}</div>
-                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: col.dot, marginTop: 2 }}>
-                    {[isPlanting && "🌱 PLANT", isFertilising && "🧪 FERTILISE", isHarvesting && "🌾 HARVEST"].filter(Boolean).join(" · ")}
-                  </div>
-                </div>
-              );
-            })
-          }
+          {[...new Set(activeNow.map(c => c.crop_name))].map(name => {
+            const c = activeNow.find(x => x.crop_name === name);
+            const acts = getActivityMonths(c);
+            const col = CAT_COLORS[c.category] || CAT_COLORS.grain;
+            const isLivestock = c.category === "livestock";
+            const tags = isLivestock ? [
+              acts.breeding?.includes(currentMonth) && "❤️ BREEDING",
+              acts.birthing?.includes(currentMonth) && "🐣 BIRTHING",
+              acts.dipping?.includes(currentMonth) && "🪣 DIPPING",
+              acts.slaughter?.includes(currentMonth) && "🥩 SLAUGHTER",
+            ].filter(Boolean) : [
+              acts.plant?.includes(currentMonth) && "🌱 PLANT",
+              acts.fertilise?.includes(currentMonth) && "🧪 FERTILISE",
+              acts.harvest?.includes(currentMonth) && "🌾 HARVEST",
+            ].filter(Boolean);
+            return (
+              <div key={name} onClick={() => setSelectedCrop(c)} style={{ background: col.bg, border: `1px solid ${col.border}`, borderRadius: 8, padding: "6px 10px", cursor: "pointer" }}>
+                <div style={{ fontSize: 12, color: col.text, fontWeight: 600 }}>{CAT_ICONS[c.category]} {name}</div>
+                <div style={{ fontSize: 9, color: col.dot, marginTop: 2 }}>{tags.join(" · ")}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -1542,23 +1789,20 @@ function CalendarTab() {
         </select>
       </div>
 
-      {/* Gantt-style calendar grid */}
+      {/* Gantt grid */}
       {loading ? <div className="skeleton" style={{ height: 300, borderRadius: 12 }} /> : (
         <div className="card" style={{ overflowX: "auto", padding: "16px 12px" }}>
-          {/* Month header */}
+          {/* Month headers */}
           <div style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, marginBottom: 8 }}>
             <div />
             {MONTHS.map((m, i) => (
-              <div key={m} style={{ textAlign: "center", fontSize: 9, fontFamily: "'Space Mono', monospace", color: i + 1 === currentMonth ? "#7ec99a" : "#3d6b4a", fontWeight: i + 1 === currentMonth ? 700 : 400, background: i + 1 === currentMonth ? "rgba(45,122,79,0.15)" : "transparent", borderRadius: 4, padding: "3px 0" }}>{m}</div>
+              <div key={m} style={{ textAlign: "center", fontSize: 9, color: i + 1 === currentMonth ? "#7ec99a" : "#3d6b4a", fontWeight: i + 1 === currentMonth ? 700 : 400, background: i + 1 === currentMonth ? "rgba(45,122,79,0.15)" : "transparent", borderRadius: 4, padding: "3px 0" }}>{m}</div>
             ))}
           </div>
 
-          {/* Crop rows */}
+          {/* Rows */}
           {crops.map((c, idx) => {
             const col = CAT_COLORS[c.category] || CAT_COLORS.grain;
-            const plantMonths = monthsInRange(c.plant_month_start, c.plant_month_end);
-            const harvestMonths = monthsInRange(c.harvest_month_start, c.harvest_month_end);
-            const fertiliseMonths = c.fertilise_month_start ? monthsInRange(c.fertilise_month_start, c.fertilise_month_end) : [];
             return (
               <div key={idx} style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, marginBottom: 3, cursor: "pointer" }} onClick={() => setSelectedCrop(c)}>
                 <div style={{ fontSize: 11, color: col.text, display: "flex", alignItems: "center", gap: 4, paddingRight: 8, overflow: "hidden" }}>
@@ -1567,15 +1811,8 @@ function CalendarTab() {
                 </div>
                 {MONTHS.map((_, mi) => {
                   const m = mi + 1;
-                  const isPlant = plantMonths.includes(m);
-                  const isHarvest = harvestMonths.includes(m);
-                  const isFert = fertiliseMonths.includes(m);
+                  const { bg, emoji } = getCellStyle(c, m);
                   const isCurrent = m === currentMonth;
-                  let bg = "transparent";
-                  let emoji = null;
-                  if (isHarvest) { bg = "rgba(212,160,23,0.5)"; emoji = "🌾"; }
-                  else if (isPlant) { bg = `${col.border}60`; emoji = "🌱"; }
-                  else if (isFert) { bg = "rgba(90,143,200,0.3)"; emoji = "🧪"; }
                   return (
                     <div key={m} style={{ height: 22, borderRadius: 3, background: bg, border: isCurrent ? "1px solid #7ec99a" : "1px solid transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>
                       {emoji}
@@ -1587,66 +1824,706 @@ function CalendarTab() {
           })}
 
           {/* Legend */}
-          <div style={{ display: "flex", gap: 16, marginTop: 16, flexWrap: "wrap" }}>
-            {[["🌱", "rgba(45,122,79,0.4)", "Plant"], ["🧪", "rgba(90,143,200,0.3)", "Fertilise"], ["🌾", "rgba(212,160,23,0.5)", "Harvest"]].map(([icon, bg, label]) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
-                <span style={{ fontSize: 10, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>{label}</span>
-              </div>
-            ))}
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 20, height: 14, borderRadius: 3, border: "1px solid #7ec99a" }} />
-              <span style={{ fontSize: 10, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>Current month</span>
+          <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #1a2e1e" }}>
+            <div style={{ fontSize: 10, color: "#3d6b4a", marginBottom: 8, fontWeight: 600 }}>CROPS</div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+              {[["🌱", "rgba(45,122,79,0.4)", "Plant"], ["🧪", "rgba(90,143,200,0.3)", "Fertilise"], ["🌾", "rgba(212,160,23,0.5)", "Harvest"]].map(([icon, bg, label]) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
+                  <span style={{ fontSize: 10, color: "#5c8f6b" }}>{label}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 10, color: "#3d6b4a", marginBottom: 8, fontWeight: 600 }}>LIVESTOCK</div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              {[["❤️", "rgba(204,128,224,0.45)", "Breeding"], ["🐣", "rgba(212,160,23,0.5)", "Birthing/Calving"], ["🪣", "rgba(90,143,212,0.4)", "Dipping/Deworming"], ["🥩", "rgba(224,112,96,0.3)", "Slaughter/Sell"]].map(([icon, bg, label]) => (
+                <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
+                  <span style={{ fontSize: 10, color: "#5c8f6b" }}>{label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* Crop detail modal */}
+      {/* Crop/Livestock detail modal */}
       {selectedCrop && (
         <div className="modal-overlay" onClick={() => setSelectedCrop(null)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>{CAT_ICONS[selectedCrop.category]} {selectedCrop.crop_name}</div>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginTop: 2 }}>{(CAT_COLORS[selectedCrop.category] || CAT_COLORS.grain).text && selectedCrop.category?.replace("_", " ").toUpperCase()} · ZONE {selectedCrop.agro_zone}</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2 }}>{selectedCrop.category?.replace("_", " ").toUpperCase()} · ZONE {selectedCrop.agro_zone}</div>
               </div>
               <button onClick={() => setSelectedCrop(null)} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
 
-            {/* Timeline pills */}
-            {[
-              { label: "🌱 PLANT", months: monthsInRange(selectedCrop.plant_month_start, selectedCrop.plant_month_end), color: "#7ec99a" },
-              { label: "🧪 FERTILISE", months: selectedCrop.fertilise_month_start ? monthsInRange(selectedCrop.fertilise_month_start, selectedCrop.fertilise_month_end) : [], color: "#7ab0e0" },
-              { label: "🌾 HARVEST", months: monthsInRange(selectedCrop.harvest_month_start, selectedCrop.harvest_month_end), color: "#d4a017" },
-            ].map(({ label, months, color }) => months.length > 0 && (
-              <div key={label} style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 6 }}>{label}</div>
-                <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                  {months.map(m => (
-                    <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontFamily: "'Space Mono', monospace", fontWeight: m === currentMonth ? 700 : 400 }}>
-                      {MONTHS[m - 1]}
-                    </span>
-                  ))}
+            {selectedCrop.category === "livestock" ? (
+              // Livestock-specific timeline
+              [
+                { label: "❤️ BREEDING SEASON", months: selectedCrop.breeding_month_start ? monthsInRange(selectedCrop.breeding_month_start, selectedCrop.breeding_month_end) : [], color: "#cc80e0" },
+                { label: "🐣 BIRTHING / CALVING", months: selectedCrop.birthing_month_start ? monthsInRange(selectedCrop.birthing_month_start, selectedCrop.birthing_month_end) : [], color: "#d4a017" },
+                { label: "🪣 DIPPING / DEWORMING", months: selectedCrop.dipping_month_start ? monthsInRange(selectedCrop.dipping_month_start, selectedCrop.dipping_month_end) : [], color: "#5a9fd4" },
+                { label: "🥩 SLAUGHTER / SELLING", months: selectedCrop.slaughter_month_start ? monthsInRange(selectedCrop.slaughter_month_start, selectedCrop.slaughter_month_end) : [], color: "#e07060" },
+              ].map(({ label, months, color }) => months.length > 0 && (
+                <div key={label} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {months.map(m => (
+                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
+                        {MONTHS[m - 1]}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              // Crop timeline
+              [
+                { label: "🌱 PLANT", months: selectedCrop.plant_month_start ? monthsInRange(selectedCrop.plant_month_start, selectedCrop.plant_month_end) : [], color: "#7ec99a" },
+                { label: "🧪 FERTILISE", months: selectedCrop.fertilise_month_start ? monthsInRange(selectedCrop.fertilise_month_start, selectedCrop.fertilise_month_end) : [], color: "#7ab0e0" },
+                { label: "🌾 HARVEST", months: selectedCrop.harvest_month_start ? monthsInRange(selectedCrop.harvest_month_start, selectedCrop.harvest_month_end) : [], color: "#d4a017" },
+              ].map(({ label, months, color }) => months.length > 0 && (
+                <div key={label} style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                    {months.map(m => (
+                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
+                        {MONTHS[m - 1]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
 
             {selectedCrop.variety && (
               <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>RECOMMENDED VARIETIES</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 4, fontWeight: 600 }}>
+                  {selectedCrop.category === "livestock" ? "BREEDS" : "RECOMMENDED VARIETIES"}
+                </div>
                 <div style={{ fontSize: 13, color: "#c8e8d4" }}>{selectedCrop.variety}</div>
               </div>
             )}
             {selectedCrop.notes && (
               <div style={{ background: "#1a2e1e", borderRadius: 10, padding: 12, borderLeft: "3px solid #2d7a4f" }}>
-                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>AGRITEX NOTES</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 4, fontWeight: 600 }}>AGRITEX NOTES</div>
                 <div style={{ fontSize: 13, color: "#c8e8d4", lineHeight: 1.6 }}>{selectedCrop.notes}</div>
               </div>
             )}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── EDIT LISTING MODAL ────────────────────────────────────────────────────────
+function EditListingModal({ listing, onClose, onSave }) {
+  const [fields, setFields] = useState({
+    crop: listing.crop || "",
+    quantity: listing.quantity || "",
+    price: listing.price || "",
+    location: listing.location || "",
+    description: listing.description || "",
+    phone: listing.phone || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const set = (k, v) => setFields(f => ({ ...f, [k]: v }));
+
+  const handleSave = async () => {
+    setSaving(true);
+    await onSave({ ...fields, updated_at: new Date().toISOString() });
+    setSaving(false);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>Edit Listing</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
+        </div>
+        {[
+          ["CROP / PRODUCE", "crop", "e.g. Maize, Cattle"],
+          ["QUANTITY", "quantity", "e.g. 10 tonnes"],
+          ["PRICE", "price", "e.g. USD 298/tonne"],
+          ["LOCATION", "location", "e.g. Mazowe"],
+          ["WHATSAPP NUMBER", "phone", "+263 77X XXX XXX"],
+        ].map(([label, key, ph]) => (
+          <div key={key} style={{ marginBottom: 12 }}>
+            <label style={{ fontSize: 10, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#5c8f6b", display: "block", marginBottom: 5 }}>{label}</label>
+            <input className="input-field" value={fields[key]} onChange={e => set(key, e.target.value)} placeholder={ph} />
+          </div>
+        ))}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>DESCRIPTION</label>
+          <textarea className="input-field" value={fields.description} onChange={e => set("description", e.target.value)} rows={3} style={{ resize: "none" }} placeholder="Describe your produce..." />
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="btn-secondary" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
+          <button className="btn-primary" style={{ flex: 2 }} onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save Changes ✓"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── PRICE FEEDS TAB ───────────────────────────────────────────────────────────
+function PriceFeedsTab() {
+  const [prices, setPrices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+
+  useEffect(() => {
+    db.get("price_feed", "?order=crop").then(data => {
+      setPrices(Array.isArray(data) ? data : []);
+      setLoading(false);
+    });
+  }, []);
+
+  const categories = ["All", "Grains", "Cash Crops", "Livestock", "Horticulture"];
+  const catMap = {
+    "Grains": ["Maize", "Wheat", "Sorghum", "Soya Beans", "Groundnuts", "Pearl Millet"],
+    "Cash Crops": ["Tobacco", "Cotton", "Sunflower", "Sugar Cane"],
+    "Livestock": ["Cattle", "Goats", "Pigs", "Poultry"],
+    "Horticulture": ["Tomatoes", "Potatoes", "Onions", "Butternut", "Cabbage"],
+  };
+
+  const filtered = filter === "All" ? prices : prices.filter(p =>
+    (catMap[filter] || []).some(c => p.crop?.toLowerCase().includes(c.toLowerCase()))
+  );
+
+  const updatedDate = prices[0]?.created_at ? new Date(prices[0].created_at).toLocaleDateString("en-ZW", { day: "numeric", month: "short", year: "numeric" }) : "—";
+
+  return (
+    <div className="fade-in single-col">
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Market Prices</div>
+      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>Live prices from GMB, Cottco, ZFU and Mbare Musika · Updated {updatedDate}</div>
+
+      {/* Summary strip */}
+      <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 20 }}>
+        {[
+          { label: "Maize", icon: "🌽" }, { label: "Tobacco", icon: "🍂" },
+          { label: "Cattle", icon: "🐄" }, { label: "Tomatoes", icon: "🍅" },
+        ].map(({ label, icon }) => {
+          const p = prices.find(x => x.crop === label);
+          if (!p) return null;
+          return (
+            <div key={label} style={{ background: "#152218", border: `1px solid ${p.trend === "up" ? "#2d5a36" : "#5a2020"}`, borderRadius: 12, padding: "10px 14px", flexShrink: 0, minWidth: 110 }}>
+              <div style={{ fontSize: 18, marginBottom: 4 }}>{icon}</div>
+              <div style={{ fontSize: 11, color: "#8aaa94", marginBottom: 2 }}>{label}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#c8e8d4" }}>USD {p.price_usd}/{p.unit}</div>
+              <div style={{ fontSize: 11, color: p.trend === "up" ? "#5cd68a" : "#e07060", marginTop: 2 }}>
+                {p.trend === "up" ? "▲" : "▼"} {p.change_pct > 0 ? "+" : ""}{p.change_pct}%
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Category filter */}
+      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
+        {categories.map(c => (
+          <span key={c} className={`chip ${filter === c ? "active" : ""}`} onClick={() => setFilter(c)} style={{ fontSize: 11 }}>{c}</span>
+        ))}
+      </div>
+
+      {/* Full price table */}
+      <div className="card">
+        {/* Header */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "8px 0 12px", borderBottom: "1px solid #1a2e1e", marginBottom: 4 }}>
+          {["COMMODITY", "PRICE", "SOURCE", "CHANGE"].map(h => (
+            <div key={h} style={{ fontSize: 9, color: "#3d6b4a", fontWeight: 600, letterSpacing: "0.1em" }}>{h}</div>
+          ))}
+        </div>
+        {loading ? [1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: 44, borderRadius: 8, marginBottom: 6 }} />) :
+          filtered.map((p, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "12px 0", borderBottom: i < filtered.length - 1 ? "1px solid #1a2e1e" : "none", alignItems: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{p.crop}</div>
+              <div>
+                <div style={{ fontSize: 13, color: "#7ec99a", fontWeight: 700 }}>USD {p.price_usd}</div>
+                <div style={{ fontSize: 10, color: "#4a7a5a" }}>/{p.unit}</div>
+              </div>
+              <div style={{ fontSize: 11, color: "#5c8f6b" }}>{p.source}</div>
+              <div style={{ textAlign: "right" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: p.trend === "up" ? "#5cd68a" : p.trend === "down" ? "#e07060" : "#8aaa94" }}>
+                  {p.trend === "up" ? "▲" : p.trend === "down" ? "▼" : "—"} {Math.abs(p.change_pct)}%
+                </span>
+                {p.previous_price && (
+                  <div style={{ fontSize: 10, color: "#3d6b4a" }}>was {p.previous_price}</div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div style={{ marginTop: 16, background: "#1a2e1e", borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#5c8f6b", borderLeft: "3px solid #2d7a4f" }}>
+        💡 Prices are updated weekly from GMB, Cottco, ZFU and Mbare Musika. Use the AI Advisor for personalised price strategy.
+      </div>
+    </div>
+  );
+}
+
+// ─── FARM DIARY TAB ────────────────────────────────────────────────────────────
+const ACTIVITY_TYPES = [
+  { id: "planting", icon: "🌱", label: "Planting", color: "#5cd68a" },
+  { id: "fertilising", icon: "🧪", label: "Fertilising", color: "#7ab0e0" },
+  { id: "spraying", icon: "💧", label: "Spraying", color: "#5a9fd4" },
+  { id: "irrigation", icon: "🚿", label: "Irrigation", color: "#5a9fd4" },
+  { id: "harvesting", icon: "🌾", label: "Harvesting", color: "#d4a017" },
+  { id: "selling", icon: "💰", label: "Selling", color: "#7ec99a" },
+  { id: "livestock", icon: "🐄", label: "Livestock", color: "#cc80e0" },
+  { id: "other", icon: "📝", label: "Other", color: "#8aaa94" },
+];
+const WEATHER_OPTIONS = [
+  { id: "sunny", icon: "☀️", label: "Sunny" },
+  { id: "cloudy", icon: "⛅", label: "Cloudy" },
+  { id: "rainy", icon: "🌧️", label: "Rainy" },
+  { id: "dry", icon: "🌵", label: "Dry" },
+];
+
+function FarmDiaryTab({ authUser, setActiveTab }) {
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const [filter, setFilter] = useState("all");
+
+  const loadEntries = async () => {
+    setLoading(true);
+    const data = await db.get("farm_diary", "?order=activity_date.desc&limit=50");
+    setEntries(Array.isArray(data) ? data : []);
+    setLoading(false);
+  };
+
+  useEffect(() => { loadEntries(); }, []);
+
+  const filtered = filter === "all" ? entries : entries.filter(e => e.activity_type === filter);
+
+  // Group by date
+  const grouped = {};
+  filtered.forEach(e => {
+    const d = e.activity_date;
+    if (!grouped[d]) grouped[d] = [];
+    grouped[d].push(e);
+  });
+
+  const formatDate = (d) => {
+    const date = new Date(d + "T00:00:00");
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    if (d === today.toISOString().split("T")[0]) return "Today";
+    if (d === yesterday.toISOString().split("T")[0]) return "Yesterday";
+    return date.toLocaleDateString("en-ZW", { weekday: "short", day: "numeric", month: "short" });
+  };
+
+  // Stats
+  const thisWeek = entries.filter(e => {
+    const d = new Date(e.activity_date);
+    const now = new Date();
+    const weekAgo = new Date(now.setDate(now.getDate() - 7));
+    return d >= weekAgo;
+  });
+
+  return (
+    <div className="fade-in single-col">
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4" }}>Farm Diary</div>
+          <div style={{ fontSize: 12, color: "#4a7a5a" }}>{entries.length} activities logged</div>
+        </div>
+        <button onClick={() => setShowAdd(true)} style={{ background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "10px 16px", color: "#e8dfc8", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+          + Log Activity
+        </button>
+      </div>
+
+      {/* Weekly stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, margin: "16px 0" }}>
+        {[
+          { label: "This Week", value: thisWeek.length, icon: "📅" },
+          { label: "Plantings", value: entries.filter(e => e.activity_type === "planting").length, icon: "🌱" },
+          { label: "Harvests", value: entries.filter(e => e.activity_type === "harvesting").length, icon: "🌾" },
+          { label: "Livestock", value: entries.filter(e => e.activity_type === "livestock").length, icon: "🐄" },
+        ].map(s => (
+          <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+            <div style={{ fontSize: 18, marginBottom: 4 }}>{s.icon}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#7ec99a" }}>{s.value}</div>
+            <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Activity type filter */}
+      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
+        <span className={`chip ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")} style={{ fontSize: 11 }}>All</span>
+        {ACTIVITY_TYPES.map(a => (
+          <span key={a.id} className={`chip ${filter === a.id ? "active" : ""}`} onClick={() => setFilter(a.id)} style={{ fontSize: 11 }}>{a.icon} {a.label}</span>
+        ))}
+      </div>
+
+      {/* Entries grouped by date */}
+      {loading ? [1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12, marginBottom: 10 }} />) :
+        Object.keys(grouped).length === 0 ? (
+          <div style={{ textAlign: "center", padding: "48px 20px" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>📓</div>
+            <div style={{ fontSize: 14, color: "#5c8f6b", marginBottom: 8 }}>No activities logged yet</div>
+            <div style={{ fontSize: 12, color: "#3d6b4a", marginBottom: 20 }}>Start tracking your farm activities daily to build a record of your season.</div>
+            <button onClick={() => setShowAdd(true)} className="btn-primary" style={{ width: "auto", padding: "10px 24px" }}>Log Your First Activity</button>
+          </div>
+        ) : (
+          Object.entries(grouped).map(([date, dayEntries]) => (
+            <div key={date} style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#4a7a5a", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                {formatDate(date)}
+              </div>
+              {dayEntries.map((e, i) => {
+                const type = ACTIVITY_TYPES.find(a => a.id === e.activity_type) || ACTIVITY_TYPES[7];
+                const weather = WEATHER_OPTIONS.find(w => w.id === e.weather);
+                return (
+                  <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "14px", marginBottom: 8, borderLeft: `3px solid ${type.color}` }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                      <div style={{ width: 36, height: 36, background: `${type.color}20`, border: `1px solid ${type.color}40`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+                        {type.icon}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{type.label}{e.crop_name ? ` — ${e.crop_name}` : ""}</div>
+                          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                            {weather && <span style={{ fontSize: 14 }}>{weather.icon}</span>}
+                            {e.cost_usd && <span style={{ fontSize: 10, color: "#d4a017", background: "rgba(212,160,23,0.15)", padding: "2px 7px", borderRadius: 8 }}>USD {e.cost_usd}</span>}
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 13, color: "#8aaa94", marginTop: 4, lineHeight: 1.5 }}>{e.notes}</div>
+                        {e.quantity && <div style={{ fontSize: 11, color: "#5c8f6b", marginTop: 4 }}>📦 {e.quantity}</div>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ))
+        )
+      }
+
+      {/* Add Activity Modal */}
+      {showAdd && <AddDiaryEntryModal onClose={() => setShowAdd(false)} onSave={async (entry) => { await db.post("farm_diary", entry); setShowAdd(false); loadEntries(); }} />}
+    </div>
+  );
+}
+
+function AddDiaryEntryModal({ onClose, onSave }) {
+  const today = new Date().toISOString().split("T")[0];
+  const [fields, setFields] = useState({
+    activity_date: today,
+    activity_type: "planting",
+    crop_name: "",
+    notes: "",
+    quantity: "",
+    cost_usd: "",
+    weather: "sunny",
+  });
+  const [saving, setSaving] = useState(false);
+  const set = (k, v) => setFields(f => ({ ...f, [k]: v }));
+
+  const handleSave = async () => {
+    if (!fields.notes.trim()) return;
+    setSaving(true);
+    await onSave({
+      ...fields,
+      cost_usd: fields.cost_usd ? parseFloat(fields.cost_usd) : null,
+      crop_name: fields.crop_name || null,
+      quantity: fields.quantity || null,
+    });
+    setSaving(false);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxHeight: "92vh", overflowY: "auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>Log Activity</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
+        </div>
+
+        {/* Activity type selector */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8 }}>ACTIVITY TYPE</label>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6 }}>
+            {ACTIVITY_TYPES.map(a => (
+              <button key={a.id} onClick={() => set("activity_type", a.id)}
+                style={{ background: fields.activity_type === a.id ? `${a.color}25` : "#1a2e1e", border: `1px solid ${fields.activity_type === a.id ? a.color : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: 18, marginBottom: 3 }}>{a.icon}</div>
+                <div style={{ fontSize: 9, color: fields.activity_type === a.id ? a.color : "#5c8f6b" }}>{a.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Date */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>DATE</label>
+          <input type="date" className="input-field" value={fields.activity_date} onChange={e => set("activity_date", e.target.value)} />
+        </div>
+
+        {/* Crop */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>CROP / LIVESTOCK</label>
+          <input className="input-field" value={fields.crop_name} onChange={e => set("crop_name", e.target.value)} placeholder="e.g. Maize, Cattle, Tomatoes" />
+        </div>
+
+        {/* Notes */}
+        <div style={{ marginBottom: 12 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>NOTES *</label>
+          <textarea className="input-field" value={fields.notes} onChange={e => set("notes", e.target.value)}
+            placeholder="What did you do today? Include any observations, problems or results..." rows={3} style={{ resize: "none" }} />
+        </div>
+
+        {/* Quantity + Cost side by side */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+          <div>
+            <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>QUANTITY</label>
+            <input className="input-field" value={fields.quantity} onChange={e => set("quantity", e.target.value)} placeholder="e.g. 2 bags, 5 head" />
+          </div>
+          <div>
+            <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 5 }}>COST (USD)</label>
+            <input type="number" className="input-field" value={fields.cost_usd} onChange={e => set("cost_usd", e.target.value)} placeholder="0.00" />
+          </div>
+        </div>
+
+        {/* Weather */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8 }}>WEATHER</label>
+          <div style={{ display: "flex", gap: 8 }}>
+            {WEATHER_OPTIONS.map(w => (
+              <button key={w.id} onClick={() => set("weather", w.id)}
+                style={{ flex: 1, background: fields.weather === w.id ? "#1a3d24" : "#1a2e1e", border: `1px solid ${fields.weather === w.id ? "#2d7a4f" : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: 20 }}>{w.icon}</div>
+                <div style={{ fontSize: 9, color: fields.weather === w.id ? "#7ec99a" : "#4a7a5a", marginTop: 3 }}>{w.label}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button className="btn-primary" onClick={handleSave} disabled={saving || !fields.notes.trim()} style={{ opacity: fields.notes.trim() ? 1 : 0.4 }}>
+          {saving ? "Saving..." : "Save Entry ✓"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── SPONSOR CARD ──────────────────────────────────────────────────────────────
+function SponsorCard() {
+  const [sponsor, setSponsor] = useState(null);
+
+  useEffect(() => {
+    db.get("sponsors", "?active=eq.true&limit=1").then(data => {
+      if (Array.isArray(data) && data.length > 0) setSponsor(data[0]);
+    });
+  }, []);
+
+  if (!sponsor) return null;
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 9, color: "#3d6b4a", letterSpacing: "0.1em", marginBottom: 6, textAlign: "right" }}>SPONSORED</div>
+      <a href={sponsor.cta_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+        <div style={{ background: `linear-gradient(135deg, ${sponsor.color}18, #152218)`, border: `1px solid ${sponsor.color}40`, borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 44, height: 44, background: `${sponsor.color}25`, border: `1px solid ${sponsor.color}40`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
+            {sponsor.logo_emoji}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#c8e8d4", marginBottom: 2 }}>{sponsor.name}</div>
+            <div style={{ fontSize: 11, color: "#8aaa94", lineHeight: 1.4 }}>{sponsor.tagline}</div>
+          </div>
+          <div style={{ background: `${sponsor.color}30`, border: `1px solid ${sponsor.color}50`, borderRadius: 8, padding: "6px 10px", color: sponsor.color, fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
+            {sponsor.cta_text} →
+          </div>
+        </div>
+      </a>
+    </div>
+  );
+}
+
+// ─── FEATURE LISTING MODAL ─────────────────────────────────────────────────────
+function FeatureListingModal({ listing, onClose, onSave }) {
+  const [weeks, setWeeks] = useState(1);
+  const [method, setMethod] = useState("ecocash");
+  const [ref, setRef] = useState("");
+  const [saving, setSaving] = useState(false);
+  const price = weeks * 2;
+
+  const METHODS = [
+    { id: "ecocash", label: "EcoCash", icon: "📱", number: "*151*2*1*FARMLINK#" },
+    { id: "onemoney", label: "OneMoney", icon: "💳", number: "*111*FARMLINK#" },
+    { id: "bank", label: "Bank Transfer", icon: "🏦", number: "FBC: 1234567890" },
+  ];
+
+  const selected = METHODS.find(m => m.id === method);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>⭐ Feature This Listing</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 20, cursor: "pointer" }}>✕</button>
+        </div>
+
+        {/* Listing preview */}
+        <div style={{ background: "#1a2e1e", borderRadius: 10, padding: "10px 14px", marginBottom: 16, border: "1px solid #2d5a36" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{listing.crop}</div>
+          <div style={{ fontSize: 11, color: "#5c8f6b" }}>{listing.location} · {listing.price}</div>
+        </div>
+
+        {/* What you get */}
+        <div style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.3)", borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
+          <div style={{ fontSize: 11, color: "#d4a017", fontWeight: 700, marginBottom: 8 }}>WHAT YOU GET</div>
+          {["⭐ Featured badge on your listing", "📌 Pinned to top of marketplace", "👁 3x more visibility to buyers", "📱 Priority in search results"].map((b, i) => (
+            <div key={i} style={{ fontSize: 12, color: "#c8e8d4", marginBottom: 4 }}>{b}</div>
+          ))}
+        </div>
+
+        {/* Duration picker */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8, fontWeight: 600 }}>HOW LONG?</label>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            {[1, 2, 4].map(w => (
+              <button key={w} onClick={() => setWeeks(w)}
+                style={{ background: weeks === w ? "rgba(212,160,23,0.2)" : "#152218", border: `1px solid ${weeks === w ? "#d4a017" : "#1f3525"}`, borderRadius: 10, padding: "12px 8px", cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: weeks === w ? "#d4a017" : "#c8e8d4" }}>{w} {w === 1 ? "week" : "weeks"}</div>
+                <div style={{ fontSize: 12, color: weeks === w ? "#d4a017" : "#5c8f6b", marginTop: 2 }}>USD {w * 2}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Payment method */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 8, fontWeight: 600 }}>PAYMENT METHOD</label>
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+            {METHODS.map(m => (
+              <button key={m.id} onClick={() => setMethod(m.id)}
+                style={{ flex: 1, background: method === m.id ? "#1a3d24" : "#152218", border: `1px solid ${method === m.id ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "8px", cursor: "pointer" }}>
+                <div style={{ fontSize: 18 }}>{m.icon}</div>
+                <div style={{ fontSize: 10, color: method === m.id ? "#7ec99a" : "#4a7a5a", marginTop: 3 }}>{m.label}</div>
+              </button>
+            ))}
+          </div>
+          <div style={{ background: "#1a2e1e", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#8aaa94" }}>
+            Pay <span style={{ color: "#7ec99a", fontWeight: 700 }}>USD {price}</span> to: <span style={{ color: "#c8e8d4" }}>{selected?.number}</span>
+            <div style={{ fontSize: 11, color: "#4a7a5a", marginTop: 4 }}>Reference: FEATURE-{listing.id?.slice(0, 8).toUpperCase()}</div>
+          </div>
+        </div>
+
+        {/* Payment reference */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 10, color: "#5c8f6b", display: "block", marginBottom: 6, fontWeight: 600 }}>PAYMENT CONFIRMATION NUMBER</label>
+          <input className="input-field" value={ref} onChange={e => setRef(e.target.value)} placeholder="e.g. ECO1234567890" />
+          <div style={{ fontSize: 10, color: "#3d6b4a", marginTop: 4 }}>Enter the transaction ID from your payment confirmation SMS</div>
+        </div>
+
+        <button className="btn-primary" onClick={async () => { setSaving(true); await onSave(weeks, ref, method); setSaving(false); }}
+          disabled={saving || !ref.trim()} style={{ opacity: ref.trim() ? 1 : 0.4, background: "linear-gradient(135deg, #b8860b, #8b6914)" }}>
+          {saving ? "Activating..." : `Activate Featured Listing — USD ${price} ✓`}
+        </button>
+        <div style={{ fontSize: 10, color: "#3d6b4a", textAlign: "center", marginTop: 8 }}>
+          Your listing will be featured immediately after payment verification
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── LEGAL TAB ─────────────────────────────────────────────────────────────────
+const TOS_SECTIONS = [
+  { title: "1. Introduction", content: "Welcome to FarmLink Zim. FarmLink Zim is an agricultural marketplace and advisory platform connecting farmers, buyers, and agricultural service providers across Zimbabwe.\n\nBy accessing or using the FarmLink Zim Platform, you agree to be bound by these Terms of Service. If you do not agree to these Terms, please do not use the Platform." },
+  { title: "2. Eligibility", content: "You must be at least 18 years of age to use this Platform. By using FarmLink Zim, you represent that you are a resident of Zimbabwe or conducting agricultural business in Zimbabwe, have the legal capacity to enter into these Terms, and will use the Platform only for lawful purposes." },
+  { title: "3. Account Registration", content: "To access certain features you may register using your email address or mobile phone number. We use one-time passwords (OTP) for verification. You are responsible for maintaining the confidentiality of your credentials and must provide accurate, current information." },
+  { title: "4. Marketplace Listings", content: "Registered farmers may list agricultural produce and livestock for sale. By posting a listing, you represent that you are the legitimate owner of the produce, all information is accurate, the produce meets applicable Zimbabwean food safety standards, and you hold any necessary licences.\n\nProhibited items include stolen produce, products not meeting food safety standards, protected wildlife products, and items whose sale is prohibited under Zimbabwean law." },
+  { title: "5. Transactions and Payments", content: "FarmLink Zim is a marketplace platform. We facilitate connections between buyers and sellers but are not a party to any transaction. Users are responsible for negotiating terms, arranging payment directly, ensuring compliance with tax obligations, and resolving any disputes." },
+  { title: "6. AI Advisory Services", content: "The AI Advisor provides general agricultural guidance only. It does not constitute professional agronomic, veterinary, or legal advice. You should consult qualified professionals before making significant farming decisions. FarmLink Zim is not liable for losses arising from reliance on AI-generated advice." },
+  { title: "7. Farm Diary and Personal Data", content: "The Farm Diary feature allows you to record your agricultural activities. Data you enter is stored on our servers and may be used to improve our services and provide personalised recommendations. Please refer to our Privacy Policy for full details." },
+  { title: "8. Intellectual Property", content: `The FarmLink Zim name, logo, platform design, and all content created by FarmLink Zim are protected by copyright. © ${new Date().getFullYear()} FarmLink Zim. All rights reserved.\n\nUser-generated content remains the intellectual property of the respective user. By posting content, you grant FarmLink Zim a non-exclusive, royalty-free licence to use and display such content for the purposes of operating the Platform.` },
+  { title: "9. Prohibited Conduct", content: "Users must not post false or fraudulent listings, harass or abuse other users, attempt unauthorised access to the Platform, distribute spam or malware, scrape Platform data without consent, or use the Platform in violation of Zimbabwean laws." },
+  { title: "10. Limitation of Liability", content: "To the maximum extent permitted by Zimbabwean law, FarmLink Zim shall not be liable for indirect or consequential damages, losses from transactions between users, inaccuracies in market data or AI content, or Platform unavailability. Our total liability shall not exceed amounts paid to us in the preceding 12 months." },
+  { title: "11. Governing Law", content: "These Terms shall be governed by the laws of Zimbabwe. Any disputes shall be subject to the exclusive jurisdiction of the courts of Zimbabwe." },
+  { title: "12. Changes to These Terms", content: "We reserve the right to update these Terms at any time. We will notify registered users of material changes via email or in-app notification. Continued use of the Platform following notification constitutes acceptance of the updated Terms." },
+  { title: "13. Contact Us", content: "For questions about these Terms, contact us at:\n\nFarmLink Zim\nEmail: legal@farmlinkzim.com\nPlatform: farmlink-zim-vm8p.vercel.app\nZimbabwe" },
+];
+
+const PP_SECTIONS = [
+  { title: "1. Introduction", content: "FarmLink Zim is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect data in accordance with Zimbabwe's Cyber and Data Protection Act, 2021." },
+  { title: "2. Information We Collect", content: "We collect information you provide (name, email, phone, farm location, crops, livestock, listings, diary entries, messages) and information collected automatically (device type, IP address, pages visited, access times). We use Open-Meteo for weather data using your province location." },
+  { title: "3. How We Use Your Information", content: "We use your information to create and manage your account, display marketplace listings, provide personalised AI agricultural advice, send notifications about prices and alerts, generate anonymised agricultural insights, improve the Platform, and comply with legal obligations." },
+  { title: "4. Sharing Your Information", content: "We do not sell your personal information. Marketplace listings are visible to all Platform users. Farm diary entries are private.\n\nWe use the following services: Supabase (database, EU servers), Vercel (hosting), Anthropic Claude AI (advisory queries), and Open-Meteo (weather). We may disclose information if required by Zimbabwean law." },
+  { title: "5. Data Security", content: "We implement encrypted data transmission (HTTPS/TLS), secure OTP authentication, database-level row security policies, and regular security reviews. However, no internet transmission is 100% secure. Please notify us immediately if you suspect unauthorised account access." },
+  { title: "6. Data Retention", content: "We retain your personal information for as long as your account is active. You may request deletion at any time by contacting us. We will process deletion requests within 30 days, except where retention is required by law." },
+  { title: "7. Your Rights", content: "Under Zimbabwe's Cyber and Data Protection Act, 2021, you have the right to access your personal information, correct inaccurate data, request deletion, object to certain processing, and withdraw consent. Contact legal@farmlinkzim.com to exercise these rights." },
+  { title: "8. Children's Privacy", content: "FarmLink Zim is not directed at children under 18. We do not knowingly collect information from children. If we discover we have inadvertently done so, we will delete it promptly." },
+  { title: "9. Cookies and Storage", content: "The Platform uses browser local storage to maintain your login session and user preferences. We do not use advertising or tracking cookies. You may clear your browser storage at any time, which will log you out." },
+  { title: "10. International Data Transfers", content: "Your data may be processed on servers outside Zimbabwe (including the EU via Supabase). We ensure appropriate safeguards are in place for such transfers in accordance with applicable data protection laws." },
+  { title: "11. Changes to This Policy", content: "We may update this Privacy Policy from time to time. We will notify you of significant changes via email or in-app notification. The updated policy will be effective from the date shown at the top." },
+  { title: "12. Contact Us", content: "For privacy questions or to exercise your data rights:\n\nFarmLink Zim — Data Controller\nEmail: legal@farmlinkzim.com\nPlatform: farmlink-zim-vm8p.vercel.app\nZimbabwe\n\nYou also have the right to lodge a complaint with POTRAZ if you believe your data protection rights have been violated." },
+];
+
+function LegalTab({ page, setActiveTab }) {
+  const isTos = page === "tos";
+  const sections = isTos ? TOS_SECTIONS : PP_SECTIONS;
+  const [expanded, setExpanded] = useState(null);
+  const effectiveDate = new Date().toLocaleDateString("en-ZW", { day: "numeric", month: "long", year: "numeric" });
+
+  return (
+    <div className="fade-in single-col">
+      {/* Header */}
+      <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #2d5a36", borderRadius: 16, padding: "24px 20px", marginBottom: 20 }}>
+        <div style={{ fontSize: 11, color: "#5cd68a", fontWeight: 600, letterSpacing: "0.1em", marginBottom: 8 }}>
+          🌿 FARMLINK ZIM · LEGAL
+        </div>
+        <div style={{ fontSize: 24, fontWeight: 700, color: "#c8e8d4", marginBottom: 6 }}>
+          {isTos ? "Terms of Service" : "Privacy Policy"}
+        </div>
+        <div style={{ fontSize: 12, color: "#5c8f6b" }}>Effective: {effectiveDate}</div>
+      </div>
+
+      {/* Toggle between docs */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        {[["tos", "Terms of Service"], ["pp", "Privacy Policy"]].map(([id, label]) => (
+          <button key={id} onClick={() => setActiveTab(`legal-${id}`)}
+            style={{ flex: 1, background: page === id ? "#2d7a4f" : "#152218", border: `1px solid ${page === id ? "#3a9962" : "#1f3525"}`, borderRadius: 8, padding: "10px", color: page === id ? "#e8f5ed" : "#5c8f6b", fontSize: 12, cursor: "pointer", fontWeight: page === id ? 600 : 400 }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Accordion sections */}
+      {sections.map((s, i) => (
+        <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, marginBottom: 8, overflow: "hidden" }}>
+          <button onClick={() => setExpanded(expanded === i ? null : i)}
+            style={{ width: "100%", background: "none", border: "none", padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", textAlign: "left" }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{s.title}</span>
+            <span style={{ fontSize: 16, color: "#4a7a5a", flexShrink: 0, marginLeft: 8 }}>{expanded === i ? "−" : "+"}</span>
+          </button>
+          {expanded === i && (
+            <div style={{ padding: "0 16px 16px", borderTop: "1px solid #1a2e1e" }}>
+              {s.content.split("\n\n").map((para, j) => (
+                <p key={j} style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.7, marginTop: 12, marginBottom: 0 }}>{para}</p>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+
+      {/* Footer */}
+      <div style={{ marginTop: 24, padding: "16px", background: "#0f2218", borderRadius: 12, border: "1px solid #1f3525", textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: "#3d6b4a", marginBottom: 4 }}>© {new Date().getFullYear()} FarmLink Zim. All rights reserved.</div>
+        <div style={{ fontSize: 11, color: "#2d5236" }}>Questions? Email legal@farmlinkzim.com</div>
+      </div>
     </div>
   );
 }
@@ -1752,13 +2629,17 @@ function AdminTab({ farmers, listings }) {
 }
 
 // ─── AUTH MODAL ────────────────────────────────────────────────────────────────
-function AuthModal({ onClose, authUser, onAuth, onLogout }) {
-  const [step, setStep] = useState("input"); // input | verify | profile
+function AuthModal({ onClose, authUser, onAuth, onLogout, setActiveTab }) {
+  const [step, setStep] = useState("input");
   const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sentTo, setSentTo] = useState("");
+  const [profileTab, setProfileTab] = useState("overview");
+  const [myListings, setMyListings] = useState([]);
+  const [myDiary, setMyDiary] = useState([]);
+  const [loadingData, setLoadingData] = useState(false);
   const isEmail = identifier.includes("@");
 
   const handleSendOtp = async () => {
@@ -1768,15 +2649,10 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
     setLoading(false);
     if (err) {
       const msg = err.message || err.msg || JSON.stringify(err);
-      if (msg.includes("rate limit") || msg.includes("429")) {
-        setError("Too many attempts. Please wait a few minutes and try again.");
-      } else if (msg.includes("invalid") || msg.includes("email")) {
-        setError("Invalid email address. Please check and try again.");
-      } else if (msg.includes("not enabled") || msg.includes("disabled")) {
-        setError(`Supabase error: ${msg}. Go to Supabase → Authentication → Providers → Email → Enable.`);
-      } else {
-        setError(`Could not send code: ${msg}`);
-      }
+      if (msg.includes("rate limit") || msg.includes("429")) setError("Too many attempts. Please wait a few minutes and try again.");
+      else if (msg.includes("invalid") || msg.includes("email")) setError("Invalid email address. Please check and try again.");
+      else if (msg.includes("not enabled") || msg.includes("disabled")) setError("Email sign-in is not enabled in Supabase. Go to Authentication > Providers > Email > Enable.");
+      else setError("Could not send code: " + msg);
       return;
     }
     setSentTo(identifier.trim());
@@ -1792,530 +2668,173 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
     onAuth(user);
   };
 
-  // Show profile if already logged in
+  const loadProfileData = async () => {
+    setLoadingData(true);
+    const [listings, diary] = await Promise.all([
+      db.get("listings", "?active=eq.true&order=created_at.desc"),
+      db.get("farm_diary", "?order=activity_date.desc&limit=10"),
+    ]);
+    setMyListings(Array.isArray(listings) ? listings : []);
+    setMyDiary(Array.isArray(diary) ? diary : []);
+    setLoadingData(false);
+  };
+
   if (authUser) {
     const email = authUser.email || "";
     const phone = authUser.phone || "";
     return (
       <div className="modal-overlay" onClick={onClose}>
-        <div className="modal" onClick={e => e.stopPropagation()}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>My Profile</div>
-            <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>✕</button>
+        <div className="modal" onClick={e => e.stopPropagation()} style={{ maxHeight: "92vh", overflowY: "auto", padding: 0 }}>
+          <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", padding: "20px 20px 0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <div style={{ width: 52, height: 52, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>{"👩🏾‍🌾"}</div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#c8e8d4" }}>{email || phone}</div>
+                  <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2, display: "flex", alignItems: "center", gap: 5 }}>
+                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#5cd68a" }} />
+                    VERIFIED FARMER
+                  </div>
+                </div>
+              </div>
+              <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
+            </div>
+            <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #1f3525" }}>
+              {[["overview", "Overview"], ["listings", "Listings"], ["diary", "Diary"], ["farm", "Farm"]].map(([id, label]) => (
+                <button key={id} onClick={() => { setProfileTab(id); if (id !== "overview") loadProfileData(); }}
+                  style={{ flex: 1, background: "none", border: "none", borderBottom: profileTab === id ? "2px solid #7ec99a" : "2px solid transparent", padding: "10px 4px", color: profileTab === id ? "#7ec99a" : "#4a7a5a", fontSize: 11, cursor: "pointer", fontWeight: profileTab === id ? 600 : 400 }}>
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16, marginBottom: 20, textAlign: "center" }}>
-            <div style={{ fontSize: 48, marginBottom: 8 }}>👩🏾‍🌾</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>{email || phone}</div>
-            <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>VERIFIED FARMER</div>
+
+          <div style={{ padding: "16px 20px 20px" }}>
+            {profileTab === "overview" && (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
+                  {[{ label: "Listings", icon: "🛒" }, { label: "Diary", icon: "📓" }, { label: "Free Plan", icon: "⭐" }].map((s, i) => (
+                    <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+                      <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
+                      <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2 }}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="section-title">Quick Actions</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                  {[
+                    { icon: "🛒", label: "Manage My Listings", sub: "Edit, feature or remove listings", action: () => { setProfileTab("listings"); loadProfileData(); } },
+                    { icon: "📓", label: "View Farm Diary", sub: "See your activity log", action: () => { setProfileTab("diary"); loadProfileData(); } },
+                    { icon: "📈", label: "Market Prices", sub: "Latest GMB and ZFU prices", action: () => { onClose(); setActiveTab("prices"); } },
+                    { icon: "🗓️", label: "Planting Calendar", sub: "View seasonal schedule", action: () => { onClose(); setActiveTab("calendar"); } },
+                  ].map((a, i) => (
+                    <button key={i} onClick={a.action} style={{ display: "flex", alignItems: "center", gap: 12, background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", cursor: "pointer", textAlign: "left" }}>
+                      <span style={{ fontSize: 22 }}>{a.icon}</span>
+                      <div><div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{a.label}</div><div style={{ fontSize: 11, color: "#4a7a5a" }}>{a.sub}</div></div>
+                      <span style={{ marginLeft: "auto", color: "#3d6b4a", fontSize: 16 }}>{"›"}</span>
+                    </button>
+                  ))}
+                </div>
+                <div style={{ background: "linear-gradient(135deg, #1e2d18, #152218)", border: "1px solid #d4a017", borderRadius: 12, padding: 14, marginBottom: 16 }}>
+                  <div style={{ fontSize: 10, color: "#d4a017", fontWeight: 700, marginBottom: 6 }}>{"⭐"} FARMLINK PREMIUM — USD 5/month</div>
+                  {["Verified badge on all listings", "Unlimited listings (free: 2)", "Priority marketplace placement"].map((b, i) => (
+                    <div key={i} style={{ fontSize: 12, color: "#8aaa94", marginBottom: 3 }}>{"✓"} {b}</div>
+                  ))}
+                  <button style={{ width: "100%", background: "linear-gradient(135deg, #b8860b, #8b6914)", border: "none", borderRadius: 8, padding: "10px", color: "#fff8e8", fontSize: 12, cursor: "pointer", fontWeight: 600, marginTop: 10 }}>Upgrade to Premium {"→"}</button>
+                </div>
+                <button onClick={onLogout} style={{ width: "100%", background: "rgba(224,112,96,0.1)", border: "1px solid #e07060", borderRadius: 8, padding: "12px", color: "#e07060", fontSize: 13, cursor: "pointer", fontWeight: 600, marginTop: 8 }}>🚪 Sign Out</button>
+              </>
+            )}
+
+            {profileTab === "listings" && (
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>My Listings</div>
+                  <button onClick={() => { onClose(); setActiveTab("market"); }} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "6px 12px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>{"+"} New Listing</button>
+                </div>
+                {loadingData ? <div className="skeleton" style={{ height: 80, borderRadius: 10 }} /> :
+                  myListings.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "32px 20px" }}>
+                      <div style={{ fontSize: 36, marginBottom: 8 }}>🛒</div>
+                      <div style={{ fontSize: 13, color: "#5c8f6b", marginBottom: 12 }}>No listings yet</div>
+                      <button onClick={() => { onClose(); setActiveTab("market"); }} className="btn-primary" style={{ width: "auto", padding: "8px 20px" }}>Post Your First Listing</button>
+                    </div>
+                  ) : myListings.map((l, i) => (
+                    <div key={i} style={{ background: "#1a2e1e", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", marginBottom: 8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
+                        {l.is_featured && <span style={{ fontSize: 9, background: "rgba(212,160,23,0.2)", color: "#d4a017", padding: "2px 7px", borderRadius: 8 }}>{"⭐"} FEATURED</span>}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 4 }}>{"📍"} {l.location} · {l.price}</div>
+                      <button onClick={() => { onClose(); setActiveTab("market"); }} style={{ background: "#152218", border: "1px solid #2d5a36", borderRadius: 7, padding: "5px 12px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>{"✏️"} Edit in Marketplace</button>
+                    </div>
+                  ))
+                }
+              </>
+            )}
+
+            {profileTab === "diary" && (
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>Recent Activity</div>
+                  <button onClick={() => { onClose(); setActiveTab("diary"); }} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "6px 12px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>{"+"} Log Activity</button>
+                </div>
+                {loadingData ? <div className="skeleton" style={{ height: 80, borderRadius: 10 }} /> :
+                  myDiary.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "32px 20px" }}>
+                      <div style={{ fontSize: 36, marginBottom: 8 }}>📓</div>
+                      <div style={{ fontSize: 13, color: "#5c8f6b", marginBottom: 12 }}>No diary entries yet</div>
+                      <button onClick={() => { onClose(); setActiveTab("diary"); }} className="btn-primary" style={{ width: "auto", padding: "8px 20px" }}>Start Your Farm Diary</button>
+                    </div>
+                  ) : myDiary.map((e, i) => {
+                    const type = ACTIVITY_TYPES.find(a => a.id === e.activity_type) || ACTIVITY_TYPES[7];
+                    return (
+                      <div key={i} style={{ display: "flex", gap: 10, padding: "10px 0", borderBottom: i < myDiary.length - 1 ? "1px solid #1a2e1e" : "none" }}>
+                        <div style={{ width: 32, height: 32, background: type.color + "20", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{type.icon}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: "#c8e8d4" }}>{type.label}{e.crop_name ? " — " + e.crop_name : ""}</div>
+                          <div style={{ fontSize: 11, color: "#5c8f6b" }}>{new Date(e.activity_date + "T00:00:00").toLocaleDateString("en-ZW", { day: "numeric", month: "short" })}</div>
+                          <div style={{ fontSize: 11, color: "#8aaa94", marginTop: 2 }}>{(e.notes || "").slice(0, 60)}{(e.notes || "").length > 60 ? "..." : ""}</div>
+                        </div>
+                      </div>
+                    );
+                  })
+                }
+                <button onClick={() => { onClose(); setActiveTab("diary"); }} className="btn-secondary" style={{ width: "100%", marginTop: 12 }}>View Full Diary {"→"}</button>
+              </>
+            )}
+
+            {profileTab === "farm" && (
+              <>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4", marginBottom: 16 }}>Farm Details</div>
+                <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, color: "#4a7a5a", marginBottom: 8, fontWeight: 600 }}>UPDATE FARM REGISTRATION</div>
+                  <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update your province, district, crops and livestock through the Register Farm tab.</div>
+                  <button onClick={() => { onClose(); setActiveTab("register"); }} className="btn-primary">Update Farm Details {"→"}</button>
+                </div>
+                <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16 }}>
+                  <div style={{ fontSize: 11, color: "#4a7a5a", marginBottom: 8, fontWeight: 600 }}>CROP AND LIVESTOCK TRACKING</div>
+                  <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update hectares and headcount on the interactive farmer map.</div>
+                  <button onClick={() => { onClose(); setActiveTab("home"); }} className="btn-secondary" style={{ width: "100%" }}>Open Farmer Map {"→"}</button>
+                </div>
+              </>
+            )}
           </div>
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-            {email && <div style={{ flex: 1, background: "#152218", borderRadius: 8, padding: "10px 12px" }}>
-              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>EMAIL</div>
-              <div style={{ fontSize: 12, color: "#c8e8d4" }}>{email}</div>
-            </div>}
-            {phone && <div style={{ flex: 1, background: "#152218", borderRadius: 8, padding: "10px 12px" }}>
-              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a", marginBottom: 4 }}>PHONE</div>
-              <div style={{ fontSize: 12, color: "#c8e8d4" }}>{phone}</div>
-            </div>}
-          </div>
-          <button onClick={onLogout} className="btn-secondary" style={{ width: "100%", color: "#e07060", borderColor: "#5a2020" }}>Sign Out</button>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>
-              {step === "input" ? "Sign In / Register" : "Enter Your Code"}
-            </div>
-            <div style={{ fontSize: 11, color: "#4a7a5a", marginTop: 3 }}>
-              {step === "input" ? "Enter your email or phone number" : `Code sent to ${sentTo}`}
-            </div>
-          </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>✕</button>
-        </div>
-
-        {step === "input" && (
-          <>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 6 }}>EMAIL OR PHONE NUMBER</label>
-              <input className="input-field" value={identifier} onChange={e => { setIdentifier(e.target.value); setError(""); }}
-                placeholder="email@example.com or +263771234567"
-                onKeyDown={e => e.key === "Enter" && handleSendOtp()} autoFocus />
-              <div style={{ fontSize: 10, color: "#3d6b4a", marginTop: 6, fontFamily: "'Space Mono', monospace" }}>
-                {identifier.includes("@") ? "📧 We'll send a code to this email" : "📱 We'll send a code via SMS"}
-              </div>
-            </div>
-
-            {error && <div style={{ background: "rgba(224,112,96,0.15)", border: "1px solid #5a2020", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#e07060", marginBottom: 12 }}>{error}</div>}
-
-            <button className="btn-primary" onClick={handleSendOtp} disabled={loading || !identifier.trim()} style={{ opacity: identifier.trim() ? 1 : 0.4 }}>
-              {loading ? "Sending code..." : `Send Code ${identifier.includes("@") ? "📧" : "📱"}`}
-            </button>
-
-            <div style={{ textAlign: "center", marginTop: 16, fontSize: 11, color: "#3d6b4a" }}>
-              New farmers are automatically registered on first login.
-            </div>
-          </>
-        )}
-
-        {step === "verify" && (
-          <>
-            <div style={{ textAlign: "center", marginBottom: 20 }}>
-              <div style={{ fontSize: 48, marginBottom: 8 }}>{sentTo.includes("@") ? "📧" : "📱"}</div>
-              <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.5 }}>
-                Enter the 6-digit code sent to<br />
-                <span style={{ color: "#c8e8d4", fontFamily: "'Space Mono', monospace" }}>{sentTo}</span>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <input className="input-field" value={otp} onChange={e => { setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
-                placeholder="000000" maxLength={6} autoFocus
-                style={{ textAlign: "center", fontSize: 28, letterSpacing: "0.3em", fontFamily: "'Space Mono', monospace" }}
-                onKeyDown={e => e.key === "Enter" && handleVerify()} />
-            </div>
-
-            {error && <div style={{ background: "rgba(224,112,96,0.15)", border: "1px solid #5a2020", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#e07060", marginBottom: 12 }}>{error}</div>}
-
-            <button className="btn-primary" onClick={handleVerify} disabled={loading || otp.length < 6} style={{ opacity: otp.length === 6 ? 1 : 0.4 }}>
-              {loading ? "Verifying..." : "Verify & Sign In ✓"}
-            </button>
-
-            <button onClick={() => { setStep("input"); setOtp(""); setError(""); }}
-              style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 12, cursor: "pointer", width: "100%", marginTop: 12, textAlign: "center" }}>
-              ← Change email or phone
-            </button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ─── PRICE FEEDS TAB ───────────────────────────────────────────────────────────
-function PriceFeedsTab() {
-  const [prices, setPrices] = useState([]);
-  const [selected, setSelected] = useState("Maize");
-  const [loading, setLoading] = useState(true);
-  const crops = ["Maize", "Tobacco", "Soya Beans", "Cotton", "Wheat", "Groundnuts"];
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      const data = await db.get("price_feeds", "?order=recorded_date.asc&limit=200");
-      setPrices(Array.isArray(data) ? data : []);
-      setLoading(false);
-    };
-    load();
-  }, []);
-
-  const cropPrices = prices.filter(p => p.crop_name === selected);
-  const latest = cropPrices[cropPrices.length - 1];
-  const prev = cropPrices[cropPrices.length - 2];
-  const change = latest && prev ? ((latest.price_usd - prev.price_usd) / prev.price_usd * 100).toFixed(1) : null;
-
-  // SVG line chart
-  const chartW = 340, chartH = 100;
-  const vals = cropPrices.map(p => p.price_usd);
-  const minV = Math.min(...vals) * 0.97;
-  const maxV = Math.max(...vals) * 1.03;
-  const points = cropPrices.map((p, i) => {
-    const x = (i / (cropPrices.length - 1)) * chartW;
-    const y = chartH - ((p.price_usd - minV) / (maxV - minV)) * chartH;
-    return `${x},${y}`;
-  }).join(" ");
-  const areaPoints = `0,${chartH} ${points} ${chartW},${chartH}`;
-
-  const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-  // All latest prices for the summary table
-  const latestByAgg = {};
-  prices.forEach(p => {
-    if (!latestByAgg[p.crop_name] || p.recorded_date > latestByAgg[p.crop_name].recorded_date) {
-      latestByAgg[p.crop_name] = p;
-    }
-  });
-
-  return (
-    <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Price Feeds</div>
-      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 20 }}>Live commodity prices — GMB, Cottco & Auction Floors</div>
-
-      {/* Latest prices grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 20 }}>
-        {Object.values(latestByAgg).map((p, i) => {
-          const hist = prices.filter(x => x.crop_name === p.crop_name);
-          const prev = hist[hist.length - 2];
-          const chg = prev ? ((p.price_usd - prev.price_usd) / prev.price_usd * 100).toFixed(1) : null;
-          return (
-            <div key={i} onClick={() => setSelected(p.crop_name)}
-              style={{ background: selected === p.crop_name ? "#1a3d24" : "#152218", border: `1px solid ${selected === p.crop_name ? "#2d7a4f" : "#1f3525"}`, borderRadius: 10, padding: "10px 8px", cursor: "pointer", transition: "all 0.2s" }}>
-              <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 4, fontFamily: "'Space Mono', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.crop_name}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#7ec99a", fontFamily: "'Space Mono', monospace" }}>{p.price_usd < 10 ? `$${p.price_usd}` : `$${p.price_usd}`}</div>
-              <div style={{ fontSize: 9, color: "#3d6b4a", fontFamily: "'Space Mono', monospace" }}>/{p.unit}</div>
-              {chg && <div style={{ fontSize: 10, color: parseFloat(chg) >= 0 ? "#5cd68a" : "#e07060", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>{parseFloat(chg) >= 0 ? "▲" : "▼"} {Math.abs(chg)}%</div>}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Price chart */}
-      {loading ? <div className="skeleton" style={{ height: 180, borderRadius: 12, marginBottom: 16 }} /> : (
-        <div className="card" style={{ marginBottom: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#c8e8d4" }}>{selected}</div>
-              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a7a5a" }}>{latest?.source} · 6 Month Trend</div>
-            </div>
-            {latest && (
-              <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#7ec99a", fontFamily: "'Space Mono', monospace" }}>${latest.price_usd}/{latest.unit}</div>
-                {change && <div style={{ fontSize: 11, color: parseFloat(change) >= 0 ? "#5cd68a" : "#e07060", fontFamily: "'Space Mono', monospace" }}>{parseFloat(change) >= 0 ? "▲" : "▼"} {Math.abs(change)}% vs last month</div>}
-              </div>
-            )}
-          </div>
-
-          {cropPrices.length > 1 && (
-            <svg viewBox={`0 0 ${chartW} ${chartH + 20}`} style={{ width: "100%", height: "auto", overflow: "visible" }}>
-              {/* Grid lines */}
-              {[0, 0.25, 0.5, 0.75, 1].map((t, i) => (
-                <line key={i} x1="0" y1={chartH * t} x2={chartW} y2={chartH * t} stroke="#1a2e1e" strokeWidth="1" />
-              ))}
-              {/* Area fill */}
-              <polygon points={areaPoints} fill="rgba(45,122,79,0.15)" />
-              {/* Line */}
-              <polyline points={points} fill="none" stroke="#2d7a4f" strokeWidth="2.5" strokeLinejoin="round" />
-              {/* Dots */}
-              {cropPrices.map((p, i) => {
-                const x = (i / (cropPrices.length - 1)) * chartW;
-                const y = chartH - ((p.price_usd - minV) / (maxV - minV)) * chartH;
-                return <circle key={i} cx={x} cy={y} r="4" fill={i === cropPrices.length - 1 ? "#5cd68a" : "#2d7a4f"} stroke="#0d1a0f" strokeWidth="1.5" />;
-              })}
-              {/* X labels */}
-              {cropPrices.map((p, i) => {
-                const x = (i / (cropPrices.length - 1)) * chartW;
-                const d = new Date(p.recorded_date);
-                return <text key={i} x={x} y={chartH + 14} textAnchor="middle" fill="#4a7a5a" fontSize="9" fontFamily="monospace">{MONTHS[d.getMonth()]}</text>;
-              })}
-              {/* Y labels */}
-              <text x="-4" y="10" textAnchor="end" fill="#4a7a5a" fontSize="8" fontFamily="monospace">${maxV.toFixed(0)}</text>
-              <text x="-4" y={chartH} textAnchor="end" fill="#4a7a5a" fontSize="8" fontFamily="monospace">${minV.toFixed(0)}</text>
-            </svg>
-          )}
-        </div>
-      )}
-
-      {/* Sources info */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="section-title">Data Sources</div>
-        {[
-          { name: "GMB", full: "Grain Marketing Board", crops: "Maize, Wheat, Sorghum", update: "Weekly" },
-          { name: "Cottco", full: "Cotton Company of Zimbabwe", crops: "Cotton", update: "Seasonal" },
-          { name: "Auction Floors", full: "Zimbabwe Tobacco Auction", crops: "Tobacco", update: "Daily (season)" },
-          { name: "Commodity Exchange", full: "ZSE Commodity Exchange", crops: "Soya, Groundnuts", update: "Weekly" },
-        ].map((s, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: i < 3 ? "1px solid #1a2e1e" : "none" }}>
-            <div>
-              <div style={{ fontSize: 13, color: "#c8e8d4", fontWeight: 600 }}>{s.name}</div>
-              <div style={{ fontSize: 11, color: "#4a7a5a" }}>{s.crops}</div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 10, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>{s.update}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Price alert subscription */}
-      <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 12, padding: 16 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#c8e8d4", marginBottom: 6 }}>📲 Price Alerts</div>
-        <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 12 }}>Get SMS alerts when prices move more than 5% in your crops.</div>
-        <button className="btn-primary" style={{ fontSize: 11 }}>Enable Price Alerts</button>
-      </div>
-    </div>
-  );
-}
 
 // ─── PLANTING CALENDAR TAB ─────────────────────────────────────────────────────
-function PlantingCalendarTab() {
-  const [calendar, setCalendar] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState("All");
-  const [selectedCrop, setSelectedCrop] = useState("All");
-  const [loading, setLoading] = useState(true);
-
-  const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const currentMonth = new Date().getMonth() + 1;
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      const data = await db.get("planting_calendar", "?order=crop_name.asc");
-      setCalendar(Array.isArray(data) ? data : []);
-      setLoading(false);
-    };
-    load();
-  }, []);
-
-  const provinces = ["All", ...new Set(calendar.map(c => c.province).filter(p => p !== "All"))];
-  const cropNames = ["All", ...new Set(calendar.map(c => c.crop_name))];
-
-  const filtered = calendar.filter(c =>
-    (selectedProvince === "All" || c.province === "All" || c.province === selectedProvince) &&
-    (selectedCrop === "All" || c.crop_name === selectedCrop)
-  );
-
-  const getMonthRange = (start, end) => {
-    const months = [];
-    let m = start;
-    while (m !== end + 1) {
-      months.push(m > 12 ? m - 12 : m);
-      m++;
-      if (m > 24) break;
-    }
-    return months;
-  };
-
-  const isActiveNow = (entry) => {
-    const planting = getMonthRange(entry.planting_start, entry.planting_end);
-    const harvest = getMonthRange(entry.harvest_start, entry.harvest_end);
-    return planting.includes(currentMonth) || harvest.includes(currentMonth);
-  };
-
-  return (
-    <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Planting Calendar</div>
-      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 16 }}>AGRITEX-aligned planting & harvest guide for Zimbabwe</div>
-
-      {/* Current month banner */}
-      <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 12, padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={{ fontSize: 28 }}>📅</div>
-        <div>
-          <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5cd68a" }}>CURRENT MONTH — {MONTH_NAMES[currentMonth - 1].toUpperCase()}</div>
-          <div style={{ fontSize: 13, color: "#c8e8d4", marginTop: 2 }}>
-            {filtered.filter(isActiveNow).length > 0
-              ? `${filtered.filter(c => getMonthRange(c.planting_start, c.planting_end).includes(currentMonth)).length} crops to plant · ${filtered.filter(c => getMonthRange(c.harvest_start, c.harvest_end).includes(currentMonth)).length} crops to harvest`
-              : "No active planting or harvesting this month for selected filters"}
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        <div style={{ flex: 1 }}>
-          <label style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 4 }}>PROVINCE</label>
-          <select className="select-field" value={selectedProvince} onChange={e => setSelectedProvince(e.target.value)}>
-            {provinces.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
-        </div>
-        <div style={{ flex: 1 }}>
-          <label style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", display: "block", marginBottom: 4 }}>CROP</label>
-          <select className="select-field" value={selectedCrop} onChange={e => setSelectedCrop(e.target.value)}>
-            {cropNames.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-      </div>
-
-      {/* Month header bar */}
-      <div style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, marginBottom: 8, alignItems: "center" }}>
-        <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#3d6b4a" }}>CROP</div>
-        {MONTH_NAMES.map((m, i) => (
-          <div key={i} style={{ fontSize: 9, textAlign: "center", fontFamily: "'Space Mono', monospace", color: i + 1 === currentMonth ? "#7ec99a" : "#3d6b4a", background: i + 1 === currentMonth ? "rgba(45,122,79,0.2)" : "transparent", borderRadius: 4, padding: "2px 0", fontWeight: i + 1 === currentMonth ? "700" : "400" }}>{m}</div>
-        ))}
-      </div>
-
-      {/* Calendar rows */}
-      {loading ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 48, borderRadius: 8, marginBottom: 6 }} />) :
-        filtered.map((entry, idx) => {
-          const plantMonths = getMonthRange(entry.planting_start, entry.planting_end);
-          const harvestMonths = getMonthRange(entry.harvest_start, entry.harvest_end);
-          const fertMonth = entry.fertilising_month;
-          const active = isActiveNow(entry);
-
-          return (
-            <div key={idx} style={{ background: active ? "#1a2e1e" : "#152218", border: `1px solid ${active ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, marginBottom: 6, padding: "8px 10px", transition: "all 0.2s" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, alignItems: "center", marginBottom: entry.notes ? 6 : 0 }}>
-                <div>
-                  <div style={{ fontSize: 12, color: "#c8e8d4", fontWeight: 600 }}>{entry.crop_name}</div>
-                  {entry.province !== "All" && <div style={{ fontSize: 9, color: "#4a7a5a", fontFamily: "'Space Mono', monospace" }}>{entry.province}</div>}
-                </div>
-                {MONTH_NAMES.map((_, i) => {
-                  const m = i + 1;
-                  const isPlant = plantMonths.includes(m);
-                  const isHarvest = harvestMonths.includes(m);
-                  const isFert = fertMonth === m;
-                  const isCurrent = m === currentMonth;
-                  return (
-                    <div key={i} style={{ height: 20, borderRadius: 3, position: "relative",
-                      background: isHarvest ? "rgba(212,160,23,0.8)" : isPlant ? "rgba(45,122,79,0.85)" : isFert ? "rgba(90,143,163,0.6)" : "transparent",
-                      outline: isCurrent ? "1px solid #7ec99a" : "none",
-                      title: isPlant ? "Plant" : isHarvest ? "Harvest" : isFert ? "Fertilise" : ""
-                    }} />
-                  );
-                })}
-              </div>
-              {entry.notes && <div style={{ fontSize: 11, color: "#8aaa94", marginTop: 4, paddingLeft: 0 }}>{entry.notes}</div>}
-              {entry.variety && <div style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>Varieties: {entry.variety}</div>}
-            </div>
-          );
-        })
-      }
-
-      {/* Legend */}
-      <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap" }}>
-        {[
-          { color: "rgba(45,122,79,0.85)", label: "Planting" },
-          { color: "rgba(212,160,23,0.8)", label: "Harvest" },
-          { color: "rgba(90,143,163,0.6)", label: "Fertilise" },
-        ].map((l, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ width: 16, height: 12, borderRadius: 3, background: l.color }} />
-            <span style={{ fontSize: 11, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>{l.label}</span>
-          </div>
-        ))}
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div style={{ width: 16, height: 12, borderRadius: 3, border: "1px solid #7ec99a" }} />
-          <span style={{ fontSize: 11, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>Current Month</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── INPUT SUPPLIERS TAB ───────────────────────────────────────────────────────
-function InputSuppliersTab() {
-  const [suppliers, setSuppliers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filterType, setFilterType] = useState("All");
-  const [filterProvince, setFilterProvince] = useState("All");
-  const [search, setSearch] = useState("");
-  const [expanded, setExpanded] = useState(null);
-
-  const TYPES = ["All", "agrodealer", "seed", "fertiliser", "chemical", "equipment"];
-  const TYPE_LABELS = { agrodealer: "Agrodealer", seed: "Seed Company", fertiliser: "Fertiliser", chemical: "Chemical", equipment: "Equipment" };
-  const TYPE_COLORS = { agrodealer: "#2d7a4f", seed: "#5cd68a", fertiliser: "#c8b43c", chemical: "#5a9fd4", equipment: "#9a7ae0" };
-  const TYPE_ICONS = { agrodealer: "🏪", seed: "🌱", fertiliser: "🧪", chemical: "⚗️", equipment: "🚜" };
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      const data = await db.get("input_suppliers", "?order=verified.desc,name.asc");
-      setSuppliers(Array.isArray(data) ? data : []);
-      setLoading(false);
-    };
-    load();
-  }, []);
-
-  const provinces = ["All", ...new Set(suppliers.map(s => s.province))].sort();
-  const filtered = suppliers.filter(s =>
-    (filterType === "All" || s.type === filterType) &&
-    (filterProvince === "All" || s.province === filterProvince) &&
-    (!search || s.name.toLowerCase().includes(search.toLowerCase()) || (s.products || []).some(p => p.toLowerCase().includes(search.toLowerCase())))
-  );
-
-  return (
-    <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>Input Suppliers</div>
-      <div style={{ fontSize: 12, color: "#4a7a5a", marginBottom: 16 }}>Find agrodealers, seed companies & suppliers near you</div>
-
-      {/* Search */}
-      <div style={{ position: "relative", marginBottom: 12 }}>
-        <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#3d6b4a", fontSize: 14 }}>🔍</span>
-        <input className="input-field" placeholder="Search by name or product..." style={{ paddingLeft: 36 }} value={search} onChange={e => setSearch(e.target.value)} />
-      </div>
-
-      {/* Filters */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <div style={{ flex: 1 }}>
-          <select className="select-field" value={filterProvince} onChange={e => setFilterProvince(e.target.value)}>
-            {provinces.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
-        </div>
-      </div>
-      <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
-        {TYPES.map(t => (
-          <span key={t} className={`chip ${filterType === t ? "active" : ""}`} onClick={() => setFilterType(t)} style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, whiteSpace: "nowrap" }}>
-            {t === "All" ? "All" : `${TYPE_ICONS[t]} ${TYPE_LABELS[t]}`}
-          </span>
-        ))}
-      </div>
-
-      {/* Count */}
-      <div style={{ fontSize: 11, color: "#4a7a5a", fontFamily: "'Space Mono', monospace", marginBottom: 12 }}>{filtered.length} SUPPLIERS FOUND</div>
-
-      {/* Supplier cards */}
-      {loading ? [1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12, marginBottom: 10 }} />) :
-        filtered.map((s, i) => (
-          <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, marginBottom: 10, overflow: "hidden" }}>
-            <div style={{ padding: "14px 16px", cursor: "pointer" }} onClick={() => setExpanded(expanded === i ? null : i)}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 18 }}>{TYPE_ICONS[s.type] || "🏪"}</span>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>{s.name}</div>
-                    {s.verified && <span style={{ fontSize: 9, background: "rgba(45,122,79,0.3)", color: "#5cd68a", padding: "1px 6px", borderRadius: 8, fontFamily: "'Space Mono', monospace" }}>✓ VERIFIED</span>}
-                  </div>
-                  <div style={{ fontSize: 11, color: "#4a7a5a" }}>📍 {s.district ? `${s.district}, ` : ""}{s.province}</div>
-                  <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {(s.products || []).slice(0, 3).map((p, j) => (
-                      <span key={j} style={{ fontSize: 10, background: "rgba(45,122,79,0.15)", color: "#7ec99a", padding: "2px 8px", borderRadius: 8, fontFamily: "'Space Mono', monospace" }}>{p}</span>
-                    ))}
-                    {(s.products || []).length > 3 && <span style={{ fontSize: 10, color: "#4a7a5a", fontFamily: "'Space Mono', monospace", padding: "2px 4px" }}>+{s.products.length - 3} more</span>}
-                  </div>
-                </div>
-                <div style={{ fontSize: 12, color: "#3d6b4a", marginLeft: 8 }}>{expanded === i ? "▲" : "▼"}</div>
-              </div>
-            </div>
-
-            {/* Expanded details */}
-            {expanded === i && (
-              <div style={{ borderTop: "1px solid #1a2e1e", padding: "12px 16px", background: "#0f1e12" }}>
-                {s.address && <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 10 }}>📍 {s.address}</div>}
-                {(s.products || []).length > 0 && (
-                  <div style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginBottom: 6 }}>PRODUCTS & SERVICES</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                      {s.products.map((p, j) => (
-                        <span key={j} style={{ fontSize: 11, background: "rgba(45,122,79,0.15)", color: "#7ec99a", padding: "3px 10px", borderRadius: 8 }}>{p}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {s.phone && (
-                    <a href={`tel:${s.phone}`} style={{ display: "flex", alignItems: "center", gap: 6, background: "#152218", border: "1px solid #2d5a36", borderRadius: 8, padding: "8px 14px", color: "#7ec99a", textDecoration: "none", fontSize: 12, fontFamily: "'Space Mono', monospace" }}>
-                      📞 {s.phone}
-                    </a>
-                  )}
-                  {s.whatsapp && (
-                    <a href={`https://wa.me/${s.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
-                      style={{ display: "flex", alignItems: "center", gap: 6, background: "#1a5c2a", border: "1px solid #25a244", borderRadius: 8, padding: "8px 14px", color: "#4cd964", textDecoration: "none", fontSize: 12, fontFamily: "'Space Mono', monospace" }}>
-                      💬 WhatsApp
-                    </a>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        ))
-      }
-
-      {/* Add supplier CTA */}
-      <div style={{ background: "#152218", border: "1px dashed #2d5a36", borderRadius: 12, padding: 16, textAlign: "center", marginTop: 8 }}>
-        <div style={{ fontSize: 24, marginBottom: 8 }}>🏪</div>
-        <div style={{ fontSize: 13, color: "#c8e8d4", marginBottom: 4 }}>Know a supplier not listed?</div>
-        <div style={{ fontSize: 11, color: "#4a7a5a", marginBottom: 12 }}>Help other farmers by adding them to the directory.</div>
-        <button className="btn-secondary" style={{ fontSize: 11 }}>+ Add Supplier</button>
-      </div>
-    </div>
-  );
-}
 
 // ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
+
+}
+
 function InsightsTab() {
   const [cropData, setCropData] = useState([]);
   const [livestockData, setLivestockData] = useState([]);
