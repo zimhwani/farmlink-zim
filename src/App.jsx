@@ -398,7 +398,7 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 10 }}>
+                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 10 }}>
                   {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.email?.split("@")[0] || "Profile"}</span></> : "👤 Login"}
                 </button>
               </div>
@@ -562,7 +562,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
             {unreadCount > 0 && <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginTop: 2 }}>{unreadCount} UNREAD</div>}
           </div>
           {unreadCount > 0 && (
-            <button onClick={onMarkAllRead} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 10px", color: "#5c8f6b", fontSize: 10, cursor: "pointer", fontFamily: "'Space Mono', monospace" }}>
+            <button onClick={onMarkAllRead} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 10px", color: "#5c8f6b", fontSize: 10, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               Mark all read
             </button>
           )}

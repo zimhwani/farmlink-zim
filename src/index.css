@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0d1a0f; color: #e8dfc8; font-family: 'Crimson Pro', Georgia, serif; }
+body { background: #0d1a0f; color: #e8dfc8; font-family: 'Plus Jakarta Sans', sans-serif; }
 
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: #0d1a0f; }
@@ -176,9 +176,9 @@ body { background: #0d1a0f; color: #e8dfc8; font-family: 'Crimson Pro', Georgia,
 .chip.active { background: #2d7a4f; border-color: #3a9962; color: #e8f5ed; }
 .chip:hover { border-color: #4aad72; }
 
-.input-field { background: #1a2e1e; border: 1px solid #2d5a36; border-radius: 8px; padding: 10px 14px; color: #e8dfc8; font-family: 'Crimson Pro', serif; font-size: 15px; width: 100%; outline: none; transition: border-color 0.2s; }
+.input-field { background: #1a2e1e; border: 1px solid #2d5a36; border-radius: 8px; padding: 10px 14px; color: #e8dfc8; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; width: 100%; outline: none; transition: border-color 0.2s; }
 .input-field:focus { border-color: #4aad72; }
-.select-field { background: #1a2e1e; border: 1px solid #2d5a36; border-radius: 8px; padding: 10px 14px; color: #e8dfc8; font-family: 'Crimson Pro', serif; font-size: 15px; width: 100%; outline: none; appearance: none; cursor: pointer; }
+.select-field { background: #1a2e1e; border: 1px solid #2d5a36; border-radius: 8px; padding: 10px 14px; color: #e8dfc8; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; width: 100%; outline: none; appearance: none; cursor: pointer; }
 
 .section-title { font-size: 11px; font-family: 'Space Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; color: #5c8f6b; margin-bottom: 12px; }
 
