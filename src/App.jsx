@@ -439,7 +439,7 @@ export default function FarmLinkZim() {
       {showContactModal && <ContactModal listing={showContactModal} onClose={() => setShowContactModal(null)} onSend={async (msg) => { await db.post("messages", { listing_id: showContactModal.id, ...msg }); await db.post("notifications", { type: "message", title: "New buyer enquiry", body: `${msg.sender_name} is interested in your ${showContactModal.crop} listing (${showContactModal.quantity} at ${showContactModal.price})`, read: false }); loadNotifications(); setShowContactModal(null); }} />}
       {showFarmerMap && <FarmerMapModal farmers={farmers} onClose={() => setShowFarmerMap(false)} loadFarmers={loadFarmers} />}
       {showListingDetail && <ListingDetailModal listing={showListingDetail} onClose={() => setShowListingDetail(null)} onContact={() => { setShowContactModal(showListingDetail); setShowListingDetail(null); }} />}
-      {showAuthModal && <div style={{position:"fixed",inset:0,background:"red",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",color:"white",fontSize:24}} onClick={() => setShowAuthModal(false)}>MODAL TEST - CLICK TO CLOSE</div>}{showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} authUser={authUser} onAuth={(user) => { setAuthUser(user); setShowAuthModal(false); }} onLogout={() => { auth.signOut(); setAuthUser(null); setShowAuthModal(false); }} setActiveTab={setActiveTab} />}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} authUser={authUser} onAuth={(user) => { setAuthUser(user); setShowAuthModal(false); }} onLogout={() => { auth.signOut(); setAuthUser(null); setShowAuthModal(false); }} setActiveTab={setActiveTab} />}
     </div>
   );
 }
