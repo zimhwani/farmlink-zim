@@ -378,17 +378,18 @@ export default function FarmLinkZim() {
               </div>
               {/* Desktop spacer */}
               <div style={{ flex: 1 }} />
-              <div style={{ display: "flex", gap: 8 }}>
-                <div style={{ position: "relative" }}>
-                  <div onClick={() => { setShowNotifications(v => !v); if (!showNotifications) loadNotifications(); }}
-                    style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", position: "relative" }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", position: "relative", zIndex: 50 }}>
+                {/* Notification bell */}
+                <div style={{ position: "relative", zIndex: 51 }}>
+                  <button onClick={() => { setShowNotifications(v => !v); if (!showNotifications) loadNotifications(); }}
+                    style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 16, cursor: "pointer", position: "relative", zIndex: 51 }}>
                     🔔
                     {notifications.filter(n => !n.read).length > 0 && (
-                      <span style={{ position: "absolute", top: -4, right: -4, background: "#e07060", borderRadius: "50%", width: 16, height: 16, fontSize: 9, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Space Mono', monospace", fontWeight: 700 }}>
+                      <span style={{ position: "absolute", top: -4, right: -4, background: "#e07060", borderRadius: "50%", width: 16, height: 16, fontSize: 9, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
                         {notifications.filter(n => !n.read).length}
                       </span>
                     )}
-                  </div>
+                  </button>
                   {showNotifications && (
                     <NotificationPanel
                       notifications={notifications}
@@ -398,8 +399,10 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 600 }}>
-                  {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.email?.split("@")[0] || "Profile"}</span></> : "👤 Login"}
+                {/* Login button */}
+                <button onClick={() => setShowAuthModal(true)}
+                  style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 52 }}>
+                  {authUser ? <>{"👩🏾‍🌾"} <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.email?.split("@")[0] || "Profile"}</span></> : "👤 Login"}
                 </button>
               </div>
             </div>
