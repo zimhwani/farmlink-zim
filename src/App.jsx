@@ -369,7 +369,7 @@ export default function FarmLinkZim() {
           <div className="top-bar">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               {/* Mobile logo */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="mobile-logo">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }} className="mobile-logo">
                 <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
                 <div>
                   <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#0d1a0f" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
