@@ -2335,7 +2335,7 @@ function SponsorCard() {
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 9, color: "#5c8f6b", letterSpacing: "0.1em", marginBottom: 6, textAlign: "right" }}>SPONSORED</div>
       <a href={sponsor.cta_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-        <div style={{ background: `linear-gradient(135deg, ${sponsor.color}18, #FAF7F2)`, border: `1px solid ${sponsor.color}40`, borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ background: "#152218", border: `1px solid ${sponsor.color}40`, borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 44, height: 44, background: `${sponsor.color}25`, border: `1px solid ${sponsor.color}40`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
             {sponsor.logo_emoji}
           </div>
