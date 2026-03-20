@@ -185,13 +185,29 @@ export default function FarmLinkZim() {
   };
 
   const getWeatherIcon = (code) => {
-    if (code === 0) return "☀️";
-    if (code <= 2) return "⛅";
-    if (code <= 48) return "🌫️";
-    if (code <= 67) return "🌧️";
-    if (code <= 77) return "🌨️";
-    if (code <= 82) return "🌦️";
-    return "⛈️";
+    if (code === 0) return "sunny";
+    if (code <= 2) return "partly_cloudy";
+    if (code === 3) return "cloudy";
+    if (code <= 48) return "foggy";
+    if (code <= 67) return "rainy";
+    if (code <= 77) return "snowy";
+    if (code <= 84) return "rainy";
+    if (code <= 99) return "stormy";
+    return "sunny";
+  };
+
+  const WeatherIcon = ({ type, size = 36 }) => {
+    const icons = {
+      sunny: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="7" fill="#F4C430"/>{[0,45,90,135,180,225,270,315].map(a=><line key={a} x1="18" y1="4" x2="18" y2="8" stroke="#F4C430" strokeWidth="2.5" strokeLinecap="round" transform={`rotate(${a} 18 18)`}/>)}</svg>,
+      partly_cloudy: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><circle cx="13" cy="16" r="5" fill="#F4C430"/>{[0,60,120,180,240,300].map(a=><line key={a} x1="13" y1="7" x2="13" y2="10" stroke="#F4C430" strokeWidth="2" strokeLinecap="round" transform={`rotate(${a} 13 16)`}/>)}<ellipse cx="21" cy="23" rx="9" ry="6" fill="#8aaa94"/><ellipse cx="14" cy="25" rx="6" ry="5" fill="#8aaa94"/><ellipse cx="27" cy="25" rx="5" ry="4" fill="#8aaa94"/></svg>,
+      cloudy: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="21" rx="12" ry="7" fill="#5c8f6b"/><ellipse cx="11" cy="23" rx="7" ry="6" fill="#5c8f6b"/><ellipse cx="25" cy="23" rx="6" ry="5" fill="#5c8f6b"/><ellipse cx="18" cy="17" rx="9" ry="6" fill="#7ec99a"/></svg>,
+      foggy: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="13" rx="10" ry="6" fill="#5c8f6b"/>{[18,22,26,30].map((y,i)=><rect key={i} x={6+i} y={y} width={24-i*2} height="2.5" rx="1.25" fill="#8aaa94" opacity="0.7"/>)}</svg>,
+      drizzle: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="14" rx="11" ry="7" fill="#5c8f6b"/><ellipse cx="11" cy="16" rx="7" ry="5" fill="#5c8f6b"/>{[[12,24],[17,22],[22,24],[15,28],[20,28]].map(([x,y],i)=><line key={i} x1={x} y1={y} x2={x-2} y2={y+5} stroke="#7ec99a" strokeWidth="2" strokeLinecap="round"/>)}</svg>,
+      rainy: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="13" rx="11" ry="7" fill="#3d6b4a"/><ellipse cx="11" cy="15" rx="7" ry="5" fill="#3d6b4a"/>{[[11,23],[16,21],[21,23],[14,28],[19,28],[24,21]].map(([x,y],i)=><line key={i} x1={x} y1={y} x2={x-3} y2={y+6} stroke="#7ec99a" strokeWidth="2.5" strokeLinecap="round"/>)}</svg>,
+      stormy: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="12" rx="12" ry="7" fill="#2d5a36"/><ellipse cx="11" cy="14" rx="7" ry="5" fill="#2d5a36"/>{[[11,22],[16,20],[22,22],[14,27],[20,27]].map(([x,y],i)=><line key={i} x1={x} y1={y} x2={x-2} y2={y+5} stroke="#5c8f6b" strokeWidth="2" strokeLinecap="round"/>)}<polyline points="20,19 16,26 20,26 15,33" stroke="#F4C430" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>,
+      snowy: <svg width={size} height={size} viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="13" rx="11" ry="7" fill="#5c8f6b"/><ellipse cx="11" cy="15" rx="7" ry="5" fill="#5c8f6b"/>{[[11,24],[16,22],[21,24],[14,29],[19,29],[24,22]].map(([x,y],i)=><circle key={i} cx={x} cy={y} r="2" fill="#c8e8d4"/>)}</svg>,
+    };
+    return icons[type] || icons.sunny;
   };
 
   const loadListings = async () => {
