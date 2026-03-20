@@ -2922,11 +2922,14 @@ function InsightsTab() {
   }, []);
 
   const yieldData = [
-    { region: "Mash Central", crop: "Maize", yield: 4.2, forecast: 3.6, change: -14 },
-    { region: "Mash East", crop: "Tobacco", yield: 1.8, forecast: 2.1, change: 17 },
-    { region: "Manicaland", crop: "Coffee", yield: 0.9, forecast: 1.0, change: 11 },
-    { region: "Midlands", crop: "Soya", yield: 2.3, forecast: 2.0, change: -13 },
-    { region: "Mat North", crop: "Cattle", yield: 820, forecast: 790, change: -4 },
+    { region: "Mash Central", crop: "Maize", yield: 1.2, forecast: 1.7, change: 42, note: "Above-avg rainfall boost" },
+    { region: "Mash West", crop: "Maize", yield: 1.1, forecast: 1.6, change: 45, note: "La Niña benefit" },
+    { region: "Mash East", crop: "Tobacco", yield: 1.8, forecast: 2.0, change: 11, note: "Good curing conditions" },
+    { region: "Manicaland", crop: "Coffee", yield: 0.9, forecast: 1.1, change: 22, note: "Favourable rainfall" },
+    { region: "Midlands", crop: "Soya Beans", yield: 1.8, forecast: 2.2, change: 22, note: "Improved soil moisture" },
+    { region: "Masvingo", crop: "Sorghum", yield: 0.6, forecast: 0.8, change: 33, note: "Drought-tolerant varieties" },
+    { region: "Mat North", crop: "Cattle", yield: 820, forecast: 870, change: 6, note: "Better pasture conditions" },
+    { region: "Mat South", crop: "Groundnuts", yield: 0.7, forecast: 0.9, change: 29, note: "Recovery from drought" },
   ];
 
   const maxCrop = Math.max(...cropData.map(d => d.total), 1);
@@ -3075,31 +3078,60 @@ function InsightsTab() {
       )}
 
       {/* AI forecast */}
-      <div style={{ background: "linear-gradient(135deg, #F2EDE4, #FAF7F2)", border: "1px solid #2d5a36", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
+      <div style={{ background: "linear-gradient(135deg, #F2EDE4, #FAF7F2)", border: "1px solid #D4C8A0", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
         <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
           <div style={{ fontSize: 28 }}>🛰️</div>
           <div>
-            <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#3D6B45", marginBottom: 4 }}>AI SATELLITE FORECAST · 2024/25 SEASON</div>
-            <div style={{ fontSize: 15, color: "#2C1A0E", lineHeight: 1.5 }}>Mashonaland maize yield expected to drop <strong style={{ color: "#B85A38" }}>12–15%</strong> due to reduced rainfall. Manicaland tobacco shows strong recovery.</div>
+            <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#3D6B45", marginBottom: 6 }}>AI SATELLITE FORECAST · 2025/26 SEASON</div>
+            <div style={{ fontSize: 15, color: "#2C1A0E", lineHeight: 1.6, marginBottom: 10 }}>
+              <strong style={{ color: "#3D6B45" }}>Above-average yields forecast</strong> nationally. La Niña conditions are driving above-normal rainfall across Mashonaland, Manicaland and Midlands. NASA soil moisture data shows above-normal root zone moisture across central Zimbabwe.
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {[
+                { icon: "🌧️", label: "Rainfall", value: "Above average", status: "positive", note: "Oct–Mar season" },
+                { icon: "🌡️", label: "Temperature", value: "Near normal", status: "neutral", note: "Slight cooling north" },
+                { icon: "💧", label: "Soil Moisture", value: "Above normal", status: "positive", note: "NASA FLDAS data" },
+                { icon: "🌊", label: "La Niña", value: "Active", status: "positive", note: "Through mid-2026" },
+              ].map((item, i) => (
+                <div key={i} style={{ background: "#FFFEF9", borderRadius: 8, padding: "8px 10px", border: "1px solid #E8E0D4" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+                    <span style={{ fontSize: 14 }}>{item.icon}</span>
+                    <span style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#A08060" }}>{item.label.toUpperCase()}</span>
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: item.status === "positive" ? "#3D6B45" : item.status === "negative" ? "#B85A38" : "#2C1A0E" }}>{item.value}</div>
+                  <div style={{ fontSize: 10, color: "#A08060" }}>{item.note}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 10, color: "#A08060", marginTop: 10, fontFamily: "'DM Mono', monospace" }}>
+              SOURCES: FEWS NET · NASA FLDAS · GEOGLAM Crop Monitor · Zimbabwe MSD · NOAA/NCEP · Updated March 2026
+            </div>
           </div>
         </div>
       </div>
 
       {/* Yield table */}
       <div className="card" style={{ marginBottom: 16 }}>
-        <div className="section-title">Regional Yield Forecast</div>
+        <div className="section-title">2025/26 Regional Yield Forecast</div>
+        <div style={{ fontSize: 11, color: "#A08060", fontFamily: "'DM Mono', monospace", marginBottom: 12 }}>SOURCE: GEOGLAM · FEWS NET · NASA FLDAS · La Niña analog years</div>
         {yieldData.map((d, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < yieldData.length - 1 ? "1px solid #E8E0D4" : "none" }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, color: "#2C1A0E", marginBottom: 2 }}>{d.region}</div>
-              <div style={{ fontSize: 10, color: "#7A5A3A", fontFamily: "'DM Mono', monospace" }}>{d.crop}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "#2C1A0E" }}>{d.region}</div>
+                <span style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", background: "#F2EDE4", color: "#7A5A3A", padding: "1px 6px", borderRadius: 4 }}>{d.crop}</span>
+              </div>
+              <div style={{ fontSize: 10, color: "#A08060" }}>{d.note}</div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: "#7A5A3A" }}>{d.yield} → {d.forecast} {d.crop === "Cattle" ? "kg/head" : "t/ha"}</div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: d.change > 0 ? "#3D6B45" : "#B85A38" }}>{d.change > 0 ? "▲" : "▼"} {Math.abs(d.change)}%</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#7A5A3A" }}>{d.yield} → {d.forecast} {d.crop === "Cattle" ? "kg/hd" : "t/ha"}</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 600, color: d.change > 0 ? "#3D6B45" : "#B85A38" }}>{d.change > 0 ? "▲" : "▼"} {Math.abs(d.change)}%</div>
             </div>
           </div>
         ))}
+        <div style={{ marginTop: 12, padding: "8px 10px", background: "#EBF4EC", borderRadius: 8, fontSize: 11, color: "#3D6B45" }}>
+          📡 Overall national maize yield forecast: <strong>above average</strong> — driven by La Niña rainfall and improved soil moisture across all main growing provinces.
+        </div>
       </div>
 
       {/* Premium upsell */}
