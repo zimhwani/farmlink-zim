@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  --bg-base: #f0f7f2;
+  --bg-base: #ffffff;
   --bg-card: #ffffff;
   --bg-card-alt: #f5faf6;
   --bg-accent: #e4f2e8;
@@ -21,13 +21,13 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg-base); color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif; }
+body { background: #ffffff; color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif; }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #e8f5ec; }
+::-webkit-scrollbar-track { background: #f0f0f0; }
 ::-webkit-scrollbar-thumb { background: #7ec99a; border-radius: 2px; }
 
-.app-shell { display: flex; min-height: 100vh; background: var(--bg-base); }
+.app-shell { display: flex; min-height: 100vh; background: #ffffff; }
 .sidebar { display: none; }
 .main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .top-bar { padding: 12px 20px; border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 100; background: var(--bg-topbar); box-shadow: 0 1px 4px rgba(45,122,79,0.06); }
