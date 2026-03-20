@@ -2632,17 +2632,13 @@ function AdminTab({ farmers, listings }) {
 }
 
 // ─── AUTH MODAL ────────────────────────────────────────────────────────────────
-function AuthModal({ onClose, authUser, onAuth, onLogout, setActiveTab }) {
+function AuthModal({ onClose, authUser, onAuth, onLogout }) {
   const [step, setStep] = useState("input");
   const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sentTo, setSentTo] = useState("");
-  const [profileTab, setProfileTab] = useState("overview");
-  const [myListings, setMyListings] = useState([]);
-  const [myDiary, setMyDiary] = useState([]);
-  const [loadingData, setLoadingData] = useState(false);
   const isEmail = identifier.includes("@");
 
   const handleSendOtp = async () => {
@@ -2654,7 +2650,6 @@ function AuthModal({ onClose, authUser, onAuth, onLogout, setActiveTab }) {
       const msg = err.message || err.msg || JSON.stringify(err);
       if (msg.includes("rate limit") || msg.includes("429")) setError("Too many attempts. Please wait a few minutes and try again.");
       else if (msg.includes("invalid") || msg.includes("email")) setError("Invalid email address. Please check and try again.");
-      else if (msg.includes("not enabled") || msg.includes("disabled")) setError("Email sign-in is not enabled in Supabase. Go to Authentication > Providers > Email > Enable.");
       else setError("Could not send code: " + msg);
       return;
     }
@@ -2671,171 +2666,89 @@ function AuthModal({ onClose, authUser, onAuth, onLogout, setActiveTab }) {
     onAuth(user);
   };
 
-  const loadProfileData = async () => {
-    setLoadingData(true);
-    const [listings, diary] = await Promise.all([
-      db.get("listings", "?active=eq.true&order=created_at.desc"),
-      db.get("farm_diary", "?order=activity_date.desc&limit=10"),
-    ]);
-    setMyListings(Array.isArray(listings) ? listings : []);
-    setMyDiary(Array.isArray(diary) ? diary : []);
-    setLoadingData(false);
-  };
-
   if (authUser) {
     const email = authUser.email || "";
     const phone = authUser.phone || "";
     return (
       <div className="modal-overlay" onClick={onClose}>
-        <div className="modal" onClick={e => e.stopPropagation()} style={{ maxHeight: "92vh", overflowY: "auto", padding: 0 }}>
-          <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", padding: "20px 20px 0" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                <div style={{ width: 52, height: 52, background: "linear-gradient(135deg, #2d7a4f, #1a5c36)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>{"👩🏾‍🌾"}</div>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#c8e8d4" }}>{email || phone}</div>
-                  <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 2, display: "flex", alignItems: "center", gap: 5 }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#5cd68a" }} />
-                    VERIFIED FARMER
-                  </div>
-                </div>
-              </div>
-              <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
-            </div>
-            <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #1f3525" }}>
-              {[["overview", "Overview"], ["listings", "Listings"], ["diary", "Diary"], ["farm", "Farm"]].map(([id, label]) => (
-                <button key={id} onClick={() => { setProfileTab(id); if (id !== "overview") loadProfileData(); }}
-                  style={{ flex: 1, background: "none", border: "none", borderBottom: profileTab === id ? "2px solid #7ec99a" : "2px solid transparent", padding: "10px 4px", color: profileTab === id ? "#7ec99a" : "#4a7a5a", fontSize: 11, cursor: "pointer", fontWeight: profileTab === id ? 600 : 400 }}>
-                  {label}
-                </button>
-              ))}
-            </div>
+        <div className="modal" onClick={e => e.stopPropagation()}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>My Profile</div>
+            <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
           </div>
-
-          <div style={{ padding: "16px 20px 20px" }}>
-            {profileTab === "overview" && (
-              <>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
-                  {[{ label: "Listings", icon: "🛒" }, { label: "Diary", icon: "📓" }, { label: "Free Plan", icon: "⭐" }].map((s, i) => (
-                    <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
-                      <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
-                      <div style={{ fontSize: 9, color: "#4a7a5a", marginTop: 2 }}>{s.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="section-title">Quick Actions</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-                  {[
-                    { icon: "🛒", label: "Manage My Listings", sub: "Edit, feature or remove listings", action: () => { setProfileTab("listings"); loadProfileData(); } },
-                    { icon: "📓", label: "View Farm Diary", sub: "See your activity log", action: () => { setProfileTab("diary"); loadProfileData(); } },
-                    { icon: "📈", label: "Market Prices", sub: "Latest GMB and ZFU prices", action: () => { onClose(); setActiveTab("prices"); } },
-                    { icon: "🗓️", label: "Planting Calendar", sub: "View seasonal schedule", action: () => { onClose(); setActiveTab("calendar"); } },
-                  ].map((a, i) => (
-                    <button key={i} onClick={a.action} style={{ display: "flex", alignItems: "center", gap: 12, background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", cursor: "pointer", textAlign: "left" }}>
-                      <span style={{ fontSize: 22 }}>{a.icon}</span>
-                      <div><div style={{ fontSize: 13, fontWeight: 600, color: "#c8e8d4" }}>{a.label}</div><div style={{ fontSize: 11, color: "#4a7a5a" }}>{a.sub}</div></div>
-                      <span style={{ marginLeft: "auto", color: "#3d6b4a", fontSize: 16 }}>{"›"}</span>
-                    </button>
-                  ))}
-                </div>
-                <div style={{ background: "linear-gradient(135deg, #1e2d18, #152218)", border: "1px solid #d4a017", borderRadius: 12, padding: 14, marginBottom: 16 }}>
-                  <div style={{ fontSize: 10, color: "#d4a017", fontWeight: 700, marginBottom: 6 }}>{"⭐"} FARMLINK PREMIUM — USD 5/month</div>
-                  {["Verified badge on all listings", "Unlimited listings (free: 2)", "Priority marketplace placement"].map((b, i) => (
-                    <div key={i} style={{ fontSize: 12, color: "#8aaa94", marginBottom: 3 }}>{"✓"} {b}</div>
-                  ))}
-                  <button style={{ width: "100%", background: "linear-gradient(135deg, #b8860b, #8b6914)", border: "none", borderRadius: 8, padding: "10px", color: "#fff8e8", fontSize: 12, cursor: "pointer", fontWeight: 600, marginTop: 10 }}>Upgrade to Premium {"→"}</button>
-                </div>
-                <button onClick={onLogout} style={{ width: "100%", background: "rgba(224,112,96,0.1)", border: "1px solid #e07060", borderRadius: 8, padding: "12px", color: "#e07060", fontSize: 13, cursor: "pointer", fontWeight: 600, marginTop: 8 }}>🚪 Sign Out</button>
-              </>
-            )}
-
-            {profileTab === "listings" && (
-              <>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>My Listings</div>
-                  <button onClick={() => { onClose(); setActiveTab("market"); }} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "6px 12px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>{"+"} New Listing</button>
-                </div>
-                {loadingData ? <div className="skeleton" style={{ height: 80, borderRadius: 10 }} /> :
-                  myListings.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "32px 20px" }}>
-                      <div style={{ fontSize: 36, marginBottom: 8 }}>🛒</div>
-                      <div style={{ fontSize: 13, color: "#5c8f6b", marginBottom: 12 }}>No listings yet</div>
-                      <button onClick={() => { onClose(); setActiveTab("market"); }} className="btn-primary" style={{ width: "auto", padding: "8px 20px" }}>Post Your First Listing</button>
-                    </div>
-                  ) : myListings.map((l, i) => (
-                    <div key={i} style={{ background: "#1a2e1e", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", marginBottom: 8 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>{l.crop}</div>
-                        {l.is_featured && <span style={{ fontSize: 9, background: "rgba(212,160,23,0.2)", color: "#d4a017", padding: "2px 7px", borderRadius: 8 }}>{"⭐"} FEATURED</span>}
-                      </div>
-                      <div style={{ fontSize: 11, color: "#5c8f6b", marginBottom: 4 }}>{"📍"} {l.location} · {l.price}</div>
-                      <button onClick={() => { onClose(); setActiveTab("market"); }} style={{ background: "#152218", border: "1px solid #2d5a36", borderRadius: 7, padding: "5px 12px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>{"✏️"} Edit in Marketplace</button>
-                    </div>
-                  ))
-                }
-              </>
-            )}
-
-            {profileTab === "diary" && (
-              <>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4" }}>Recent Activity</div>
-                  <button onClick={() => { onClose(); setActiveTab("diary"); }} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "6px 12px", color: "#7ec99a", fontSize: 11, cursor: "pointer" }}>{"+"} Log Activity</button>
-                </div>
-                {loadingData ? <div className="skeleton" style={{ height: 80, borderRadius: 10 }} /> :
-                  myDiary.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "32px 20px" }}>
-                      <div style={{ fontSize: 36, marginBottom: 8 }}>📓</div>
-                      <div style={{ fontSize: 13, color: "#5c8f6b", marginBottom: 12 }}>No diary entries yet</div>
-                      <button onClick={() => { onClose(); setActiveTab("diary"); }} className="btn-primary" style={{ width: "auto", padding: "8px 20px" }}>Start Your Farm Diary</button>
-                    </div>
-                  ) : myDiary.map((e, i) => {
-                    const type = ACTIVITY_TYPES.find(a => a.id === e.activity_type) || ACTIVITY_TYPES[7];
-                    return (
-                      <div key={i} style={{ display: "flex", gap: 10, padding: "10px 0", borderBottom: i < myDiary.length - 1 ? "1px solid #1a2e1e" : "none" }}>
-                        <div style={{ width: 32, height: 32, background: type.color + "20", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{type.icon}</div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: "#c8e8d4" }}>{type.label}{e.crop_name ? " — " + e.crop_name : ""}</div>
-                          <div style={{ fontSize: 11, color: "#5c8f6b" }}>{new Date(e.activity_date + "T00:00:00").toLocaleDateString("en-ZW", { day: "numeric", month: "short" })}</div>
-                          <div style={{ fontSize: 11, color: "#8aaa94", marginTop: 2 }}>{(e.notes || "").slice(0, 60)}{(e.notes || "").length > 60 ? "..." : ""}</div>
-                        </div>
-                      </div>
-                    );
-                  })
-                }
-                <button onClick={() => { onClose(); setActiveTab("diary"); }} className="btn-secondary" style={{ width: "100%", marginTop: 12 }}>View Full Diary {"→"}</button>
-              </>
-            )}
-
-            {profileTab === "farm" && (
-              <>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#c8e8d4", marginBottom: 16 }}>Farm Details</div>
-                <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16, marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, color: "#4a7a5a", marginBottom: 8, fontWeight: 600 }}>UPDATE FARM REGISTRATION</div>
-                  <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update your province, district, crops and livestock through the Register Farm tab.</div>
-                  <button onClick={() => { onClose(); setActiveTab("register"); }} className="btn-primary">Update Farm Details {"→"}</button>
-                </div>
-                <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16 }}>
-                  <div style={{ fontSize: 11, color: "#4a7a5a", marginBottom: 8, fontWeight: 600 }}>CROP AND LIVESTOCK TRACKING</div>
-                  <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update hectares and headcount on the interactive farmer map.</div>
-                  <button onClick={() => { onClose(); setActiveTab("home"); }} className="btn-secondary" style={{ width: "100%" }}>Open Farmer Map {"→"}</button>
-                </div>
-              </>
-            )}
+          <div style={{ background: "#1a2e1e", borderRadius: 12, padding: 16, marginBottom: 16, textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 8 }}>{"👩🏾‍🌾"}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#c8e8d4", marginBottom: 4 }}>{email || phone}</div>
+            <div style={{ fontSize: 10, color: "#4a7a5a" }}>VERIFIED FARMER</div>
           </div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+            {email && <div style={{ flex: 1, background: "#152218", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 4 }}>EMAIL</div>
+              <div style={{ fontSize: 12, color: "#c8e8d4" }}>{email}</div>
+            </div>}
+            {phone && <div style={{ flex: 1, background: "#152218", borderRadius: 8, padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, color: "#4a7a5a", marginBottom: 4 }}>PHONE</div>
+              <div style={{ fontSize: 12, color: "#c8e8d4" }}>{phone}</div>
+            </div>}
+          </div>
+          <div style={{ background: "linear-gradient(135deg, #1e2d18, #152218)", border: "1px solid #d4a017", borderRadius: 12, padding: 14, marginBottom: 16 }}>
+            <div style={{ fontSize: 10, color: "#d4a017", fontWeight: 700, marginBottom: 6 }}>{"⭐"} FARMLINK PREMIUM — USD 5/month</div>
+            {["Verified badge on all listings", "Unlimited listings (free: 2)", "Priority marketplace placement"].map((b, i) => (
+              <div key={i} style={{ fontSize: 12, color: "#8aaa94", marginBottom: 3 }}>{"✓"} {b}</div>
+            ))}
+            <button style={{ width: "100%", background: "linear-gradient(135deg, #b8860b, #8b6914)", border: "none", borderRadius: 8, padding: "10px", color: "#fff8e8", fontSize: 12, cursor: "pointer", fontWeight: 600, marginTop: 10 }}>Upgrade to Premium {"→"}</button>
+          </div>
+          <button onClick={onLogout} style={{ width: "100%", background: "rgba(224,112,96,0.1)", border: "1px solid #e07060", borderRadius: 8, padding: "12px", color: "#e07060", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>{"🚪"} Sign Out</button>
         </div>
       </div>
     );
   }
 
-// ─── PRICE FEEDS TAB ───────────────────────────────────────────────────────────
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#c8e8d4" }}>
+              {step === "input" ? "Sign In / Register" : "Enter Your Code"}
+            </div>
+            <div style={{ fontSize: 11, color: "#4a7a5a", marginTop: 3 }}>
+              {step === "input" ? "Enter your email or phone number" : "Code sent to " + sentTo}
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#4a7a5a", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
+        </div>
 
-// ─── PLANTING CALENDAR TAB ─────────────────────────────────────────────────────
+        {step === "input" && (
+          <>
+            <input className="input-field" value={identifier} onChange={e => setIdentifier(e.target.value)}
+              placeholder="Email or phone number" onKeyDown={e => e.key === "Enter" && handleSendOtp()} />
+            {error && <div style={{ color: "#e07060", fontSize: 12, margin: "8px 0" }}>{error}</div>}
+            <button className="btn-primary" onClick={handleSendOtp} disabled={loading} style={{ marginTop: 12 }}>
+              {loading ? "Sending..." : "Send Code →"}
+            </button>
+            <div style={{ fontSize: 11, color: "#3d6b4a", textAlign: "center", marginTop: 12 }}>
+              {"We'll send a one-time code to verify your identity"}
+            </div>
+          </>
+        )}
 
-// ─── INPUT SUPPLIERS TAB ───────────────────────────────────────────────────────
-
-// ─── INSIGHTS TAB ──────────────────────────────────────────────────────────────
-
+        {step === "verify" && (
+          <>
+            <input className="input-field" value={otp} onChange={e => setOtp(e.target.value)}
+              placeholder="Enter your code" maxLength={8} onKeyDown={e => e.key === "Enter" && handleVerify()} />
+            {error && <div style={{ color: "#e07060", fontSize: 12, margin: "8px 0" }}>{error}</div>}
+            <button className="btn-primary" onClick={handleVerify} disabled={loading} style={{ marginTop: 12 }}>
+              {loading ? "Verifying..." : "Verify Code →"}
+            </button>
+            <button onClick={() => setStep("input")} className="btn-secondary" style={{ marginTop: 8, width: "100%" }}>
+              {"← Back"}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function InsightsTab() {
