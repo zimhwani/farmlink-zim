@@ -959,7 +959,7 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
               return (
                 <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#2d7a4f", background: "#0f2218" } : {}}>
                   <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#8aaa94", marginBottom: 4 }}>{label}</div>
-                  <div style={{ fontSize: 18, marginBottom: 4 }}>{getWeatherIcon(weather.weathercode[i])}</div>
+                  <div style={{ fontSize: 18, marginBottom: 4 }}>{undefined}<WeatherIcon type=<WeatherIcon type={getWeatherIcon(weather.weathercode[i])} size={32} /> size={32} /></div>
                   <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#e8dfc8" }}>{Math.round(weather.temperature_2m_max[i])}°</div>
                   <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#8aaa94" }}>{Math.round(weather.temperature_2m_min[i])}°</div>
                   <div style={{ fontSize: 9, color: "#5a9fd4", marginTop: 4 }}>{weather.precipitation_probability_max[i]}%</div>
