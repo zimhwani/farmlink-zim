@@ -398,7 +398,7 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 10 }}>
+                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Space Mono', monospace", color: authUser ? "#7ec99a" : "#4a7a5a", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 600 }}>
                   {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.email?.split("@")[0] || "Profile"}</span></> : "👤 Login"}
                 </button>
               </div>
@@ -552,7 +552,7 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
   return (
     <>
       {/* Backdrop */}
-      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 150 }} />
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 150, touchAction: "none" }} />
       {/* Panel */}
       <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 200, overflow: "hidden" }}>
         {/* Header */}
