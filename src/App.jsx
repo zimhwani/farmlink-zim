@@ -325,10 +325,10 @@ export default function FarmLinkZim() {
           {/* Logo */}
           <div style={{ padding: "0 20px 24px", borderBottom: "1px solid #1f3525" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #3D6B45, #2C5235)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
+              <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>FarmLink <span style={{ color: "#3D6B45" }}>Zim</span></div>
-                <div style={{ fontSize: 8, fontFamily: "'DM Mono', monospace", color: "#7A5A3A", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>FarmLink <span style={{ color: "#2d7a4f" }}>Zim</span></div>
+                <div style={{ fontSize: 8, fontFamily: "'Space Mono', monospace", color: "#8aaa94", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
               </div>
             </div>
           </div>
@@ -345,19 +345,19 @@ export default function FarmLinkZim() {
 
           {/* Bottom sidebar info */}
           <div style={{ padding: "16px 20px", borderTop: "1px solid #1f3525" }}>
-            <div style={{ fontSize: 10, color: "#A08060", marginBottom: 6, fontWeight: 600, letterSpacing: "0.08em" }}>PLATFORM STATUS</div>
+            <div style={{ fontSize: 10, color: "#5c8f6b", marginBottom: 6, fontWeight: 600, letterSpacing: "0.08em" }}>PLATFORM STATUS</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#3D6B45" }} className="pulse" />
-              <span style={{ fontSize: 11, color: "#5A8A62" }}>Live · Farmlink connected</span>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#2d7a4f" }} className="pulse" />
+              <span style={{ fontSize: 11, color: "#3a9962" }}>Live · Farmlink connected</span>
             </div>
-            <div style={{ fontSize: 10, color: "#C4A882", marginTop: 6 }}>{"© "}{new Date().getFullYear()}{" FarmLink Zim. All rights reserved."}
+            <div style={{ fontSize: 10, color: "#4a7a5a", marginTop: 6 }}>{"© "}{new Date().getFullYear()}{" FarmLink Zim. All rights reserved."}
             </div>
             <div style={{ borderTop: "1px solid #E8E0D4", paddingTop: 10 }}>
               <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
-                <button onClick={() => setActiveTab("legal-tos")} style={{ background: "none", border: "none", color: "rgba(250,247,242,0.35)", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Terms of Service</button>
-                <button onClick={() => setActiveTab("legal-pp")} style={{ background: "none", border: "none", color: "rgba(250,247,242,0.35)", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Privacy Policy</button>
+                <button onClick={() => setActiveTab("legal-tos")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Terms of Service</button>
+                <button onClick={() => setActiveTab("legal-pp")} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", fontSize: 10, cursor: "pointer", padding: 0, textDecoration: "underline" }}>Privacy Policy</button>
               </div>
-              <div style={{ fontSize: 10, color: "rgba(250,247,242,0.3)" }}>© {new Date().getFullYear()} FarmLink Zim</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>© {new Date().getFullYear()} FarmLink Zim</div>
             </div>
           </div>
         </div>
@@ -370,10 +370,10 @@ export default function FarmLinkZim() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               {/* Mobile logo */}
               <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="mobile-logo">
-                <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #3D6B45, #2C5235)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
+                <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#FAF7F2" }}>FarmLink <span style={{ color: "#8ABB92" }}>Zim</span></div>
-                  <div style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: "#7A5A3A", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#0d1a0f" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#8aaa94", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
                 </div>
               </div>
               {/* Desktop spacer */}
@@ -381,10 +381,10 @@ export default function FarmLinkZim() {
               <div style={{ display: "flex", gap: 8 }}>
                 <div style={{ position: "relative" }}>
                   <div onClick={() => { setShowNotifications(v => !v); if (!showNotifications) loadNotifications(); }}
-                    style={{ background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", position: "relative" }}>
+                    style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", position: "relative" }}>
                     🔔
                     {notifications.filter(n => !n.read).length > 0 && (
-                      <span style={{ position: "absolute", top: -4, right: -4, background: "#B85A38", borderRadius: "50%", width: 16, height: 16, fontSize: 9, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Mono', monospace", fontWeight: 700 }}>
+                      <span style={{ position: "absolute", top: -4, right: -4, background: "#e07060", borderRadius: "50%", width: 16, height: 16, fontSize: 9, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Space Mono', monospace", fontWeight: 700 }}>
                         {notifications.filter(n => !n.read).length}
                       </span>
                     )}
@@ -398,7 +398,7 @@ export default function FarmLinkZim() {
                     />
                   )}
                 </div>
-                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#E8F0E4" : "#FFFEF9", border: `1px solid ${authUser ? "#3D6B45" : "#E8E0D4"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", color: authUser ? "#3D6B45" : "#7A5A3A", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 10 }}>
+                <button onClick={() => setShowAuthModal(true)} style={{ background: authUser ? "#1a3d24" : "#152218", border: `1px solid ${authUser ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "6px 10px", fontSize: 12, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif", color: authUser ? "#2d7a4f" : "#8aaa94", display: "flex", alignItems: "center", gap: 5, position: "relative", zIndex: 10 }}>
                   {authUser ? <>👩🏾‍🌾 <span style={{ maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{authUser.email?.split("@")[0] || "Profile"}</span></> : "👤 Login"}
                 </button>
               </div>
@@ -425,7 +425,7 @@ export default function FarmLinkZim() {
       {/* MOBILE BOTTOM NAV */}
       <div className="bottom-nav">
         {TABS.map(tab => (
-          <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`} style={{ color: "#A08060" }} onClick={() => setActiveTab(tab.id)}>
+          <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`} style={{ color: "#5c8f6b" }} onClick={() => setActiveTab(tab.id)}>
             <span className="tab-icon">{tab.icon}</span>
             <span className="tab-label">{tab.id === "advisory" ? "AI" : tab.label}</span>
           </button>
@@ -504,14 +504,14 @@ function MobileNav({ TABS, activeTab, setActiveTab }) {
 
       {/* More drawer */}
       {showMore && (
-        <div style={{ position: "fixed", bottom: 65, left: 0, right: 0, background: "#FAF7F2", border: "1px solid #1f3525", borderRadius: "16px 16px 0 0", padding: "16px 12px 8px", zIndex: 99, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
-          <div style={{ width: "100%", fontSize: 9, fontFamily: "'DM Mono', monospace", color: "#A08060", letterSpacing: "0.12em", textAlign: "center", marginBottom: 4 }}>MORE</div>
+        <div style={{ position: "fixed", bottom: 65, left: 0, right: 0, background: "#0d1a0f", border: "1px solid #1f3525", borderRadius: "16px 16px 0 0", padding: "16px 12px 8px", zIndex: 99, display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+          <div style={{ width: "100%", fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", letterSpacing: "0.12em", textAlign: "center", marginBottom: 4 }}>MORE</div>
           {MORE.map(tab => (
             <button key={tab.id}
               onClick={() => { setActiveTab(tab.id); setShowMore(false); }}
-              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, background: activeTab === tab.id ? "#FFFEF9" : "transparent", border: activeTab === tab.id ? "1px solid #2d7a4f" : "1px solid #1f3525", borderRadius: 12, padding: "10px 16px", cursor: "pointer", minWidth: 80 }}>
+              style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, background: activeTab === tab.id ? "#152218" : "transparent", border: activeTab === tab.id ? "1px solid #2d7a4f" : "1px solid #1f3525", borderRadius: 12, padding: "10px 16px", cursor: "pointer", minWidth: 80 }}>
               <span style={{ fontSize: 22 }}>{tab.icon}</span>
-              <span style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: activeTab === tab.id ? "#3D6B45" : "#5A8A62", letterSpacing: "0.06em", textTransform: "uppercase" }}>{tab.label}</span>
+              <span style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: activeTab === tab.id ? "#2d7a4f" : "#3a9962", letterSpacing: "0.06em", textTransform: "uppercase" }}>{tab.label}</span>
             </button>
           ))}
         </div>
@@ -521,13 +521,13 @@ function MobileNav({ TABS, activeTab, setActiveTab }) {
       <div className="bottom-nav">
         {PRIMARY.map(tab => (
           <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
-            style={{ color: "#A08060" }} onClick={() => { setActiveTab(tab.id); setShowMore(false); }}>
+            style={{ color: "#5c8f6b" }} onClick={() => { setActiveTab(tab.id); setShowMore(false); }}>
             <span className="tab-icon">{tab.icon}</span>
           </button>
         ))}
         {/* More button */}
         <button className={`tab-btn ${moreActive || showMore ? "active" : ""}`}
-          style={{ color: "#A08060" }} onClick={() => setShowMore(v => !v)}>
+          style={{ color: "#5c8f6b" }} onClick={() => setShowMore(v => !v)}>
           <span className="tab-icon">{showMore ? "✕" : "••••"}</span>
         </button>
       </div>
@@ -537,7 +537,7 @@ function MobileNav({ TABS, activeTab, setActiveTab }) {
 
 // ─── NOTIFICATION PANEL ───────────────────────────────────────────────────────
 const NOTIF_ICONS = { message: "✉️", price: "📈", pest: "🚨", weather: "🌧️", system: "🌿" };
-const NOTIF_COLORS = { message: "#3D6B45", price: "#C4820A", pest: "#B85A38", weather: "#5a9fd4", system: "#3D6B45" };
+const NOTIF_COLORS = { message: "#2d7a4f", price: "#d4a017", pest: "#e07060", weather: "#5a9fd4", system: "#2d7a4f" };
 
 function timeAgo(dateStr) {
   const diff = (Date.now() - new Date(dateStr)) / 1000;
@@ -554,15 +554,15 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
       {/* Backdrop */}
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 150 }} />
       {/* Panel */}
-      <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#FAF7F2", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(44,26,14,0.35)", zIndex: 200, overflow: "hidden" }}>
+      <div style={{ position: "absolute", right: 0, top: 44, width: 320, background: "#0d1a0f", border: "1px solid #2d5a36", borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.6)", zIndex: 200, overflow: "hidden" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid #1f3525" }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 700, color: "#2C1A0E" }}>Notifications</div>
-            {unreadCount > 0 && <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", marginTop: 2 }}>{unreadCount} UNREAD</div>}
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#e8dfc8" }}>Notifications</div>
+            {unreadCount > 0 && <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", marginTop: 2 }}>{unreadCount} UNREAD</div>}
           </div>
           {unreadCount > 0 && (
-            <button onClick={onMarkAllRead} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 10px", color: "#5A8A62", fontSize: 10, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
+            <button onClick={onMarkAllRead} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 10px", color: "#3a9962", fontSize: 10, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               Mark all read
             </button>
           )}
@@ -570,12 +570,12 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
         {/* List */}
         <div style={{ maxHeight: 420, overflowY: "auto" }}>
           {notifications.length === 0 ? (
-            <div style={{ padding: "32px 16px", textAlign: "center", color: "#A08060", fontSize: 12 }}>No notifications yet</div>
+            <div style={{ padding: "32px 16px", textAlign: "center", color: "#5c8f6b", fontSize: 12 }}>No notifications yet</div>
           ) : notifications.map(n => (
             <div key={n.id} onClick={() => onMarkRead(n.id)}
-              style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: "1px solid #E8E0D4", background: n.read ? "transparent" : "rgba(61,107,69,0.06)", cursor: "pointer", transition: "background 0.2s" }}
+              style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: "1px solid #E8E0D4", background: n.read ? "transparent" : "rgba(45,122,79,0.06)", cursor: "pointer", transition: "background 0.2s" }}
               onMouseOver={e => e.currentTarget.style.background = "rgba(45,122,79,0.12)"}
-              onMouseOut={e => e.currentTarget.style.background = n.read ? "transparent" : "rgba(61,107,69,0.06)"}>
+              onMouseOut={e => e.currentTarget.style.background = n.read ? "transparent" : "rgba(45,122,79,0.06)"}>
               {/* Icon */}
               <div style={{ width: 36, height: 36, borderRadius: 10, background: `${NOTIF_COLORS[n.type]}20`, border: `1px solid ${NOTIF_COLORS[n.type]}40`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>
                 {NOTIF_ICONS[n.type] || "🔔"}
@@ -583,11 +583,11 @@ function NotificationPanel({ notifications, onClose, onMarkRead, onMarkAllRead }
               {/* Content */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                  <div style={{ fontSize: 13, fontWeight: n.read ? 400 : 600, color: n.read ? "#7A5A3A" : "#2C1A0E", lineHeight: 1.3 }}>{n.title}</div>
+                  <div style={{ fontSize: 13, fontWeight: n.read ? 400 : 600, color: n.read ? "#8aaa94" : "#e8dfc8", lineHeight: 1.3 }}>{n.title}</div>
                   {!n.read && <div style={{ width: 7, height: 7, borderRadius: "50%", background: NOTIF_COLORS[n.type], flexShrink: 0, marginTop: 4 }} />}
                 </div>
-                <div style={{ fontSize: 11, color: "#5A8A62", marginTop: 3, lineHeight: 1.4 }}>{n.body}</div>
-                <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#A08060", marginTop: 4 }}>{timeAgo(n.created_at)}</div>
+                <div style={{ fontSize: 11, color: "#3a9962", marginTop: 3, lineHeight: 1.4 }}>{n.body}</div>
+                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginTop: 4 }}>{timeAgo(n.created_at)}</div>
               </div>
             </div>
           ))}
@@ -629,27 +629,27 @@ function CropHectareRow({ crop, onUpdate }) {
   };
 
   return (
-    <div style={{ marginBottom: 8, background: "#F2EDE4", borderRadius: 8, padding: "8px 10px" }}>
+    <div style={{ marginBottom: 8, background: "#0f2218", borderRadius: 8, padding: "8px 10px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: editing ? 8 : 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: isLivestock ? "rgba(61,107,69,0.12)" : "rgba(61,107,69,0.12)", color: isLivestock ? "#5a9fd4" : "#3D6B45", flexShrink: 0 }}>
+          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 10, background: isLivestock ? "rgba(45,122,79,0.2)" : "rgba(45,122,79,0.2)", color: isLivestock ? "#5a9fd4" : "#2d7a4f", flexShrink: 0 }}>
             {isLivestock ? "🐄" : "🌾"} {crop.crop_name}
           </span>
           {!editing && (
-            <span style={{ fontSize: 10, color: currentVal ? "#C4820A" : "#A08060" }}>
+            <span style={{ fontSize: 10, color: currentVal ? "#d4a017" : "#5c8f6b" }}>
               {currentVal != null ? `${currentVal} ${unit}` : `— ${unit}`}
             </span>
           )}
           {!editing && stage && (
-            <span style={{ fontSize: 10, color: "#5A8A62" }}>{stageLabels[stage]}</span>
+            <span style={{ fontSize: 10, color: "#3a9962" }}>{stageLabels[stage]}</span>
           )}
         </div>
         {!editing ? (
-          <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 8px", color: "#7A5A3A", fontSize: 9, cursor: "pointer" }}>edit</button>
+          <button onClick={() => setEditing(true)} style={{ background: "none", border: "1px solid #2d5a36", borderRadius: 5, padding: "1px 8px", color: "#8aaa94", fontSize: 9, cursor: "pointer" }}>edit</button>
         ) : (
           <div style={{ display: "flex", gap: 4 }}>
-            <button onClick={handleSave} disabled={saving} style={{ background: "#3D6B45", border: "none", borderRadius: 6, padding: "2px 10px", color: "#2C1A0E", fontSize: 10, cursor: "pointer" }}>{saving ? "..." : "✓"}</button>
-            <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 12, cursor: "pointer" }}>✕</button>
+            <button onClick={handleSave} disabled={saving} style={{ background: "#2d7a4f", border: "none", borderRadius: 6, padding: "2px 10px", color: "#e8dfc8", fontSize: 10, cursor: "pointer" }}>{saving ? "..." : "✓"}</button>
+            <button onClick={() => setEditing(false)} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 12, cursor: "pointer" }}>✕</button>
           </div>
         )}
       </div>
@@ -657,15 +657,15 @@ function CropHectareRow({ crop, onUpdate }) {
       {editing && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
           <div>
-            <label style={{ fontSize: 9, color: "#7A5A3A", display: "block", marginBottom: 3 }}>{isLivestock ? "HEAD COUNT" : "HECTARES"}</label>
+            <label style={{ fontSize: 9, color: "#8aaa94", display: "block", marginBottom: 3 }}>{isLivestock ? "HEAD COUNT" : "HECTARES"}</label>
             <input type="number" value={value} onChange={e => setValue(e.target.value)} placeholder={placeholder}
-              style={{ width: "100%", background: "#F2EDE4", border: "1px solid #4aad72", borderRadius: 6, padding: "4px 8px", color: "#2C1A0E", fontSize: 11, outline: "none" }}
+              style={{ width: "100%", background: "#0f2218", border: "1px solid #4aad72", borderRadius: 6, padding: "4px 8px", color: "#e8dfc8", fontSize: 11, outline: "none" }}
               autoFocus onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") setEditing(false); }} />
           </div>
           <div>
-            <label style={{ fontSize: 9, color: "#7A5A3A", display: "block", marginBottom: 3 }}>CURRENT STAGE</label>
+            <label style={{ fontSize: 9, color: "#8aaa94", display: "block", marginBottom: 3 }}>CURRENT STAGE</label>
             <select value={stage} onChange={e => setStage(e.target.value)}
-              style={{ width: "100%", background: "#F2EDE4", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 6px", color: "#2C1A0E", fontSize: 11, outline: "none" }}>
+              style={{ width: "100%", background: "#0f2218", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 6px", color: "#e8dfc8", fontSize: 11, outline: "none" }}>
               <option value="">Select stage</option>
               {stages.map(s => <option key={s} value={s}>{stageLabels[s]}</option>)}
             </select>
@@ -702,10 +702,10 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
       <div className="modal" style={{ borderRadius: "20px 20px 0 0", maxHeight: "92vh" }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>Farmer Distribution Map</div>
-            <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#7A5A3A" }}>{farmers.length} REGISTERED FARMERS · ZIMBABWE</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>Farmer Distribution Map</div>
+            <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#8aaa94" }}>{farmers.length} REGISTERED FARMERS · ZIMBABWE</div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 22, cursor: "pointer" }}>✕</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 22, cursor: "pointer" }}>✕</button>
         </div>
 
         <div style={{ background: "#080f09", borderRadius: 12, border: "1px solid #1f3525", overflow: "hidden", marginBottom: 14 }}>
@@ -754,9 +754,9 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
               const isSelected = selectedDistrict?.district === d.district;
               return (
                 <g key={i} onClick={() => setSelectedDistrict(isSelected ? null : d)} style={{ cursor: "pointer" }}>
-                  <circle cx={d.x} cy={d.y} r={r + 10} fill="#3D6B45" opacity="0.12"/>
-                  <circle cx={d.x} cy={d.y} r={r} fill={isSelected ? "#3D6B45" : "#3D6B45"} stroke={isSelected ? "#2C1A0E" : "#3D6B45"} strokeWidth="2"/>
-                  <text x={d.x} y={d.y + 1} textAnchor="middle" dominantBaseline="middle" fill="#2C1A0E" fontSize="12" fontWeight="bold" fontFamily="monospace" style={{ pointerEvents: "none" }}>{d.count}</text>
+                  <circle cx={d.x} cy={d.y} r={r + 10} fill="#2d7a4f" opacity="0.12"/>
+                  <circle cx={d.x} cy={d.y} r={r} fill={isSelected ? "#2d7a4f" : "#2d7a4f"} stroke={isSelected ? "#e8dfc8" : "#2d7a4f"} strokeWidth="2"/>
+                  <text x={d.x} y={d.y + 1} textAnchor="middle" dominantBaseline="middle" fill="#e8dfc8" fontSize="12" fontWeight="bold" fontFamily="monospace" style={{ pointerEvents: "none" }}>{d.count}</text>
                 </g>
               );
             })}
@@ -764,11 +764,11 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
 
           {/* Legend */}
           <div style={{ position: "absolute", bottom: 10, right: 10, background: "rgba(8,15,9,0.92)", borderRadius: 8, padding: "6px 10px", border: "1px solid #1f3525" }}>
-            <div style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: "#7A5A3A", marginBottom: 4 }}>FARMERS</div>
+            <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#8aaa94", marginBottom: 4 }}>FARMERS</div>
             {[{ r: 8, label: "1–2" }, { r: 11, label: "3–5" }, { r: 14, label: "6+" }].map(l => (
               <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
-                <svg width={l.r * 2 + 4} height={l.r * 2 + 4}><circle cx={l.r + 2} cy={l.r + 2} r={l.r} fill="#3D6B45" stroke="#3D6B45" strokeWidth="1.5" /></svg>
-                <span style={{ fontSize: 9, color: "#7A5A3A", fontFamily: "'DM Mono', monospace" }}>{l.label}</span>
+                <svg width={l.r * 2 + 4} height={l.r * 2 + 4}><circle cx={l.r + 2} cy={l.r + 2} r={l.r} fill="#2d7a4f" stroke="#2d7a4f" strokeWidth="1.5" /></svg>
+                <span style={{ fontSize: 9, color: "#8aaa94", fontFamily: "'Space Mono', monospace" }}>{l.label}</span>
               </div>
             ))}
           </div>
@@ -778,10 +778,10 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
           <div className="card" style={{ marginBottom: 12 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#2C1A0E" }}>{selectedDistrict.district}</div>
-                <div style={{ fontSize: 11, color: "#5A8A62" }}>{selectedDistrict.province}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#e8dfc8" }}>{selectedDistrict.district}</div>
+                <div style={{ fontSize: 11, color: "#3a9962" }}>{selectedDistrict.province}</div>
               </div>
-              <div style={{ background: "rgba(61,107,69,0.12)", color: "#3D6B45", fontFamily: "'DM Mono', monospace", fontSize: 12, padding: "4px 10px", borderRadius: 20 }}>
+              <div style={{ background: "rgba(45,122,79,0.2)", color: "#2d7a4f", fontFamily: "'Space Mono', monospace", fontSize: 12, padding: "4px 10px", borderRadius: 20 }}>
                 {selectedDistrict.count} farmer{selectedDistrict.count > 1 ? "s" : ""}
               </div>
             </div>
@@ -790,8 +790,8 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                   <div style={{ fontSize: 20 }}>👩🏾‍🌾</div>
                   <div>
-                    <div style={{ fontSize: 13, color: "#2C1A0E", fontWeight: 600 }}>{f.name}</div>
-                    <div style={{ fontSize: 10, color: "#7A5A3A", fontFamily: "'DM Mono', monospace" }}>{f.ward}</div>
+                    <div style={{ fontSize: 13, color: "#e8dfc8", fontWeight: 600 }}>{f.name}</div>
+                    <div style={{ fontSize: 10, color: "#8aaa94", fontFamily: "'Space Mono', monospace" }}>{f.ward}</div>
                   </div>
                 </div>
                 {f.farmer_crops && f.farmer_crops.length > 0 && (
@@ -807,7 +807,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: "center", padding: "10px 0", color: "#7A5A3A", fontSize: 11, fontFamily: "'DM Mono', monospace" }}>
+          <div style={{ textAlign: "center", padding: "10px 0", color: "#8aaa94", fontSize: 11, fontFamily: "'Space Mono', monospace" }}>
             TAP A GREEN DOT TO SEE FARMERS IN THAT DISTRICT
           </div>
         )}
@@ -816,10 +816,10 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
         {Object.entries(farmers.reduce((acc, f) => { acc[f.province] = (acc[f.province] || 0) + 1; return acc; }, {}))
           .sort((a, b) => b[1] - a[1]).map(([prov, count]) => (
             <div key={prov} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <div style={{ flex: 1, fontSize: 13, color: "#2C1A0E" }}>{prov}</div>
+              <div style={{ flex: 1, fontSize: 13, color: "#e8dfc8" }}>{prov}</div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <div style={{ height: 6, borderRadius: 3, background: "linear-gradient(90deg, #2d7a4f, #5cd68a)", width: Math.max(20, (count / farmers.length) * 140) }} />
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#3D6B45", minWidth: 16 }}>{count}</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#2d7a4f", minWidth: 16 }}>{count}</div>
               </div>
             </div>
           ))}
@@ -875,11 +875,11 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
   return (
     <div className="fade-in two-col">
       {authUser && (
-        <div style={{ background: "linear-gradient(135deg, #E8F0E4, #F2EDE4)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 4, display: "flex", alignItems: "center", gap: 12, gridColumn: "1 / -1" }}>
+        <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d5a36", borderRadius: 14, padding: "14px 18px", marginBottom: 4, display: "flex", alignItems: "center", gap: 12, gridColumn: "1 / -1" }}>
           <div style={{ fontSize: 32 }}>{"👩🏾‍🌾"}</div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>{getGreeting(authUser.email || authUser.phone)}</div>
-            <div style={{ fontSize: 12, color: "#5A8A62", marginTop: 2 }}>Welcome to your farm dashboard</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>{getGreeting(authUser.email || authUser.phone)}</div>
+            <div style={{ fontSize: 12, color: "#3a9962", marginTop: 2 }}>Welcome to your farm dashboard</div>
           </div>
         </div>
       )}
@@ -889,9 +889,9 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
         <div style={{ background: "linear-gradient(135deg, #1a3d24 0%, #0f2a18 100%)", borderRadius: 16, padding: "24px 20px", marginBottom: 16, position: "relative", overflow: "hidden", border: "1px solid #2d5a36" }}>
           <div className="hero-grain" />
           <div style={{ position: "absolute", right: -20, top: -20, fontSize: 100, opacity: 0.07 }}>🌿</div>
-          <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#3D6B45", letterSpacing: "0.15em", marginBottom: 8 }}>ZIMBABWE'S FARMING PLATFORM</div>
-          <div style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.2, color: "#d8f0e0", marginBottom: 8 }}>Connect. Grow.<br /><span style={{ color: "#3D6B45" }}>Prosper.</span></div>
-          <div style={{ fontSize: 14, color: "#7A5A3A", lineHeight: 1.5, marginBottom: 20 }}>Linking farmers to markets, advisors, and buyers across Zimbabwe.</div>
+          <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#2d7a4f", letterSpacing: "0.15em", marginBottom: 8 }}>ZIMBABWE'S FARMING PLATFORM</div>
+          <div style={{ fontSize: 28, fontWeight: 700, lineHeight: 1.2, color: "#d8f0e0", marginBottom: 8 }}>Connect. Grow.<br /><span style={{ color: "#2d7a4f" }}>Prosper.</span></div>
+          <div style={{ fontSize: 14, color: "#8aaa94", lineHeight: 1.5, marginBottom: 20 }}>Linking farmers to markets, advisors, and buyers across Zimbabwe.</div>
           <div style={{ display: "flex", gap: 8 }}>
             <button className="btn-primary" style={{ width: "auto", padding: "10px 18px", fontSize: 11 }} onClick={() => setActiveTab("register")}>Register Farm</button>
             <button className="btn-secondary" style={{ padding: "10px 18px", fontSize: 11 }} onClick={() => setActiveTab("market")}>Browse Market</button>
@@ -900,17 +900,17 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
 
         {/* Stats */}
         <div style={{ display: "grid", gap: 8, marginBottom: 16 }} className="stats-row">
-          <div onClick={onFarmerMapClick} style={{ background: "#FFFEF9", border: "1px solid #2d7a4f", borderRadius: 10, padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>
+          <div onClick={onFarmerMapClick} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 10, padding: "12px 8px", textAlign: "center", cursor: "pointer" }}>
             <div style={{ fontSize: 20, marginBottom: 4 }}>👩🏾‍🌾</div>
-            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 14, color: "#3D6B45", fontWeight: 700 }}>{farmerCount}</div>
-            <div style={{ fontSize: 9, color: "#7A5A3A", marginTop: 2, fontFamily: "'DM Mono', monospace" }}>Farmers</div>
-            <div style={{ fontSize: 8, color: "#3D6B45", marginTop: 2, fontFamily: "'DM Mono', monospace" }}>TAP MAP ↗</div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#2d7a4f", fontWeight: 700 }}>{farmerCount}</div>
+            <div style={{ fontSize: 9, color: "#8aaa94", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>Farmers</div>
+            <div style={{ fontSize: 8, color: "#2d7a4f", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>TAP MAP ↗</div>
           </div>
           {[{ label: "Listings", value: listingCount, icon: "🛒" }, { label: "Districts", value: "60+", icon: "📍" }].map(s => (
-            <div key={s.label} style={{ background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
+            <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "12px 8px", textAlign: "center" }}>
               <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 14, color: "#3D6B45", fontWeight: 700 }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: "#7A5A3A", marginTop: 2, fontFamily: "'DM Mono', monospace" }}>{s.label}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 14, color: "#2d7a4f", fontWeight: 700 }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: "#8aaa94", marginTop: 2, fontFamily: "'Space Mono', monospace" }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -919,10 +919,10 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
         <div className="section-title">Quick Actions</div>
         <div style={{ display: "grid", gap: 8 }} className="quick-grid">
           {[{ label: "AI Farm Advisor", icon: "🤖", desc: "Get instant advice", tab: "advisory" }, { label: "Sell Produce", icon: "📦", desc: "List your harvest", tab: "market" }, { label: "Crop Mapping", icon: "🗺️", desc: "Register your farm", tab: "register" }, { label: "Market Insights", icon: "📈", desc: "Yield & price data", tab: "insights" }].map((a, i) => (
-            <button key={i} onClick={() => setActiveTab(a.tab)} style={{ background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 12, padding: "14px 12px", textAlign: "left", cursor: "pointer", transition: "border-color 0.2s" }} onMouseOver={e => e.currentTarget.style.borderColor = "#5A8A62"} onMouseOut={e => e.currentTarget.style.borderColor = "#E8E0D4"}>
+            <button key={i} onClick={() => setActiveTab(a.tab)} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "14px 12px", textAlign: "left", cursor: "pointer", transition: "border-color 0.2s" }} onMouseOver={e => e.currentTarget.style.borderColor = "#3a9962"} onMouseOut={e => e.currentTarget.style.borderColor = "#1f3525"}>
               <div style={{ fontSize: 24, marginBottom: 8 }}>{a.icon}</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E", marginBottom: 2 }}>{a.label}</div>
-              <div style={{ fontSize: 11, color: "#7A5A3A" }}>{a.desc}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8", marginBottom: 2 }}>{a.label}</div>
+              <div style={{ fontSize: 11, color: "#8aaa94" }}>{a.desc}</div>
             </button>
           ))}
         </div>
@@ -934,25 +934,25 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
         <div className="card" style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div className="section-title" style={{ margin: 0 }}>Weather — Harare</div>
-            <div style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: "#3D6B45" }}>● LIVE</div>
+            <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#2d7a4f" }}>● LIVE</div>
           </div>
           <div style={{ display: "flex", gap: 5, overflowX: "auto", paddingBottom: 4 }} className="weather-strip">
             {weather ? weather.time.map((t, i) => {
               const date = new Date(t);
               const label = i === 0 ? "Today" : days[date.getDay()];
               return (
-                <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#3D6B45", background: "#F2EDE4" } : {}}>
-                  <div style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: "#7A5A3A", marginBottom: 4 }}>{label}</div>
+                <div key={i} className="weather-day" style={i === 0 ? { borderColor: "#2d7a4f", background: "#0f2218" } : {}}>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#8aaa94", marginBottom: 4 }}>{label}</div>
                   <div style={{ fontSize: 18, marginBottom: 4 }}>{getWeatherIcon(weather.weathercode[i])}</div>
-                  <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#2C1A0E" }}>{Math.round(weather.temperature_2m_max[i])}°</div>
-                  <div style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", color: "#7A5A3A" }}>{Math.round(weather.temperature_2m_min[i])}°</div>
+                  <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#e8dfc8" }}>{Math.round(weather.temperature_2m_max[i])}°</div>
+                  <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#8aaa94" }}>{Math.round(weather.temperature_2m_min[i])}°</div>
                   <div style={{ fontSize: 9, color: "#5a9fd4", marginTop: 4 }}>{weather.precipitation_probability_max[i]}%</div>
                 </div>
               );
             }) : [1,2,3,4,5,6].map(i => <div key={i} className="skeleton weather-day" style={{ height: 80 }} />)}
           </div>
           {weather && weather.precipitation_probability_max[0] > 60 && (
-            <div style={{ marginTop: 10, background: "#F2EDE4", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#7A5A3A", borderLeft: "3px solid #2d7a4f" }}>
+            <div style={{ marginTop: 10, background: "#0f2218", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#8aaa94", borderLeft: "3px solid #2d7a4f" }}>
               ⚠️ High rain probability today. Consider delaying fertiliser application.
             </div>
           )}
@@ -961,18 +961,18 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
         {/* Price Alerts */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
           <div className="section-title" style={{ margin: 0 }}>📈 Live Market Prices</div>
-          <button onClick={() => setActiveTab("prices")} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 11, cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>See all →</button>
+          <button onClick={() => setActiveTab("prices")} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 11, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>See all →</button>
         </div>
         <div style={{ display: "grid", gap: 8, marginBottom: 16 }} className="price-grid">
           {pricesLoading ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 70, borderRadius: 10 }} />) :
           prices.map((p, i) => (
-            <div key={i} style={{ background: "#FFFEF9", border: `1px solid ${p.trend === "up" ? "#1f3a25" : "#3a1f1f"}`, borderRadius: 10, padding: "12px", cursor: "pointer" }} onClick={() => setActiveTab("prices")}>
+            <div key={i} style={{ background: "#152218", border: `1px solid ${p.trend === "up" ? "#1f3a25" : "#3a1f1f"}`, borderRadius: 10, padding: "12px", cursor: "pointer" }} onClick={() => setActiveTab("prices")}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{p.crop}</div>
-                <div style={{ fontSize: 11, color: p.trend === "up" ? "#3D6B45" : "#B85A38", fontWeight: 600 }}>{p.trend === "up" ? "▲" : "▼"} {p.change}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{p.crop}</div>
+                <div style={{ fontSize: 11, color: p.trend === "up" ? "#2d7a4f" : "#e07060", fontWeight: 600 }}>{p.trend === "up" ? "▲" : "▼"} {p.change}</div>
               </div>
-              <div style={{ fontSize: 12, color: "#3D6B45", margin: "6px 0 4px", fontWeight: 600 }}>{p.price}</div>
-              <div style={{ fontSize: 10, color: "#7A5A3A" }}>{p.region}</div>
+              <div style={{ fontSize: 12, color: "#2d7a4f", margin: "6px 0 4px", fontWeight: 600 }}>{p.price}</div>
+              <div style={{ fontSize: 10, color: "#8aaa94" }}>{p.region}</div>
             </div>
           ))}
         </div>
@@ -983,13 +983,13 @@ function HomeTab({ setActiveTab, farmerCount, listingCount, weather, getWeatherI
         {/* Pest Alerts */}
         <div className="section-title">🚨 Pest & Disease Alerts</div>
         {[{ name: "Fall Armyworm", risk: "High", regions: "Mash West, Mash Central", action: "Apply chlorpyrifos immediately" }, { name: "Stalk Borer", risk: "Medium", regions: "Midlands, Masvingo", action: "Monitor trap counts weekly" }, { name: "Tick Season", risk: "High", regions: "Matabeleland", action: "Dip cattle weekly with Triatix" }].map((p, i) => (
-          <div key={i} style={{ background: "#FFFEF9", border: `1px solid ${p.risk === "High" ? "#D4C8A0" : "#3a4a20"}`, borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+          <div key={i} style={{ background: "#152218", border: `1px solid ${p.risk === "High" ? "#2d5a36" : "#3a4a20"}`, borderRadius: 10, padding: "12px", marginBottom: 8 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{p.name}</div>
-              <span style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", background: p.risk === "High" ? "rgba(224,112,96,0.2)" : "rgba(200,180,60,0.2)", color: p.risk === "High" ? "#B85A38" : "#C4820A", padding: "2px 8px", borderRadius: 8 }}>{p.risk}</span>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{p.name}</div>
+              <span style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", background: p.risk === "High" ? "rgba(224,112,96,0.2)" : "rgba(200,180,60,0.2)", color: p.risk === "High" ? "#e07060" : "#d4a017", padding: "2px 8px", borderRadius: 8 }}>{p.risk}</span>
             </div>
-            <div style={{ fontSize: 11, color: "#5A8A62", marginBottom: 2 }}>📍 {p.regions}</div>
-            <div style={{ fontSize: 11, color: "#7A5A3A" }}>💊 {p.action}</div>
+            <div style={{ fontSize: 11, color: "#3a9962", marginBottom: 2 }}>📍 {p.regions}</div>
+            <div style={{ fontSize: 11, color: "#8aaa94" }}>💊 {p.action}</div>
           </div>
         ))}
       </div>
@@ -1040,39 +1040,39 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
     <div className="fade-in single-col">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E" }}>Marketplace</div>
-          <div style={{ fontSize: 12, color: "#7A5A3A" }}>{listings.length} active listings</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8" }}>Marketplace</div>
+          <div style={{ fontSize: 12, color: "#8aaa94" }}>{listings.length} active listings</div>
         </div>
-        <button onClick={() => setShowListingModal(true)} style={{ background: "#FFFEF9", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#3D6B45", fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>+ List Produce</button>
+        <button onClick={() => setShowListingModal(true)} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "8px 14px", color: "#2d7a4f", fontSize: 12, cursor: "pointer", whiteSpace: "nowrap" }}>+ List Produce</button>
       </div>
 
       {/* My Listings / All toggle */}
       {authUser && myListings.length > 0 && (
         <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
           {[["all", "All Listings"], ["mine", `My Listings (${myListings.length})`]].map(([v, label]) => (
-            <button key={v} onClick={() => setMyTab(v)} style={{ background: myTab === v ? "#3D6B45" : "#FFFEF9", border: `1px solid ${myTab === v ? "#5A8A62" : "#E8E0D4"}`, borderRadius: 8, padding: "7px 14px", color: myTab === v ? "#FFFEF9" : "#5A8A62", fontSize: 12, cursor: "pointer" }}>{label}</button>
+            <button key={v} onClick={() => setMyTab(v)} style={{ background: myTab === v ? "#2d7a4f" : "#152218", border: `1px solid ${myTab === v ? "#3a9962" : "#1f3525"}`, borderRadius: 8, padding: "7px 14px", color: myTab === v ? "#152218" : "#3a9962", fontSize: 12, cursor: "pointer" }}>{label}</button>
           ))}
         </div>
       )}
 
       {/* Search */}
       <div style={{ position: "relative", marginBottom: 12 }}>
-        <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#A08060", fontSize: 14 }}>🔍</span>
+        <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#5c8f6b", fontSize: 14 }}>🔍</span>
         <input className="input-field" placeholder="Search crops, location, farmer..." style={{ paddingLeft: 36 }} value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
       {/* Filters */}
       <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 16 }}>
-        {filters.map(f => <span key={f} className={`chip ${filterCrop === f ? "active" : ""}`} onClick={() => setFilterCrop(f)} style={{ fontFamily: "'DM Mono', monospace", fontSize: 10 }}>{f}</span>)}
+        {filters.map(f => <span key={f} className={`chip ${filterCrop === f ? "active" : ""}`} onClick={() => setFilterCrop(f)} style={{ fontFamily: "'Space Mono', monospace", fontSize: 10 }}>{f}</span>)}
       </div>
 
       {/* Listings grid */}
       <div className="listing-grid">
         {loadingListings ? [1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 120, borderRadius: 12, marginBottom: 10 }} />) :
           filtered.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px 20px", color: "#7A5A3A", gridColumn: "1/-1" }}>
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "#8aaa94", gridColumn: "1/-1" }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🌾</div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11 }}>No listings found</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>No listings found</div>
             </div>
           ) : filtered.map(l => (
             <div key={l.id} className="listing-card" onClick={() => setShowListingDetail(l)} style={{ cursor: "pointer" }}>
@@ -1084,39 +1084,39 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
                   style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 8, marginBottom: 10 }}
                 />
               ) : (
-                <div style={{ width: "100%", height: 100, background: "#F2EDE4", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 10 }}>
+                <div style={{ width: "100%", height: 100, background: "#0f2218", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 10 }}>
                   {CROP_EMOJIS[l.crop] || l.img || "🌾"}
                 </div>
               )}
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#2C1A0E" }}>{l.crop}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#e8dfc8" }}>{l.crop}</div>
                 <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                  {l.is_featured && <span style={{ fontSize: 9, background: "rgba(196,130,10,0.15)", color: "#C4820A", border: "1px solid #d4a01740", padding: "2px 7px", borderRadius: 10, fontWeight: 700 }}>⭐ FEATURED</span>}
+                  {l.is_featured && <span style={{ fontSize: 9, background: "rgba(212,160,23,0.2)", color: "#d4a017", border: "1px solid #d4a01740", padding: "2px 7px", borderRadius: 10, fontWeight: 700 }}>⭐ FEATURED</span>}
                   <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 9, padding: "2px 7px", borderRadius: 10 }}>{l.badge}</span>
                 </div>
               </div>
-              <div style={{ fontSize: 11, color: "#5A8A62", marginBottom: 6 }}>📍 {l.location}</div>
-              {l.description && <div style={{ fontSize: 12, color: "#7A5A3A", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{l.description}</div>}
+              <div style={{ fontSize: 11, color: "#3a9962", marginBottom: 6 }}>📍 {l.location}</div>
+              {l.description && <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 8, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{l.description}</div>}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <span style={{ fontSize: 12, color: "#3D6B45" }}>{l.price}</span>
-                  <span style={{ fontSize: 11, color: "#7A5A3A", marginLeft: 6 }}>{l.quantity}</span>
+                  <span style={{ fontSize: 12, color: "#2d7a4f" }}>{l.price}</span>
+                  <span style={{ fontSize: 11, color: "#8aaa94", marginLeft: 6 }}>{l.quantity}</span>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
                   {/* Edit/Delete for own listings */}
                   {authUser && (l.auth_user_id === authUser.id) && (<>
                     {!l.is_featured && (
                       <button onClick={e => { e.stopPropagation(); setFeaturingListing(l); }}
-                        style={{ background: "rgba(196,130,10,0.12)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#C4820A", fontSize: 11, cursor: "pointer" }}>⭐ Feature</button>
+                        style={{ background: "rgba(212,160,23,0.15)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#d4a017", fontSize: 11, cursor: "pointer" }}>⭐ Feature</button>
                     )}
                     {l.is_featured && (
-                      <span style={{ background: "rgba(196,130,10,0.15)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#C4820A", fontSize: 10 }}>⭐ Featured</span>
+                      <span style={{ background: "rgba(212,160,23,0.2)", border: "1px solid #d4a017", borderRadius: 6, padding: "4px 8px", color: "#d4a017", fontSize: 10 }}>⭐ Featured</span>
                     )}
                     <button onClick={e => { e.stopPropagation(); setEditingListing(l); }}
-                      style={{ background: "#F2EDE4", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#3D6B45", fontSize: 11, cursor: "pointer" }}>✏️</button>
+                      style={{ background: "#0f2218", border: "1px solid #2d5a36", borderRadius: 6, padding: "4px 8px", color: "#2d7a4f", fontSize: 11, cursor: "pointer" }}>✏️</button>
                     <button onClick={e => { e.stopPropagation(); deleteListing(l.id); }}
-                      style={{ background: "#2a1a1a", border: "1px solid #5a2020", borderRadius: 6, padding: "4px 8px", color: "#B85A38", fontSize: 11, cursor: "pointer" }}>🗑</button>
+                      style={{ background: "#2a1a1a", border: "1px solid #5a2020", borderRadius: 6, padding: "4px 8px", color: "#e07060", fontSize: 11, cursor: "pointer" }}>🗑</button>
                   </>)}
                   {l.phone && (
                     <a href={`https://wa.me/${l.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
@@ -1142,8 +1142,8 @@ function MarketTab({ listings, loadingListings, filterCrop, setFilterCrop, setSh
   );
 }
 
-function badgeColorBg(b) { if (b === "Premium") return "rgba(196,130,10,0.15)"; if (b === "Verified") return "rgba(61,107,69,0.15)"; return "rgba(61,107,69,0.12)"; }
-function badgeColorText(b) { if (b === "Premium") return "#C4820A"; if (b === "Verified") return "#3D6B45"; return "#5a9fd4"; }
+function badgeColorBg(b) { if (b === "Premium") return "rgba(212,160,23,0.2)"; if (b === "Verified") return "rgba(45,122,79,0.25)"; return "rgba(45,122,79,0.2)"; }
+function badgeColorText(b) { if (b === "Premium") return "#d4a017"; if (b === "Verified") return "#2d7a4f"; return "#5a9fd4"; }
 
 // ─── LISTING DETAIL MODAL ──────────────────────────────────────────────────────
 function ListingDetailModal({ listing, onClose, onContact }) {
@@ -1174,7 +1174,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
               {allMedia.length > 1 && (
                 <div style={{ position: "absolute", bottom: 10, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6 }}>
                   {allMedia.map((_, dotIdx) => (
-                    <div key={dotIdx} onClick={() => setMediaIdx(dotIdx)} style={{ width: dotIdx === mediaIdx ? 20 : 6, height: 6, borderRadius: 3, background: dotIdx === mediaIdx ? "#3D6B45" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.2s" }} />
+                    <div key={dotIdx} onClick={() => setMediaIdx(dotIdx)} style={{ width: dotIdx === mediaIdx ? 20 : 6, height: 6, borderRadius: 3, background: dotIdx === mediaIdx ? "#2d7a4f" : "rgba(255,255,255,0.4)", cursor: "pointer", transition: "all 0.2s" }} />
                   ))}
                 </div>
               )}
@@ -1187,7 +1187,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
               </>}
               {/* Media count badge */}
               {allMedia.length > 1 && (
-                <div style={{ position: "absolute", top: 10, right: 10, background: "rgba(44,26,14,0.35)", borderRadius: 10, padding: "2px 8px", fontSize: 10, color: "#fff", fontFamily: "'DM Mono', monospace" }}>
+                <div style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.6)", borderRadius: 10, padding: "2px 8px", fontSize: 10, color: "#fff", fontFamily: "'Space Mono', monospace" }}>
                   {mediaIdx + 1}/{allMedia.length}
                 </div>
               )}
@@ -1214,30 +1214,30 @@ function ListingDetailModal({ listing, onClose, onContact }) {
           {/* Header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: "#2C1A0E" }}>{l.crop}</div>
-              <div style={{ fontSize: 12, color: "#5A8A62", marginTop: 2 }}>👩🏾‍🌾 {l.farmer_name} · 📍 {l.location}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#e8dfc8" }}>{l.crop}</div>
+              <div style={{ fontSize: 12, color: "#3a9962", marginTop: 2 }}>👩🏾‍🌾 {l.farmer_name} · 📍 {l.location}</div>
             </div>
-            <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 22, cursor: "pointer", flexShrink: 0 }}>✕</button>
+            <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 22, cursor: "pointer", flexShrink: 0 }}>✕</button>
           </div>
 
           {/* Price + quantity */}
           <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-            <div style={{ background: "rgba(61,107,69,0.12)", borderRadius: 10, padding: "10px 16px", flex: 1 }}>
-              <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", marginBottom: 4 }}>PRICE</div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#3D6B45", fontFamily: "'DM Mono', monospace" }}>{l.price}</div>
+            <div style={{ background: "rgba(45,122,79,0.2)", borderRadius: 10, padding: "10px 16px", flex: 1 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", marginBottom: 4 }}>PRICE</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#2d7a4f", fontFamily: "'Space Mono', monospace" }}>{l.price}</div>
             </div>
-            <div style={{ background: "#FFFEF9", borderRadius: 10, padding: "10px 16px", flex: 1 }}>
-              <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", marginBottom: 4 }}>AVAILABLE</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#2C1A0E" }}>{l.quantity}</div>
+            <div style={{ background: "#152218", borderRadius: 10, padding: "10px 16px", flex: 1 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", marginBottom: 4 }}>AVAILABLE</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#e8dfc8" }}>{l.quantity}</div>
             </div>
-            <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 10, fontFamily: "'DM Mono', monospace", padding: "6px 10px", borderRadius: 10, alignSelf: "center" }}>{l.badge}</span>
+            <span style={{ background: badgeColorBg(l.badge), color: badgeColorText(l.badge), fontSize: 10, fontFamily: "'Space Mono', monospace", padding: "6px 10px", borderRadius: 10, alignSelf: "center" }}>{l.badge}</span>
           </div>
 
           {/* Description */}
           {l.description && (
             <div style={{ marginBottom: 16 }}>
               <div className="section-title">About this listing</div>
-              <div style={{ fontSize: 14, color: "#2C1A0E", lineHeight: 1.7 }}>{l.description}</div>
+              <div style={{ fontSize: 14, color: "#e8dfc8", lineHeight: 1.7 }}>{l.description}</div>
             </div>
           )}
 
@@ -1247,7 +1247,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
             {/* WhatsApp */}
             {waNumber && (
               <a href={`https://wa.me/${waNumber}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: "linear-gradient(135deg, #1a5c2a, #128c3c)", border: "1px solid #25a244", borderRadius: 10, padding: "14px", textDecoration: "none", color: "#4cd964", fontFamily: "'DM Mono', monospace", fontSize: 13 }}>
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: "linear-gradient(135deg, #1a5c2a, #128c3c)", border: "1px solid #25a244", borderRadius: 10, padding: "14px", textDecoration: "none", color: "#4cd964", fontFamily: "'Space Mono', monospace", fontSize: 13 }}>
                 <span style={{ fontSize: 22 }}>💬</span>
                 <div>
                   <div style={{ fontWeight: 700 }}>Chat on WhatsApp</div>
@@ -1256,7 +1256,7 @@ function ListingDetailModal({ listing, onClose, onContact }) {
               </a>
             )}
             {/* In-app message */}
-            <button onClick={onContact} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "linear-gradient(135deg, #3D6B45, #2C5235)", border: "none", borderRadius: 10, padding: "14px", color: "#2C1A0E", fontFamily: "'DM Mono', monospace", fontSize: 13, cursor: "pointer" }}>
+            <button onClick={onContact} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "14px", color: "#e8dfc8", fontFamily: "'Space Mono', monospace", fontSize: 13, cursor: "pointer" }}>
               <span style={{ fontSize: 18 }}>✉️</span> Send In-App Message
             </button>
           </div>
@@ -1311,30 +1311,30 @@ function ListingModal({ onClose, onSave }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>List Your Produce</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 20, cursor: "pointer" }}>✕</button>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>List Your Produce</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
 
         {/* Media upload */}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 8 }}>PHOTOS & VIDEOS</label>
+          <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 8 }}>PHOTOS & VIDEOS</label>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
             {mediaPreviews.map((p, i) => (
               <div key={i} style={{ position: "relative", width: 72, height: 72, borderRadius: 8, overflow: "hidden", flexShrink: 0 }}>
                 {p.type.startsWith("video/")
-                  ? <div style={{ width: "100%", height: "100%", background: "#F2EDE4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎥</div>
+                  ? <div style={{ width: "100%", height: "100%", background: "#0f2218", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>🎥</div>
                   : <img src={p.url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 }
                 <button onClick={() => removeMedia(i)} style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,0.7)", border: "none", borderRadius: "50%", width: 18, height: 18, color: "#fff", fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
               </div>
             ))}
-            <label style={{ width: 72, height: 72, background: "#F2EDE4", border: "2px dashed #2d5a36", borderRadius: 8, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+            <label style={{ width: 72, height: 72, background: "#0f2218", border: "2px dashed #2d5a36", borderRadius: 8, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
               <input type="file" accept="image/*,video/*" multiple onChange={handleMedia} style={{ display: "none" }} />
               <div style={{ fontSize: 22 }}>📷</div>
-              <div style={{ fontSize: 9, color: "#7A5A3A", fontFamily: "'DM Mono', monospace", marginTop: 2 }}>ADD</div>
+              <div style={{ fontSize: 9, color: "#8aaa94", fontFamily: "'Space Mono', monospace", marginTop: 2 }}>ADD</div>
             </label>
           </div>
-          <div style={{ fontSize: 10, color: "#A08060", fontFamily: "'DM Mono', monospace" }}>Add up to 6 photos or 1 video</div>
+          <div style={{ fontSize: 10, color: "#5c8f6b", fontFamily: "'Space Mono', monospace" }}>Add up to 6 photos or 1 video</div>
         </div>
 
         {/* Fields */}
@@ -1347,14 +1347,14 @@ function ListingModal({ onClose, onSave }) {
           ["PRICE", "price", "e.g. USD 280/tonne", "text"],
         ].map(([label, key, ph, type]) => (
           <div key={key} style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 5 }}>{label}</label>
+            <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 5 }}>{label}</label>
             <input className="input-field" type={type} value={fields[key]} onChange={e => set(key, e.target.value)} placeholder={ph} />
           </div>
         ))}
 
         {/* Description */}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 5 }}>DESCRIPTION — OPTIONAL</label>
+          <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 5 }}>DESCRIPTION — OPTIONAL</label>
           <textarea className="input-field" value={fields.description} onChange={e => set("description", e.target.value)}
             placeholder="Describe your produce — variety, quality, storage, delivery options..." rows={3} style={{ resize: "none" }} />
         </div>
@@ -1376,22 +1376,22 @@ function ContactModal({ listing, onClose, onSend }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>Contact Seller</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 20, cursor: "pointer" }}>✕</button>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>Contact Seller</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
-        {sent ? <div style={{ textAlign: "center", padding: "24px 0" }}><div style={{ fontSize: 40, marginBottom: 12 }}>✅</div><div style={{ fontSize: 16, color: "#3D6B45", fontWeight: 600 }}>Message Sent!</div></div> : (
+        {sent ? <div style={{ textAlign: "center", padding: "24px 0" }}><div style={{ fontSize: 40, marginBottom: 12 }}>✅</div><div style={{ fontSize: 16, color: "#2d7a4f", fontWeight: 600 }}>Message Sent!</div></div> : (
           <>
-            <div style={{ background: "#F2EDE4", borderRadius: 10, padding: "10px 12px", marginBottom: 16, fontSize: 13, color: "#7A5A3A" }}>
-              <strong style={{ color: "#2C1A0E" }}>{listing.crop}</strong> · {listing.quantity} · {listing.price}
+            <div style={{ background: "#0f2218", borderRadius: 10, padding: "10px 12px", marginBottom: 16, fontSize: 13, color: "#8aaa94" }}>
+              <strong style={{ color: "#e8dfc8" }}>{listing.crop}</strong> · {listing.quantity} · {listing.price}
             </div>
             {[["YOUR NAME", name, setName, "Full name", "text"], ["PHONE", phone, setPhone, "+263 77X XXX XXX", "tel"]].map(([l, v, s, p, t]) => (
               <div key={l} style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 5 }}>{l}</label>
+                <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 5 }}>{l}</label>
                 <input className="input-field" type={t} value={v} onChange={e => s(e.target.value)} placeholder={p} />
               </div>
             ))}
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 5 }}>MESSAGE</label>
+              <label style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 5 }}>MESSAGE</label>
               <textarea className="input-field" value={message} onChange={e => setMessage(e.target.value)} rows={3} style={{ resize: "none" }} />
             </div>
             <button className="btn-primary" onClick={handleSend} style={{ opacity: (!name || !message) ? 0.4 : 1 }}>Send Message</button>
@@ -1437,16 +1437,16 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
     return (
       <div className="fade-in" style={{ padding: "40px 16px", textAlign: "center" }}>
         <div style={{ fontSize: 64, marginBottom: 16 }}>👩🏾‍🌾</div>
-        <div style={{ fontSize: 24, fontWeight: 700, color: "#3D6B45", marginBottom: 8 }}>Farm Registered!</div>
-        <div style={{ fontSize: 15, color: "#7A5A3A", lineHeight: 1.6, marginBottom: 4 }}>Welcome, <strong style={{ color: "#2C1A0E" }}>{registeredFarmer.name}</strong></div>
-        <div style={{ fontSize: 13, color: "#7A5A3A", marginBottom: 24 }}>{registeredFarmer.province} · {registeredFarmer.district} · {registeredFarmer.ward}</div>
+        <div style={{ fontSize: 24, fontWeight: 700, color: "#2d7a4f", marginBottom: 8 }}>Farm Registered!</div>
+        <div style={{ fontSize: 15, color: "#8aaa94", lineHeight: 1.6, marginBottom: 4 }}>Welcome, <strong style={{ color: "#e8dfc8" }}>{registeredFarmer.name}</strong></div>
+        <div style={{ fontSize: 13, color: "#8aaa94", marginBottom: 24 }}>{registeredFarmer.province} · {registeredFarmer.district} · {registeredFarmer.ward}</div>
         <div className="card" style={{ textAlign: "left", marginBottom: 16 }}>
           <div className="section-title">Your Farm Profile</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
             {selectedCrops.map(c => <span key={c} className="chip active" style={{ fontSize: 11 }}>🌾 {c}</span>)}
             {selectedLivestock.map(l => <span key={l} className="chip active" style={{ fontSize: 11 }}>🐄 {l}</span>)}
           </div>
-          {registeredFarmer.farm_size_hectares && <div style={{ fontSize: 13, color: "#7A5A3A" }}>Farm size: <strong style={{ color: "#2C1A0E" }}>{registeredFarmer.farm_size_hectares} ha</strong></div>}
+          {registeredFarmer.farm_size_hectares && <div style={{ fontSize: 13, color: "#8aaa94" }}>Farm size: <strong style={{ color: "#e8dfc8" }}>{registeredFarmer.farm_size_hectares} ha</strong></div>}
         </div>
         <button className="btn-primary" onClick={resetRegistration}>Register Another Farm</button>
       </div>
@@ -1456,31 +1456,31 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
   return (
     <div className="fade-in single-col">
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E", marginBottom: 4 }}>Farmer Registration</div>
-        <div style={{ fontSize: 12, color: "#7A5A3A" }}>Join farmers on FarmLink Zim 👩🏾‍🌾</div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8", marginBottom: 4 }}>Farmer Registration</div>
+        <div style={{ fontSize: 12, color: "#8aaa94" }}>Join farmers on FarmLink Zim 👩🏾‍🌾</div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 24 }}>
         {[1,2,3].map(s => <div key={s} className={`step-dot ${wizardStep === s ? "active" : wizardStep > s ? "done" : "pending"}`} />)}
-        <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#7A5A3A", marginLeft: 6 }}>STEP {wizardStep} OF 3 — {["LOCATION", "CROPS & LIVESTOCK", "FARM DETAILS"][wizardStep - 1]}</div>
+        <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#8aaa94", marginLeft: 6 }}>STEP {wizardStep} OF 3 — {["LOCATION", "CROPS & LIVESTOCK", "FARM DETAILS"][wizardStep - 1]}</div>
       </div>
       {wizardStep === 1 && (
         <div className="fade-in">
           <div className="card" style={{ marginBottom: 12 }}>
             {[["FULL NAME", farmerName, setFarmerName, "e.g. Tendai Moyo", "text"], ["PHONE NUMBER", farmerPhone, setFarmerPhone, "+263 77X XXX XXX", "tel"]].map(([label, val, setter, ph, type]) => (
               <div key={label} style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 6 }}>{label}</label>
+                <label style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 6 }}>{label}</label>
                 <input className="input-field" type={type} placeholder={ph} value={val} onChange={e => setter(e.target.value)} />
               </div>
             ))}
             {[["PROVINCE", province, (v) => { setProvince(v); setDistrict(""); }, Object.keys(PROVINCES)], ...(province ? [["DISTRICT", district, setDistrict, PROVINCES[province]]] : []), ...(district ? [["WARD", ward, setWard, wards]] : [])].map(([label, val, setter, options]) => (
               <div key={label} style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 6 }}>{label}</label>
+                <label style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 6 }}>{label}</label>
                 <div style={{ position: "relative" }}>
                   <select className="select-field" value={val} onChange={e => setter(e.target.value)}>
                     <option value="">Select {label.toLowerCase()}...</option>
                     {options.map(o => <option key={o} value={o}>{o}</option>)}
                   </select>
-                  <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#7A5A3A" }}>▾</span>
+                  <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#8aaa94" }}>▾</span>
                 </div>
               </div>
             ))}
@@ -1500,20 +1500,20 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
             {/* Per-crop hectares and stage */}
             {selectedCrops.length > 0 && (
               <div style={{ borderTop: "1px solid #E8E0D4", paddingTop: 12 }}>
-                <div style={{ fontSize: 10, color: "#5A8A62", fontWeight: 600, marginBottom: 10 }}>CROP DETAILS</div>
+                <div style={{ fontSize: 10, color: "#3a9962", fontWeight: 600, marginBottom: 10 }}>CROP DETAILS</div>
                 {selectedCrops.map(crop => (
-                  <div key={crop} style={{ background: "#F2EDE4", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E", marginBottom: 10 }}>🌾 {crop}</div>
+                  <div key={crop} style={{ background: "#0f2218", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8", marginBottom: 10 }}>🌾 {crop}</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
                       <div>
-                        <label style={{ fontSize: 10, color: "#7A5A3A", display: "block", marginBottom: 4 }}>HECTARES</label>
+                        <label style={{ fontSize: 10, color: "#8aaa94", display: "block", marginBottom: 4 }}>HECTARES</label>
                         <input type="number" className="input-field" style={{ padding: "8px 10px" }}
                           placeholder="e.g. 2.5"
                           value={cropDetails[crop]?.hectares || ""}
                           onChange={e => updateCropDetail(crop, "hectares", e.target.value)} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 10, color: "#7A5A3A", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
+                        <label style={{ fontSize: 10, color: "#8aaa94", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
                         <select className="select-field" style={{ padding: "8px 10px" }}
                           value={cropDetails[crop]?.stage || ""}
                           onChange={e => updateCropDetail(crop, "stage", e.target.value)}>
@@ -1538,20 +1538,20 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
             {/* Per-livestock head count and stage */}
             {selectedLivestock.length > 0 && (
               <div style={{ borderTop: "1px solid #E8E0D4", paddingTop: 12 }}>
-                <div style={{ fontSize: 10, color: "#5A8A62", fontWeight: 600, marginBottom: 10 }}>LIVESTOCK DETAILS</div>
+                <div style={{ fontSize: 10, color: "#3a9962", fontWeight: 600, marginBottom: 10 }}>LIVESTOCK DETAILS</div>
                 {selectedLivestock.map(animal => (
-                  <div key={animal} style={{ background: "#F2EDE4", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E", marginBottom: 10 }}>🐄 {animal}</div>
+                  <div key={animal} style={{ background: "#0f2218", borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8", marginBottom: 10 }}>🐄 {animal}</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       <div>
-                        <label style={{ fontSize: 10, color: "#7A5A3A", display: "block", marginBottom: 4 }}>HEAD COUNT</label>
+                        <label style={{ fontSize: 10, color: "#8aaa94", display: "block", marginBottom: 4 }}>HEAD COUNT</label>
                         <input type="number" className="input-field" style={{ padding: "8px 10px" }}
                           placeholder="e.g. 12"
                           value={cropDetails[animal]?.head_count || ""}
                           onChange={e => updateCropDetail(animal, "head_count", e.target.value)} />
                       </div>
                       <div>
-                        <label style={{ fontSize: 10, color: "#7A5A3A", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
+                        <label style={{ fontSize: 10, color: "#8aaa94", display: "block", marginBottom: 4 }}>CURRENT STAGE</label>
                         <select className="select-field" style={{ padding: "8px 10px" }}
                           value={cropDetails[animal]?.stage || ""}
                           onChange={e => updateCropDetail(animal, "stage", e.target.value)}>
@@ -1576,22 +1576,22 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
         <div className="fade-in">
           <div className="card" style={{ marginBottom: 12 }}>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 6 }}>FARM SIZE (HECTARES) — OPTIONAL</label>
+              <label style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 6 }}>FARM SIZE (HECTARES) — OPTIONAL</label>
               <input className="input-field" type="number" placeholder="e.g. 5.5" value={farmSize} onChange={e => setFarmSize(e.target.value)} />
             </div>
-            <div><label style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#5A8A62", display: "block", marginBottom: 6 }}>SMS PRICE ALERTS</label>
+            <div><label style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#3a9962", display: "block", marginBottom: 6 }}>SMS PRICE ALERTS</label>
               <span className="chip active" style={{ fontSize: 11 }}>✓ Enable SMS alerts</span></div>
           </div>
           <div className="card card-premium" style={{ marginBottom: 16 }}>
             <div className="section-title">Registration Summary</div>
-            <div style={{ fontSize: 14, color: "#2C1A0E", marginBottom: 4 }}>{farmerName}</div>
-            {farmerPhone && <div style={{ fontSize: 12, color: "#5A8A62", marginBottom: 4 }}>📱 {farmerPhone}</div>}
-            <div style={{ fontSize: 12, color: "#5A8A62", marginBottom: 10 }}>📍 {province} › {district} › {ward}</div>
+            <div style={{ fontSize: 14, color: "#e8dfc8", marginBottom: 4 }}>{farmerName}</div>
+            {farmerPhone && <div style={{ fontSize: 12, color: "#3a9962", marginBottom: 4 }}>📱 {farmerPhone}</div>}
+            <div style={{ fontSize: 12, color: "#3a9962", marginBottom: 10 }}>📍 {province} › {district} › {ward}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
               {selectedCrops.map(c => (
-                <div key={c} style={{ background: "rgba(61,107,69,0.1)", border: "1px solid rgba(45,122,79,0.3)", borderRadius: 8, padding: "6px 10px", marginBottom: 4 }}>
-                  <div style={{ fontSize: 12, color: "#3D6B45", fontWeight: 600 }}>🌾 {c}</div>
-                  <div style={{ fontSize: 10, color: "#7A5A3A", marginTop: 2 }}>
+                <div key={c} style={{ background: "rgba(45,122,79,0.1)", border: "1px solid rgba(45,122,79,0.3)", borderRadius: 8, padding: "6px 10px", marginBottom: 4 }}>
+                  <div style={{ fontSize: 12, color: "#2d7a4f", fontWeight: 600 }}>🌾 {c}</div>
+                  <div style={{ fontSize: 10, color: "#8aaa94", marginTop: 2 }}>
                     {cropDetails[c]?.hectares ? `${cropDetails[c].hectares} ha` : "— ha"} · {cropDetails[c]?.stage ? CROP_STAGES.find(s => s.id === cropDetails[c].stage)?.label : "Stage not set"}
                   </div>
                 </div>
@@ -1599,7 +1599,7 @@ function RegisterTab({ wizardStep, setWizardStep, province, setProvince, distric
               {selectedLivestock.map(l => (
                 <div key={l} style={{ background: "rgba(90,143,163,0.15)", border: "1px solid rgba(90,143,163,0.3)", borderRadius: 8, padding: "6px 10px", marginBottom: 4 }}>
                   <div style={{ fontSize: 12, color: "#5a9fd4", fontWeight: 600 }}>🐄 {l}</div>
-                  <div style={{ fontSize: 10, color: "#7A5A3A", marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: "#8aaa94", marginTop: 2 }}>
                     {cropDetails[l]?.head_count ? `${cropDetails[l].head_count} head` : "— head"} · {cropDetails[l]?.stage ? LIVESTOCK_STAGES.find(s => s.id === cropDetails[l].stage)?.label : "Stage not set"}
                   </div>
                 </div>
@@ -1622,29 +1622,29 @@ function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping
     <div className="fade-in chat-col">
       <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #1f3525" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, #3D6B45, #2C5235)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
+          <div style={{ width: 40, height: 40, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: "#2C1A0E" }}>FarmLink AI Advisor</div>
-            <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#7A5A3A" }}>
-              <span className="pulse" style={{ display: "inline-block", width: 6, height: 6, background: "#3D6B45", borderRadius: "50%", marginRight: 5 }} />TRAINED ON AGRITEX & ZFU DATA
+            <div style={{ fontSize: 16, fontWeight: 600, color: "#e8dfc8" }}>FarmLink AI Advisor</div>
+            <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#8aaa94" }}>
+              <span className="pulse" style={{ display: "inline-block", width: 6, height: 6, background: "#2d7a4f", borderRadius: "50%", marginRight: 5 }} />TRAINED ON AGRITEX & ZFU DATA
             </div>
           </div>
         </div>
       </div>
       <div style={{ padding: "10px 16px", borderBottom: "1px solid #E8E0D4" }}>
         <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 }}>
-          {CHAT_STARTERS.map((s, i) => <span key={i} className="chip" style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", flexShrink: 0 }} onClick={() => sendChat(s)}>{s}</span>)}
+          {CHAT_STARTERS.map((s, i) => <span key={i} className="chip" style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", flexShrink: 0 }} onClick={() => sendChat(s)}>{s}</span>)}
         </div>
       </div>
       <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: 12 }}>
         {chatMessages.map((m, i) => (
           <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-            <div className={m.role === "ai" ? "chat-bubble-ai" : "chat-bubble-user"} style={{ color: "#2C1A0E" }}>{m.text}</div>
+            <div className={m.role === "ai" ? "chat-bubble-ai" : "chat-bubble-user"} style={{ color: "#e8dfc8" }}>{m.text}</div>
           </div>
         ))}
         {isTyping && (
-          <div style={{ display: "flex", gap: 5, padding: "10px 14px", background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: "16px 16px 16px 4px", width: "fit-content" }}>
-            {[0,1,2].map(i => <div key={i} className="pulse" style={{ width: 6, height: 6, background: "#5A8A62", borderRadius: "50%", animationDelay: `${i * 0.2}s` }} />)}
+          <div style={{ display: "flex", gap: 5, padding: "10px 14px", background: "#152218", border: "1px solid #1f3525", borderRadius: "16px 16px 16px 4px", width: "fit-content" }}>
+            {[0,1,2].map(i => <div key={i} className="pulse" style={{ width: 6, height: 6, background: "#3a9962", borderRadius: "50%", animationDelay: `${i * 0.2}s` }} />)}
           </div>
         )}
         <div ref={chatEndRef} />
@@ -1652,9 +1652,9 @@ function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping
       <div style={{ padding: "12px 16px 16px", borderTop: "1px solid #1f3525" }}>
         <div style={{ display: "flex", gap: 8 }}>
           <input className="input-field" placeholder="Ask about crops, livestock, weather..." value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendChat()} style={{ flex: 1 }} />
-          <button onClick={() => sendChat()} style={{ background: "linear-gradient(135deg, #3D6B45, #2C5235)", border: "none", borderRadius: 8, width: 44, height: 44, cursor: "pointer", fontSize: 18, flexShrink: 0 }}>➤</button>
+          <button onClick={() => sendChat()} style={{ background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 8, width: 44, height: 44, cursor: "pointer", fontSize: 18, flexShrink: 0 }}>➤</button>
         </div>
-        <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#A08060", marginTop: 6, textAlign: "center" }}>Powered by Farmlink AI</div>
+        <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginTop: 6, textAlign: "center" }}>Powered by Farmlink AI</div>
       </div>
     </div>
   );
@@ -1663,7 +1663,7 @@ function AdvisoryTab({ chatMessages, chatInput, setChatInput, sendChat, isTyping
 // ─── PLANTING CALENDAR TAB ─────────────────────────────────────────────────────
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const ZONE_LABELS = { all: "All Zimbabwe", mashonaland: "Mashonaland", matabeleland: "Matabeleland", manicaland: "Manicaland", midlands: "Midlands", masvingo: "Masvingo" };
-const CAT_COLORS = { grain: { bg: "rgba(61,107,69,0.15)", border: "#3D6B45", text: "#3D6B45", dot: "#3D6B45" }, cash_crop: { bg: "rgba(200,160,30,0.2)", border: "#c8a01e", text: "#C4820A", dot: "#e8c040" }, horticulture: { bg: "rgba(90,143,200,0.2)", border: "#5a8fc8", text: "#7ab0e0", dot: "#8ac8f0" }, livestock: { bg: "rgba(180,90,200,0.2)", border: "#b45ac8", text: "#cc80e0", dot: "#d890f0" } };
+const CAT_COLORS = { grain: { bg: "rgba(45,122,79,0.25)", border: "#2d7a4f", text: "#2d7a4f", dot: "#2d7a4f" }, cash_crop: { bg: "rgba(200,160,30,0.2)", border: "#c8a01e", text: "#d4a017", dot: "#e8c040" }, horticulture: { bg: "rgba(90,143,200,0.2)", border: "#5a8fc8", text: "#7ab0e0", dot: "#8ac8f0" }, livestock: { bg: "rgba(180,90,200,0.2)", border: "#b45ac8", text: "#cc80e0", dot: "#d890f0" } };
 const CAT_ICONS = { grain: "🌾", cash_crop: "💰", horticulture: "🥦", livestock: "🐄" };
 
 function monthsInRange(start, end) {
@@ -1733,7 +1733,7 @@ function CalendarTab() {
       if (acts.slaughter?.includes(m)) return { bg: "rgba(224,112,96,0.3)", emoji: "🥩" };
     } else {
       if (acts.harvest?.includes(m)) return { bg: "rgba(212,160,23,0.5)", emoji: "🌾" };
-      if (acts.plant?.includes(m)) return { bg: `${CAT_COLORS[c.category]?.border || "#3D6B45"}60`, emoji: "🌱" };
+      if (acts.plant?.includes(m)) return { bg: `${CAT_COLORS[c.category]?.border || "#2d7a4f"}60`, emoji: "🌱" };
       if (acts.fertilise?.includes(m)) return { bg: "rgba(90,143,200,0.3)", emoji: "🧪" };
     }
     return { bg: "transparent", emoji: null };
@@ -1741,12 +1741,12 @@ function CalendarTab() {
 
   return (
     <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E", marginBottom: 4 }}>Planting Calendar</div>
-      <div style={{ fontSize: 12, color: "#7A5A3A", marginBottom: 20 }}>AGRITEX seasonal guide · Zimbabwe 2025/26</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8", marginBottom: 4 }}>Planting Calendar</div>
+      <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 20 }}>AGRITEX seasonal guide · Zimbabwe 2025/26</div>
 
       {/* This month banner */}
-      <div style={{ background: "linear-gradient(135deg, #E8F0E4, #F2EDE4)", border: "1px solid #2d7a4f", borderRadius: 14, padding: 16, marginBottom: 20 }}>
-        <div style={{ fontSize: 10, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, color: "#3D6B45", marginBottom: 8, letterSpacing: "0.1em" }}>
+      <div style={{ background: "linear-gradient(135deg, #1a3d24, #0f2218)", border: "1px solid #2d7a4f", borderRadius: 14, padding: 16, marginBottom: 20 }}>
+        <div style={{ fontSize: 10, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, color: "#2d7a4f", marginBottom: 8, letterSpacing: "0.1em" }}>
           🗓️ {MONTHS[currentMonth - 1].toUpperCase()} — WHAT TO DO NOW
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -1796,7 +1796,7 @@ function CalendarTab() {
           <div style={{ display: "grid", gridTemplateColumns: "120px repeat(12, 1fr)", gap: 2, marginBottom: 8 }}>
             <div />
             {MONTHS.map((m, i) => (
-              <div key={m} style={{ textAlign: "center", fontSize: 9, color: i + 1 === currentMonth ? "#3D6B45" : "#A08060", fontWeight: i + 1 === currentMonth ? 700 : 400, background: i + 1 === currentMonth ? "rgba(61,107,69,0.1)" : "transparent", borderRadius: 4, padding: "3px 0" }}>{m}</div>
+              <div key={m} style={{ textAlign: "center", fontSize: 9, color: i + 1 === currentMonth ? "#2d7a4f" : "#5c8f6b", fontWeight: i + 1 === currentMonth ? 700 : 400, background: i + 1 === currentMonth ? "rgba(45,122,79,0.1)" : "transparent", borderRadius: 4, padding: "3px 0" }}>{m}</div>
             ))}
           </div>
 
@@ -1825,21 +1825,21 @@ function CalendarTab() {
 
           {/* Legend */}
           <div style={{ marginTop: 16, paddingTop: 12, borderTop: "1px solid #E8E0D4" }}>
-            <div style={{ fontSize: 10, color: "#A08060", marginBottom: 8, fontWeight: 600 }}>CROPS</div>
+            <div style={{ fontSize: 10, color: "#5c8f6b", marginBottom: 8, fontWeight: 600 }}>CROPS</div>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
               {[["🌱", "rgba(45,122,79,0.4)", "Plant"], ["🧪", "rgba(90,143,200,0.3)", "Fertilise"], ["🌾", "rgba(212,160,23,0.5)", "Harvest"]].map(([icon, bg, label]) => (
                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                   <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
-                  <span style={{ fontSize: 10, color: "#5A8A62" }}>{label}</span>
+                  <span style={{ fontSize: 10, color: "#3a9962" }}>{label}</span>
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 10, color: "#A08060", marginBottom: 8, fontWeight: 600 }}>LIVESTOCK</div>
+            <div style={{ fontSize: 10, color: "#5c8f6b", marginBottom: 8, fontWeight: 600 }}>LIVESTOCK</div>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               {[["❤️", "rgba(204,128,224,0.45)", "Breeding"], ["🐣", "rgba(212,160,23,0.5)", "Birthing/Calving"], ["🪣", "rgba(90,143,212,0.4)", "Dipping/Deworming"], ["🥩", "rgba(224,112,96,0.3)", "Slaughter/Sell"]].map(([icon, bg, label]) => (
                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                   <div style={{ width: 20, height: 14, borderRadius: 3, background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9 }}>{icon}</div>
-                  <span style={{ fontSize: 10, color: "#5A8A62" }}>{label}</span>
+                  <span style={{ fontSize: 10, color: "#3a9962" }}>{label}</span>
                 </div>
               ))}
             </div>
@@ -1853,25 +1853,25 @@ function CalendarTab() {
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E" }}>{CAT_ICONS[selectedCrop.category]} {selectedCrop.crop_name}</div>
-                <div style={{ fontSize: 10, color: "#7A5A3A", marginTop: 2 }}>{selectedCrop.category?.replace("_", " ").toUpperCase()} · ZONE {selectedCrop.agro_zone}</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8" }}>{CAT_ICONS[selectedCrop.category]} {selectedCrop.crop_name}</div>
+                <div style={{ fontSize: 10, color: "#8aaa94", marginTop: 2 }}>{selectedCrop.category?.replace("_", " ").toUpperCase()} · ZONE {selectedCrop.agro_zone}</div>
               </div>
-              <button onClick={() => setSelectedCrop(null)} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 22, cursor: "pointer" }}>✕</button>
+              <button onClick={() => setSelectedCrop(null)} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
 
             {selectedCrop.category === "livestock" ? (
               // Livestock-specific timeline
               [
                 { label: "❤️ BREEDING SEASON", months: selectedCrop.breeding_month_start ? monthsInRange(selectedCrop.breeding_month_start, selectedCrop.breeding_month_end) : [], color: "#cc80e0" },
-                { label: "🐣 BIRTHING / CALVING", months: selectedCrop.birthing_month_start ? monthsInRange(selectedCrop.birthing_month_start, selectedCrop.birthing_month_end) : [], color: "#C4820A" },
+                { label: "🐣 BIRTHING / CALVING", months: selectedCrop.birthing_month_start ? monthsInRange(selectedCrop.birthing_month_start, selectedCrop.birthing_month_end) : [], color: "#d4a017" },
                 { label: "🪣 DIPPING / DEWORMING", months: selectedCrop.dipping_month_start ? monthsInRange(selectedCrop.dipping_month_start, selectedCrop.dipping_month_end) : [], color: "#5a9fd4" },
-                { label: "🥩 SLAUGHTER / SELLING", months: selectedCrop.slaughter_month_start ? monthsInRange(selectedCrop.slaughter_month_start, selectedCrop.slaughter_month_end) : [], color: "#B85A38" },
+                { label: "🥩 SLAUGHTER / SELLING", months: selectedCrop.slaughter_month_start ? monthsInRange(selectedCrop.slaughter_month_start, selectedCrop.slaughter_month_end) : [], color: "#e07060" },
               ].map(({ label, months, color }) => months.length > 0 && (
                 <div key={label} style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 10, color: "#7A5A3A", marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                  <div style={{ fontSize: 10, color: "#8aaa94", marginBottom: 6, fontWeight: 600 }}>{label}</div>
                   <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                     {months.map(m => (
-                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#FAF7F2" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
+                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
                         {MONTHS[m - 1]}
                       </span>
                     ))}
@@ -1881,15 +1881,15 @@ function CalendarTab() {
             ) : (
               // Crop timeline
               [
-                { label: "🌱 PLANT", months: selectedCrop.plant_month_start ? monthsInRange(selectedCrop.plant_month_start, selectedCrop.plant_month_end) : [], color: "#3D6B45" },
+                { label: "🌱 PLANT", months: selectedCrop.plant_month_start ? monthsInRange(selectedCrop.plant_month_start, selectedCrop.plant_month_end) : [], color: "#2d7a4f" },
                 { label: "🧪 FERTILISE", months: selectedCrop.fertilise_month_start ? monthsInRange(selectedCrop.fertilise_month_start, selectedCrop.fertilise_month_end) : [], color: "#7ab0e0" },
-                { label: "🌾 HARVEST", months: selectedCrop.harvest_month_start ? monthsInRange(selectedCrop.harvest_month_start, selectedCrop.harvest_month_end) : [], color: "#C4820A" },
+                { label: "🌾 HARVEST", months: selectedCrop.harvest_month_start ? monthsInRange(selectedCrop.harvest_month_start, selectedCrop.harvest_month_end) : [], color: "#d4a017" },
               ].map(({ label, months, color }) => months.length > 0 && (
                 <div key={label} style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 10, color: "#7A5A3A", marginBottom: 6, fontWeight: 600 }}>{label}</div>
+                  <div style={{ fontSize: 10, color: "#8aaa94", marginBottom: 6, fontWeight: 600 }}>{label}</div>
                   <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                     {months.map(m => (
-                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#FAF7F2" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
+                      <span key={m} style={{ background: m === currentMonth ? color : "rgba(255,255,255,0.08)", color: m === currentMonth ? "#0d1a0f" : color, border: `1px solid ${color}40`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: m === currentMonth ? 700 : 400 }}>
                         {MONTHS[m - 1]}
                       </span>
                     ))}
@@ -1900,16 +1900,16 @@ function CalendarTab() {
 
             {selectedCrop.variety && (
               <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 10, color: "#7A5A3A", marginBottom: 4, fontWeight: 600 }}>
+                <div style={{ fontSize: 10, color: "#8aaa94", marginBottom: 4, fontWeight: 600 }}>
                   {selectedCrop.category === "livestock" ? "BREEDS" : "RECOMMENDED VARIETIES"}
                 </div>
-                <div style={{ fontSize: 13, color: "#2C1A0E" }}>{selectedCrop.variety}</div>
+                <div style={{ fontSize: 13, color: "#e8dfc8" }}>{selectedCrop.variety}</div>
               </div>
             )}
             {selectedCrop.notes && (
-              <div style={{ background: "#F2EDE4", borderRadius: 10, padding: 12, borderLeft: "3px solid #2d7a4f" }}>
-                <div style={{ fontSize: 10, color: "#7A5A3A", marginBottom: 4, fontWeight: 600 }}>AGRITEX NOTES</div>
-                <div style={{ fontSize: 13, color: "#2C1A0E", lineHeight: 1.6 }}>{selectedCrop.notes}</div>
+              <div style={{ background: "#0f2218", borderRadius: 10, padding: 12, borderLeft: "3px solid #2d7a4f" }}>
+                <div style={{ fontSize: 10, color: "#8aaa94", marginBottom: 4, fontWeight: 600 }}>AGRITEX NOTES</div>
+                <div style={{ fontSize: 13, color: "#e8dfc8", lineHeight: 1.6 }}>{selectedCrop.notes}</div>
               </div>
             )}
           </div>
@@ -1942,8 +1942,8 @@ function EditListingModal({ listing, onClose, onSave }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>Edit Listing</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 20, cursor: "pointer" }}>✕</button>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>Edit Listing</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
         {[
           ["CROP / PRODUCE", "crop", "e.g. Maize, Cattle"],
@@ -1953,12 +1953,12 @@ function EditListingModal({ listing, onClose, onSave }) {
           ["WHATSAPP NUMBER", "phone", "+263 77X XXX XXX"],
         ].map(([label, key, ph]) => (
           <div key={key} style={{ marginBottom: 12 }}>
-            <label style={{ fontSize: 10, fontFamily: "'DM Sans', sans-serif", color: "#5A8A62", display: "block", marginBottom: 5 }}>{label}</label>
+            <label style={{ fontSize: 10, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#3a9962", display: "block", marginBottom: 5 }}>{label}</label>
             <input className="input-field" value={fields[key]} onChange={e => set(key, e.target.value)} placeholder={ph} />
           </div>
         ))}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 5 }}>DESCRIPTION</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 5 }}>DESCRIPTION</label>
           <textarea className="input-field" value={fields.description} onChange={e => set("description", e.target.value)} rows={3} style={{ resize: "none" }} placeholder="Describe your produce..." />
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -2001,8 +2001,8 @@ function PriceFeedsTab() {
 
   return (
     <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E", marginBottom: 4 }}>Market Prices</div>
-      <div style={{ fontSize: 12, color: "#7A5A3A", marginBottom: 20 }}>Live prices from GMB, Cottco, ZFU and Mbare Musika · Updated {updatedDate}</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8", marginBottom: 4 }}>Market Prices</div>
+      <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 20 }}>Live prices from GMB, Cottco, ZFU and Mbare Musika · Updated {updatedDate}</div>
 
       {/* Summary strip */}
       <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 20 }}>
@@ -2013,11 +2013,11 @@ function PriceFeedsTab() {
           const p = prices.find(x => x.crop === label);
           if (!p) return null;
           return (
-            <div key={label} style={{ background: "#FFFEF9", border: `1px solid ${p.trend === "up" ? "#D4C8A0" : "#D4C8A0"}`, borderRadius: 12, padding: "10px 14px", flexShrink: 0, minWidth: 110 }}>
+            <div key={label} style={{ background: "#152218", border: `1px solid ${p.trend === "up" ? "#2d5a36" : "#2d5a36"}`, borderRadius: 12, padding: "10px 14px", flexShrink: 0, minWidth: 110 }}>
               <div style={{ fontSize: 18, marginBottom: 4 }}>{icon}</div>
-              <div style={{ fontSize: 11, color: "#7A5A3A", marginBottom: 2 }}>{label}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#2C1A0E" }}>USD {p.price_usd}/{p.unit}</div>
-              <div style={{ fontSize: 11, color: p.trend === "up" ? "#3D6B45" : "#B85A38", marginTop: 2 }}>
+              <div style={{ fontSize: 11, color: "#8aaa94", marginBottom: 2 }}>{label}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#e8dfc8" }}>USD {p.price_usd}/{p.unit}</div>
+              <div style={{ fontSize: 11, color: p.trend === "up" ? "#2d7a4f" : "#e07060", marginTop: 2 }}>
                 {p.trend === "up" ? "▲" : "▼"} {p.change_pct > 0 ? "+" : ""}{p.change_pct}%
               </div>
             </div>
@@ -2037,24 +2037,24 @@ function PriceFeedsTab() {
         {/* Header */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "8px 0 12px", borderBottom: "1px solid #E8E0D4", marginBottom: 4 }}>
           {["COMMODITY", "PRICE", "SOURCE", "CHANGE"].map(h => (
-            <div key={h} style={{ fontSize: 9, color: "#A08060", fontWeight: 600, letterSpacing: "0.1em" }}>{h}</div>
+            <div key={h} style={{ fontSize: 9, color: "#5c8f6b", fontWeight: 600, letterSpacing: "0.1em" }}>{h}</div>
           ))}
         </div>
         {loading ? [1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: 44, borderRadius: 8, marginBottom: 6 }} />) :
           filtered.map((p, i) => (
             <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 80px", gap: 8, padding: "12px 0", borderBottom: i < filtered.length - 1 ? "1px solid #E8E0D4" : "none", alignItems: "center" }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{p.crop}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{p.crop}</div>
               <div>
-                <div style={{ fontSize: 13, color: "#3D6B45", fontWeight: 700 }}>USD {p.price_usd}</div>
-                <div style={{ fontSize: 10, color: "#7A5A3A" }}>/{p.unit}</div>
+                <div style={{ fontSize: 13, color: "#2d7a4f", fontWeight: 700 }}>USD {p.price_usd}</div>
+                <div style={{ fontSize: 10, color: "#8aaa94" }}>/{p.unit}</div>
               </div>
-              <div style={{ fontSize: 11, color: "#5A8A62" }}>{p.source}</div>
+              <div style={{ fontSize: 11, color: "#3a9962" }}>{p.source}</div>
               <div style={{ textAlign: "right" }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: p.trend === "up" ? "#3D6B45" : p.trend === "down" ? "#B85A38" : "#7A5A3A" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: p.trend === "up" ? "#2d7a4f" : p.trend === "down" ? "#e07060" : "#8aaa94" }}>
                   {p.trend === "up" ? "▲" : p.trend === "down" ? "▼" : "—"} {Math.abs(p.change_pct)}%
                 </span>
                 {p.previous_price && (
-                  <div style={{ fontSize: 10, color: "#A08060" }}>was {p.previous_price}</div>
+                  <div style={{ fontSize: 10, color: "#5c8f6b" }}>was {p.previous_price}</div>
                 )}
               </div>
             </div>
@@ -2062,7 +2062,7 @@ function PriceFeedsTab() {
         }
       </div>
 
-      <div style={{ marginTop: 16, background: "#F2EDE4", borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#5A8A62", borderLeft: "3px solid #2d7a4f" }}>
+      <div style={{ marginTop: 16, background: "#0f2218", borderRadius: 10, padding: "12px 14px", fontSize: 12, color: "#3a9962", borderLeft: "3px solid #2d7a4f" }}>
         💡 Prices are updated weekly from GMB, Cottco, ZFU and Mbare Musika. Use the AI Advisor for personalised price strategy.
       </div>
     </div>
@@ -2071,14 +2071,14 @@ function PriceFeedsTab() {
 
 // ─── FARM DIARY TAB ────────────────────────────────────────────────────────────
 const ACTIVITY_TYPES = [
-  { id: "planting", icon: "🌱", label: "Planting", color: "#3D6B45" },
+  { id: "planting", icon: "🌱", label: "Planting", color: "#2d7a4f" },
   { id: "fertilising", icon: "🧪", label: "Fertilising", color: "#7ab0e0" },
   { id: "spraying", icon: "💧", label: "Spraying", color: "#5a9fd4" },
   { id: "irrigation", icon: "🚿", label: "Irrigation", color: "#5a9fd4" },
-  { id: "harvesting", icon: "🌾", label: "Harvesting", color: "#C4820A" },
-  { id: "selling", icon: "💰", label: "Selling", color: "#3D6B45" },
+  { id: "harvesting", icon: "🌾", label: "Harvesting", color: "#d4a017" },
+  { id: "selling", icon: "💰", label: "Selling", color: "#2d7a4f" },
   { id: "livestock", icon: "🐄", label: "Livestock", color: "#cc80e0" },
-  { id: "other", icon: "📝", label: "Other", color: "#7A5A3A" },
+  { id: "other", icon: "📝", label: "Other", color: "#8aaa94" },
 ];
 const WEATHER_OPTIONS = [
   { id: "sunny", icon: "☀️", label: "Sunny" },
@@ -2136,10 +2136,10 @@ function FarmDiaryTab({ authUser, setActiveTab }) {
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E" }}>Farm Diary</div>
-          <div style={{ fontSize: 12, color: "#7A5A3A" }}>{entries.length} activities logged</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8" }}>Farm Diary</div>
+          <div style={{ fontSize: 12, color: "#8aaa94" }}>{entries.length} activities logged</div>
         </div>
-        <button onClick={() => setShowAdd(true)} style={{ background: "linear-gradient(135deg, #3D6B45, #2C5235)", border: "none", borderRadius: 10, padding: "10px 16px", color: "#2C1A0E", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
+        <button onClick={() => setShowAdd(true)} style={{ background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", border: "none", borderRadius: 10, padding: "10px 16px", color: "#e8dfc8", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>
           + Log Activity
         </button>
       </div>
@@ -2152,10 +2152,10 @@ function FarmDiaryTab({ authUser, setActiveTab }) {
           { label: "Harvests", value: entries.filter(e => e.activity_type === "harvesting").length, icon: "🌾" },
           { label: "Livestock", value: entries.filter(e => e.activity_type === "livestock").length, icon: "🐄" },
         ].map(s => (
-          <div key={s.label} style={{ background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+          <div key={s.label} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
             <div style={{ fontSize: 18, marginBottom: 4 }}>{s.icon}</div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#3D6B45" }}>{s.value}</div>
-            <div style={{ fontSize: 9, color: "#7A5A3A", marginTop: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#2d7a4f" }}>{s.value}</div>
+            <div style={{ fontSize: 9, color: "#8aaa94", marginTop: 2 }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -2173,35 +2173,35 @@ function FarmDiaryTab({ authUser, setActiveTab }) {
         Object.keys(grouped).length === 0 ? (
           <div style={{ textAlign: "center", padding: "48px 20px" }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>📓</div>
-            <div style={{ fontSize: 14, color: "#5A8A62", marginBottom: 8 }}>No activities logged yet</div>
-            <div style={{ fontSize: 12, color: "#A08060", marginBottom: 20 }}>Start tracking your farm activities daily to build a record of your season.</div>
+            <div style={{ fontSize: 14, color: "#3a9962", marginBottom: 8 }}>No activities logged yet</div>
+            <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 20 }}>Start tracking your farm activities daily to build a record of your season.</div>
             <button onClick={() => setShowAdd(true)} className="btn-primary" style={{ width: "auto", padding: "10px 24px" }}>Log Your First Activity</button>
           </div>
         ) : (
           Object.entries(grouped).map(([date, dayEntries]) => (
             <div key={date} style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#7A5A3A", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#8aaa94", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>
                 {formatDate(date)}
               </div>
               {dayEntries.map((e, i) => {
                 const type = ACTIVITY_TYPES.find(a => a.id === e.activity_type) || ACTIVITY_TYPES[7];
                 const weather = WEATHER_OPTIONS.find(w => w.id === e.weather);
                 return (
-                  <div key={i} style={{ background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 12, padding: "14px", marginBottom: 8, borderLeft: `3px solid ${type.color}` }}>
+                  <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "14px", marginBottom: 8, borderLeft: `3px solid ${type.color}` }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                       <div style={{ width: 36, height: 36, background: `${type.color}20`, border: `1px solid ${type.color}40`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
                         {type.icon}
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{type.label}{e.crop_name ? ` — ${e.crop_name}` : ""}</div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{type.label}{e.crop_name ? ` — ${e.crop_name}` : ""}</div>
                           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                             {weather && <span style={{ fontSize: 14 }}>{weather.icon}</span>}
-                            {e.cost_usd && <span style={{ fontSize: 10, color: "#C4820A", background: "rgba(196,130,10,0.12)", padding: "2px 7px", borderRadius: 8 }}>USD {e.cost_usd}</span>}
+                            {e.cost_usd && <span style={{ fontSize: 10, color: "#d4a017", background: "rgba(212,160,23,0.15)", padding: "2px 7px", borderRadius: 8 }}>USD {e.cost_usd}</span>}
                           </div>
                         </div>
-                        <div style={{ fontSize: 13, color: "#7A5A3A", marginTop: 4, lineHeight: 1.5 }}>{e.notes}</div>
-                        {e.quantity && <div style={{ fontSize: 11, color: "#5A8A62", marginTop: 4 }}>📦 {e.quantity}</div>}
+                        <div style={{ fontSize: 13, color: "#8aaa94", marginTop: 4, lineHeight: 1.5 }}>{e.notes}</div>
+                        {e.quantity && <div style={{ fontSize: 11, color: "#3a9962", marginTop: 4 }}>📦 {e.quantity}</div>}
                       </div>
                     </div>
                   </div>
@@ -2248,19 +2248,19 @@ function AddDiaryEntryModal({ onClose, onSave }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxHeight: "92vh", overflowY: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>Log Activity</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 20, cursor: "pointer" }}>✕</button>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>Log Activity</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
 
         {/* Activity type selector */}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 8 }}>ACTIVITY TYPE</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 8 }}>ACTIVITY TYPE</label>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 6 }}>
             {ACTIVITY_TYPES.map(a => (
               <button key={a.id} onClick={() => set("activity_type", a.id)}
-                style={{ background: fields.activity_type === a.id ? `${a.color}25` : "#F2EDE4", border: `1px solid ${fields.activity_type === a.id ? a.color : "#D4C8A0"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                style={{ background: fields.activity_type === a.id ? `${a.color}25` : "#0f2218", border: `1px solid ${fields.activity_type === a.id ? a.color : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
                 <div style={{ fontSize: 18, marginBottom: 3 }}>{a.icon}</div>
-                <div style={{ fontSize: 9, color: fields.activity_type === a.id ? a.color : "#5A8A62" }}>{a.label}</div>
+                <div style={{ fontSize: 9, color: fields.activity_type === a.id ? a.color : "#3a9962" }}>{a.label}</div>
               </button>
             ))}
           </div>
@@ -2268,19 +2268,19 @@ function AddDiaryEntryModal({ onClose, onSave }) {
 
         {/* Date */}
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 5 }}>DATE</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 5 }}>DATE</label>
           <input type="date" className="input-field" value={fields.activity_date} onChange={e => set("activity_date", e.target.value)} />
         </div>
 
         {/* Crop */}
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 5 }}>CROP / LIVESTOCK</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 5 }}>CROP / LIVESTOCK</label>
           <input className="input-field" value={fields.crop_name} onChange={e => set("crop_name", e.target.value)} placeholder="e.g. Maize, Cattle, Tomatoes" />
         </div>
 
         {/* Notes */}
         <div style={{ marginBottom: 12 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 5 }}>NOTES *</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 5 }}>NOTES *</label>
           <textarea className="input-field" value={fields.notes} onChange={e => set("notes", e.target.value)}
             placeholder="What did you do today? Include any observations, problems or results..." rows={3} style={{ resize: "none" }} />
         </div>
@@ -2288,24 +2288,24 @@ function AddDiaryEntryModal({ onClose, onSave }) {
         {/* Quantity + Cost side by side */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
           <div>
-            <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 5 }}>QUANTITY</label>
+            <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 5 }}>QUANTITY</label>
             <input className="input-field" value={fields.quantity} onChange={e => set("quantity", e.target.value)} placeholder="e.g. 2 bags, 5 head" />
           </div>
           <div>
-            <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 5 }}>COST (USD)</label>
+            <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 5 }}>COST (USD)</label>
             <input type="number" className="input-field" value={fields.cost_usd} onChange={e => set("cost_usd", e.target.value)} placeholder="0.00" />
           </div>
         </div>
 
         {/* Weather */}
         <div style={{ marginBottom: 20 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 8 }}>WEATHER</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 8 }}>WEATHER</label>
           <div style={{ display: "flex", gap: 8 }}>
             {WEATHER_OPTIONS.map(w => (
               <button key={w.id} onClick={() => set("weather", w.id)}
-                style={{ flex: 1, background: fields.weather === w.id ? "#E8F0E4" : "#F2EDE4", border: `1px solid ${fields.weather === w.id ? "#3D6B45" : "#D4C8A0"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
+                style={{ flex: 1, background: fields.weather === w.id ? "#1a3d24" : "#0f2218", border: `1px solid ${fields.weather === w.id ? "#2d7a4f" : "#2d5a36"}`, borderRadius: 8, padding: "8px 4px", cursor: "pointer", textAlign: "center" }}>
                 <div style={{ fontSize: 20 }}>{w.icon}</div>
-                <div style={{ fontSize: 9, color: fields.weather === w.id ? "#3D6B45" : "#7A5A3A", marginTop: 3 }}>{w.label}</div>
+                <div style={{ fontSize: 9, color: fields.weather === w.id ? "#2d7a4f" : "#8aaa94", marginTop: 3 }}>{w.label}</div>
               </button>
             ))}
           </div>
@@ -2333,15 +2333,15 @@ function SponsorCard() {
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 9, color: "#A08060", letterSpacing: "0.1em", marginBottom: 6, textAlign: "right" }}>SPONSORED</div>
+      <div style={{ fontSize: 9, color: "#5c8f6b", letterSpacing: "0.1em", marginBottom: 6, textAlign: "right" }}>SPONSORED</div>
       <a href={sponsor.cta_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
         <div style={{ background: `linear-gradient(135deg, ${sponsor.color}18, #FAF7F2)`, border: `1px solid ${sponsor.color}40`, borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 44, height: 44, background: `${sponsor.color}25`, border: `1px solid ${sponsor.color}40`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
             {sponsor.logo_emoji}
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#2C1A0E", marginBottom: 2 }}>{sponsor.name}</div>
-            <div style={{ fontSize: 11, color: "#7A5A3A", lineHeight: 1.4 }}>{sponsor.tagline}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#e8dfc8", marginBottom: 2 }}>{sponsor.name}</div>
+            <div style={{ fontSize: 11, color: "#8aaa94", lineHeight: 1.4 }}>{sponsor.tagline}</div>
           </div>
           <div style={{ background: `${sponsor.color}30`, border: `1px solid ${sponsor.color}50`, borderRadius: 8, padding: "6px 10px", color: sponsor.color, fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
             {sponsor.cta_text} →
@@ -2372,33 +2372,33 @@ function FeatureListingModal({ listing, onClose, onSave }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>⭐ Feature This Listing</div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 20, cursor: "pointer" }}>✕</button>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>⭐ Feature This Listing</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 20, cursor: "pointer" }}>✕</button>
         </div>
 
         {/* Listing preview */}
-        <div style={{ background: "#F2EDE4", borderRadius: 10, padding: "10px 14px", marginBottom: 16, border: "1px solid #2d5a36" }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{listing.crop}</div>
-          <div style={{ fontSize: 11, color: "#5A8A62" }}>{listing.location} · {listing.price}</div>
+        <div style={{ background: "#0f2218", borderRadius: 10, padding: "10px 14px", marginBottom: 16, border: "1px solid #2d5a36" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{listing.crop}</div>
+          <div style={{ fontSize: 11, color: "#3a9962" }}>{listing.location} · {listing.price}</div>
         </div>
 
         {/* What you get */}
-        <div style={{ background: "rgba(196,130,10,0.08)", border: "1px solid rgba(212,160,23,0.3)", borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
-          <div style={{ fontSize: 11, color: "#C4820A", fontWeight: 700, marginBottom: 8 }}>WHAT YOU GET</div>
+        <div style={{ background: "rgba(212,160,23,0.08)", border: "1px solid rgba(212,160,23,0.3)", borderRadius: 10, padding: "12px 14px", marginBottom: 16 }}>
+          <div style={{ fontSize: 11, color: "#d4a017", fontWeight: 700, marginBottom: 8 }}>WHAT YOU GET</div>
           {["⭐ Featured badge on your listing", "📌 Pinned to top of marketplace", "👁 3x more visibility to buyers", "📱 Priority in search results"].map((b, i) => (
-            <div key={i} style={{ fontSize: 12, color: "#2C1A0E", marginBottom: 4 }}>{b}</div>
+            <div key={i} style={{ fontSize: 12, color: "#e8dfc8", marginBottom: 4 }}>{b}</div>
           ))}
         </div>
 
         {/* Duration picker */}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 8, fontWeight: 600 }}>HOW LONG?</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 8, fontWeight: 600 }}>HOW LONG?</label>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
             {[1, 2, 4].map(w => (
               <button key={w} onClick={() => setWeeks(w)}
-                style={{ background: weeks === w ? "rgba(196,130,10,0.15)" : "#FFFEF9", border: `1px solid ${weeks === w ? "#C4820A" : "#E8E0D4"}`, borderRadius: 10, padding: "12px 8px", cursor: "pointer", textAlign: "center" }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: weeks === w ? "#C4820A" : "#2C1A0E" }}>{w} {w === 1 ? "week" : "weeks"}</div>
-                <div style={{ fontSize: 12, color: weeks === w ? "#C4820A" : "#5A8A62", marginTop: 2 }}>USD {w * 2}</div>
+                style={{ background: weeks === w ? "rgba(212,160,23,0.2)" : "#152218", border: `1px solid ${weeks === w ? "#d4a017" : "#1f3525"}`, borderRadius: 10, padding: "12px 8px", cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: weeks === w ? "#d4a017" : "#e8dfc8" }}>{w} {w === 1 ? "week" : "weeks"}</div>
+                <div style={{ fontSize: 12, color: weeks === w ? "#d4a017" : "#3a9962", marginTop: 2 }}>USD {w * 2}</div>
               </button>
             ))}
           </div>
@@ -2406,34 +2406,34 @@ function FeatureListingModal({ listing, onClose, onSave }) {
 
         {/* Payment method */}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 8, fontWeight: 600 }}>PAYMENT METHOD</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 8, fontWeight: 600 }}>PAYMENT METHOD</label>
           <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
             {METHODS.map(m => (
               <button key={m.id} onClick={() => setMethod(m.id)}
-                style={{ flex: 1, background: method === m.id ? "#E8F0E4" : "#FFFEF9", border: `1px solid ${method === m.id ? "#3D6B45" : "#E8E0D4"}`, borderRadius: 8, padding: "8px", cursor: "pointer" }}>
+                style={{ flex: 1, background: method === m.id ? "#1a3d24" : "#152218", border: `1px solid ${method === m.id ? "#2d7a4f" : "#1f3525"}`, borderRadius: 8, padding: "8px", cursor: "pointer" }}>
                 <div style={{ fontSize: 18 }}>{m.icon}</div>
-                <div style={{ fontSize: 10, color: method === m.id ? "#3D6B45" : "#7A5A3A", marginTop: 3 }}>{m.label}</div>
+                <div style={{ fontSize: 10, color: method === m.id ? "#2d7a4f" : "#8aaa94", marginTop: 3 }}>{m.label}</div>
               </button>
             ))}
           </div>
-          <div style={{ background: "#F2EDE4", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#7A5A3A" }}>
-            Pay <span style={{ color: "#3D6B45", fontWeight: 700 }}>USD {price}</span> to: <span style={{ color: "#2C1A0E" }}>{selected?.number}</span>
-            <div style={{ fontSize: 11, color: "#7A5A3A", marginTop: 4 }}>Reference: FEATURE-{listing.id?.slice(0, 8).toUpperCase()}</div>
+          <div style={{ background: "#0f2218", borderRadius: 8, padding: "10px 12px", fontSize: 12, color: "#8aaa94" }}>
+            Pay <span style={{ color: "#2d7a4f", fontWeight: 700 }}>USD {price}</span> to: <span style={{ color: "#e8dfc8" }}>{selected?.number}</span>
+            <div style={{ fontSize: 11, color: "#8aaa94", marginTop: 4 }}>Reference: FEATURE-{listing.id?.slice(0, 8).toUpperCase()}</div>
           </div>
         </div>
 
         {/* Payment reference */}
         <div style={{ marginBottom: 20 }}>
-          <label style={{ fontSize: 10, color: "#5A8A62", display: "block", marginBottom: 6, fontWeight: 600 }}>PAYMENT CONFIRMATION NUMBER</label>
+          <label style={{ fontSize: 10, color: "#3a9962", display: "block", marginBottom: 6, fontWeight: 600 }}>PAYMENT CONFIRMATION NUMBER</label>
           <input className="input-field" value={ref} onChange={e => setRef(e.target.value)} placeholder="e.g. ECO1234567890" />
-          <div style={{ fontSize: 10, color: "#A08060", marginTop: 4 }}>Enter the transaction ID from your payment confirmation SMS</div>
+          <div style={{ fontSize: 10, color: "#5c8f6b", marginTop: 4 }}>Enter the transaction ID from your payment confirmation SMS</div>
         </div>
 
         <button className="btn-primary" onClick={async () => { setSaving(true); await onSave(weeks, ref, method); setSaving(false); }}
-          disabled={saving || !ref.trim()} style={{ opacity: ref.trim() ? 1 : 0.4, background: "linear-gradient(135deg, #C4820A, #8B5E0A)" }}>
+          disabled={saving || !ref.trim()} style={{ opacity: ref.trim() ? 1 : 0.4, background: "linear-gradient(135deg, #b8860b, #8b6914)" }}>
           {saving ? "Activating..." : `Activate Featured Listing — USD ${price} ✓`}
         </button>
-        <div style={{ fontSize: 10, color: "#A08060", textAlign: "center", marginTop: 8 }}>
+        <div style={{ fontSize: 10, color: "#5c8f6b", textAlign: "center", marginTop: 8 }}>
           Your listing will be featured immediately after payment verification
         </div>
       </div>
@@ -2483,20 +2483,20 @@ function LegalTab({ page, setActiveTab }) {
     <div className="fade-in single-col">
       {/* Header */}
       <div style={{ background: "linear-gradient(135deg, #F2EDE4, #E8F0E4)", border: "1px solid #2d5a36", borderRadius: 16, padding: "24px 20px", marginBottom: 20 }}>
-        <div style={{ fontSize: 11, color: "#3D6B45", fontWeight: 600, letterSpacing: "0.1em", marginBottom: 8 }}>
+        <div style={{ fontSize: 11, color: "#2d7a4f", fontWeight: 600, letterSpacing: "0.1em", marginBottom: 8 }}>
           🌿 FARMLINK ZIM · LEGAL
         </div>
-        <div style={{ fontSize: 24, fontWeight: 700, color: "#2C1A0E", marginBottom: 6 }}>
+        <div style={{ fontSize: 24, fontWeight: 700, color: "#e8dfc8", marginBottom: 6 }}>
           {isTos ? "Terms of Service" : "Privacy Policy"}
         </div>
-        <div style={{ fontSize: 12, color: "#5A8A62" }}>Effective: {effectiveDate}</div>
+        <div style={{ fontSize: 12, color: "#3a9962" }}>Effective: {effectiveDate}</div>
       </div>
 
       {/* Toggle between docs */}
       <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
         {[["tos", "Terms of Service"], ["pp", "Privacy Policy"]].map(([id, label]) => (
           <button key={id} onClick={() => setActiveTab(`legal-${id}`)}
-            style={{ flex: 1, background: page === id ? "#3D6B45" : "#FFFEF9", border: `1px solid ${page === id ? "#5A8A62" : "#E8E0D4"}`, borderRadius: 8, padding: "10px", color: page === id ? "#FFFEF9" : "#5A8A62", fontSize: 12, cursor: "pointer", fontWeight: page === id ? 600 : 400 }}>
+            style={{ flex: 1, background: page === id ? "#2d7a4f" : "#152218", border: `1px solid ${page === id ? "#3a9962" : "#1f3525"}`, borderRadius: 8, padding: "10px", color: page === id ? "#152218" : "#3a9962", fontSize: 12, cursor: "pointer", fontWeight: page === id ? 600 : 400 }}>
             {label}
           </button>
         ))}
@@ -2504,16 +2504,16 @@ function LegalTab({ page, setActiveTab }) {
 
       {/* Accordion sections */}
       {sections.map((s, i) => (
-        <div key={i} style={{ background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 12, marginBottom: 8, overflow: "hidden" }}>
+        <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 12, marginBottom: 8, overflow: "hidden" }}>
           <button onClick={() => setExpanded(expanded === i ? null : i)}
             style={{ width: "100%", background: "none", border: "none", padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", textAlign: "left" }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{s.title}</span>
-            <span style={{ fontSize: 16, color: "#7A5A3A", flexShrink: 0, marginLeft: 8 }}>{expanded === i ? "−" : "+"}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{s.title}</span>
+            <span style={{ fontSize: 16, color: "#8aaa94", flexShrink: 0, marginLeft: 8 }}>{expanded === i ? "−" : "+"}</span>
           </button>
           {expanded === i && (
             <div style={{ padding: "0 16px 16px", borderTop: "1px solid #E8E0D4" }}>
               {s.content.split("\n\n").map((para, j) => (
-                <p key={j} style={{ fontSize: 13, color: "#7A5A3A", lineHeight: 1.7, marginTop: 12, marginBottom: 0 }}>{para}</p>
+                <p key={j} style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.7, marginTop: 12, marginBottom: 0 }}>{para}</p>
               ))}
             </div>
           )}
@@ -2521,9 +2521,9 @@ function LegalTab({ page, setActiveTab }) {
       ))}
 
       {/* Footer */}
-      <div style={{ marginTop: 24, padding: "16px", background: "#F2EDE4", borderRadius: 12, border: "1px solid #1f3525", textAlign: "center" }}>
-        <div style={{ fontSize: 12, color: "#A08060", marginBottom: 4 }}>© {new Date().getFullYear()} FarmLink Zim. All rights reserved.</div>
-        <div style={{ fontSize: 11, color: "#C4A882" }}>Questions? Email legal@farmlinkzim.com</div>
+      <div style={{ marginTop: 24, padding: "16px", background: "#0f2218", borderRadius: 12, border: "1px solid #1f3525", textAlign: "center" }}>
+        <div style={{ fontSize: 12, color: "#5c8f6b", marginBottom: 4 }}>© {new Date().getFullYear()} FarmLink Zim. All rights reserved.</div>
+        <div style={{ fontSize: 11, color: "#4a7a5a" }}>Questions? Email legal@farmlinkzim.com</div>
       </div>
     </div>
   );
@@ -2552,18 +2552,18 @@ function AdminTab({ farmers, listings }) {
 
   return (
     <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E", marginBottom: 4 }}>Admin Dashboard</div>
-      <div style={{ fontSize: 12, color: "#7A5A3A", marginBottom: 20 }}>Platform overview & management</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8", marginBottom: 4 }}>Admin Dashboard</div>
+      <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 20 }}>Platform overview & management</div>
 
       {/* Key metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
-        {[{ label: "Total Farmers", value: farmers.length, icon: "👩🏾‍🌾", color: "#3D6B45" }, { label: "Active Listings", value: listings.length, icon: "🛒", color: "#3D6B45" }, { label: "Messages Received", value: messages.length, icon: "💬", color: "#5a9fd4" }, { label: "Provinces Active", value: Object.keys(cropTally).length, icon: "📍", color: "#C4820A" }].map(s => (
+        {[{ label: "Total Farmers", value: farmers.length, icon: "👩🏾‍🌾", color: "#2d7a4f" }, { label: "Active Listings", value: listings.length, icon: "🛒", color: "#2d7a4f" }, { label: "Messages Received", value: messages.length, icon: "💬", color: "#5a9fd4" }, { label: "Provinces Active", value: Object.keys(cropTally).length, icon: "📍", color: "#d4a017" }].map(s => (
           <div key={s.label} className="stat-card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div style={{ fontSize: 24 }}>{s.icon}</div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 22, fontWeight: 700, color: s.color }}>{s.value}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, fontWeight: 700, color: s.color }}>{s.value}</div>
             </div>
-            <div style={{ fontSize: 11, color: "#5A8A62", marginTop: 6, fontFamily: "'DM Mono', monospace" }}>{s.label}</div>
+            <div style={{ fontSize: 11, color: "#3a9962", marginTop: 6, fontFamily: "'Space Mono', monospace" }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -2573,10 +2573,10 @@ function AdminTab({ farmers, listings }) {
         <div className="section-title">Farmers by Province</div>
         {topProvinces.map(([prov, count], i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-            <div style={{ flex: 1, fontSize: 13, color: "#2C1A0E" }}>{prov}</div>
+            <div style={{ flex: 1, fontSize: 13, color: "#e8dfc8" }}>{prov}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div style={{ height: 6, borderRadius: 3, background: "linear-gradient(90deg, #2d7a4f, #5cd68a)", width: Math.max(20, (count / farmers.length) * 120) }} />
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#3D6B45", minWidth: 16 }}>{count}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#2d7a4f", minWidth: 16 }}>{count}</div>
             </div>
           </div>
         ))}
@@ -2590,15 +2590,15 @@ function AdminTab({ farmers, listings }) {
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
               <div style={{ fontSize: 22 }}>👩🏾‍🌾</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, color: "#2C1A0E" }}>{f.name}</div>
-                <div style={{ fontSize: 10, color: "#7A5A3A", fontFamily: "'DM Mono', monospace" }}>{f.district}, {f.province}</div>
+                <div style={{ fontSize: 13, color: "#e8dfc8" }}>{f.name}</div>
+                <div style={{ fontSize: 10, color: "#8aaa94", fontFamily: "'Space Mono', monospace" }}>{f.district}, {f.province}</div>
               </div>
-              {f.phone && <div style={{ fontSize: 11, color: "#5A8A62" }}>{f.phone}</div>}
+              {f.phone && <div style={{ fontSize: 11, color: "#3a9962" }}>{f.phone}</div>}
             </div>
             {f.farmer_crops && f.farmer_crops.length > 0 && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 4, paddingLeft: 32 }}>
                 {f.farmer_crops.map((c, j) => (
-                  <span key={j} style={{ fontSize: 10, padding: "2px 7px", borderRadius: 10, background: c.type === "livestock" ? "rgba(90,143,163,0.15)" : "rgba(61,107,69,0.1)", color: c.type === "livestock" ? "#5a9fd4" : "#3D6B45", fontFamily: "'DM Mono', monospace" }}>
+                  <span key={j} style={{ fontSize: 10, padding: "2px 7px", borderRadius: 10, background: c.type === "livestock" ? "rgba(90,143,163,0.15)" : "rgba(45,122,79,0.1)", color: c.type === "livestock" ? "#5a9fd4" : "#2d7a4f", fontFamily: "'Space Mono', monospace" }}>
                     {c.type === "livestock" ? "🐄" : "🌾"} {c.crop_name}
                   </span>
                 ))}
@@ -2606,21 +2606,21 @@ function AdminTab({ farmers, listings }) {
             )}
           </div>
         ))}
-        {farmers.length === 0 && <div style={{ fontSize: 12, color: "#7A5A3A", textAlign: "center", padding: "12px 0" }}>No registrations yet</div>}
+        {farmers.length === 0 && <div style={{ fontSize: 12, color: "#8aaa94", textAlign: "center", padding: "12px 0" }}>No registrations yet</div>}
       </div>
 
       {/* Recent messages */}
       <div className="card">
         <div className="section-title">Recent Buyer Messages</div>
         {loadingMsgs ? <div className="skeleton" style={{ height: 60, borderRadius: 8 }} /> :
-          messages.length === 0 ? <div style={{ fontSize: 12, color: "#7A5A3A", textAlign: "center", padding: "12px 0" }}>No messages yet</div> :
+          messages.length === 0 ? <div style={{ fontSize: 12, color: "#8aaa94", textAlign: "center", padding: "12px 0" }}>No messages yet</div> :
           messages.slice(0, 5).map((m, i) => (
             <div key={i} style={{ padding: "10px 0", borderTop: i > 0 ? "1px solid #E8E0D4" : "none" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{m.sender_name}</div>
-                {m.sender_phone && <div style={{ fontSize: 11, color: "#5A8A62" }}>{m.sender_phone}</div>}
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{m.sender_name}</div>
+                {m.sender_phone && <div style={{ fontSize: 11, color: "#3a9962" }}>{m.sender_phone}</div>}
               </div>
-              <div style={{ fontSize: 12, color: "#7A5A3A", lineHeight: 1.4 }}>{m.message}</div>
+              <div style={{ fontSize: 12, color: "#8aaa94", lineHeight: 1.4 }}>{m.message}</div>
             </div>
           ))
         }
@@ -2691,23 +2691,23 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
           <div style={{ background: "linear-gradient(135deg, #F2EDE4, #E8F0E4)", padding: "20px 20px 0", borderRadius: "16px 16px 0 0" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
               <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                <div style={{ width: 48, height: 48, background: "linear-gradient(135deg, #3D6B45, #2C5235)", borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{"👩🏾‍🌾"}</div>
+                <div style={{ width: 48, height: 48, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", borderRadius: 13, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>{"👩🏾‍🌾"}</div>
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#2C1A0E" }}>{displayName}</div>
-                  <div style={{ fontSize: 10, color: "#7A5A3A", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#3D6B45" }} />
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#e8dfc8" }}>{displayName}</div>
+                  <div style={{ fontSize: 10, color: "#8aaa94", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#2d7a4f" }} />
                     VERIFIED FARMER
                   </div>
                 </div>
               </div>
-              <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
+              <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
             </div>
 
             {/* Tabs */}
             <div style={{ display: "flex", borderBottom: "1px solid #1f3525" }}>
               {[["overview", "Overview"], ["listings", "Listings"], ["diary", "Diary"], ["farm", "Farm"]].map(([id, label]) => (
                 <button key={id} onClick={() => { setProfileTab(id); if (id !== "overview") loadProfileData(); }}
-                  style={{ flex: 1, background: "none", border: "none", borderBottom: profileTab === id ? "2px solid #7ec99a" : "2px solid transparent", padding: "10px 4px", color: profileTab === id ? "#3D6B45" : "#7A5A3A", fontSize: 11, cursor: "pointer", fontWeight: profileTab === id ? 600 : 400 }}>
+                  style={{ flex: 1, background: "none", border: "none", borderBottom: profileTab === id ? "2px solid #7ec99a" : "2px solid transparent", padding: "10px 4px", color: profileTab === id ? "#2d7a4f" : "#8aaa94", fontSize: 11, cursor: "pointer", fontWeight: profileTab === id ? 600 : 400 }}>
                   {label}
                 </button>
               ))}
@@ -2721,10 +2721,10 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
               <div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 16 }}>
                   {[{ icon: "🛒", label: "Listings", val: myListings.length || "—" }, { icon: "📓", label: "Diary", val: myDiary.length || "—" }, { icon: "⭐", label: "Free Plan", val: "" }].map((s, i) => (
-                    <div key={i} style={{ background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+                    <div key={i} style={{ background: "#152218", border: "1px solid #1f3525", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
                       <div style={{ fontSize: 20 }}>{s.icon}</div>
-                      {s.val && <div style={{ fontSize: 16, fontWeight: 700, color: "#3D6B45", marginTop: 4 }}>{s.val}</div>}
-                      <div style={{ fontSize: 9, color: "#7A5A3A", marginTop: 2 }}>{s.label}</div>
+                      {s.val && <div style={{ fontSize: 16, fontWeight: 700, color: "#2d7a4f", marginTop: 4 }}>{s.val}</div>}
+                      <div style={{ fontSize: 9, color: "#8aaa94", marginTop: 2 }}>{s.label}</div>
                     </div>
                   ))}
                 </div>
@@ -2736,27 +2736,27 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
                     { icon: "📓", label: "Farm Diary", sub: "View your activity log", action: () => { setProfileTab("diary"); loadProfileData(); } },
                     { icon: "🌾", label: "Farm Details", sub: "Update crops and livestock", action: () => { setProfileTab("farm"); } },
                   ].map((a, i) => (
-                    <button key={i} onClick={a.action} style={{ display: "flex", alignItems: "center", gap: 12, background: "#FFFEF9", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", cursor: "pointer", textAlign: "left", width: "100%" }}>
+                    <button key={i} onClick={a.action} style={{ display: "flex", alignItems: "center", gap: 12, background: "#152218", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", cursor: "pointer", textAlign: "left", width: "100%" }}>
                       <span style={{ fontSize: 20 }}>{a.icon}</span>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: "#2C1A0E" }}>{a.label}</div>
-                        <div style={{ fontSize: 11, color: "#7A5A3A" }}>{a.sub}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: "#e8dfc8" }}>{a.label}</div>
+                        <div style={{ fontSize: 11, color: "#8aaa94" }}>{a.sub}</div>
                       </div>
-                      <span style={{ color: "#A08060", fontSize: 18 }}>{"›"}</span>
+                      <span style={{ color: "#5c8f6b", fontSize: 18 }}>{"›"}</span>
                     </button>
                   ))}
                 </div>
 
                 {/* Premium */}
-                <div style={{ background: "linear-gradient(135deg, #EBF4EC, #FFFEF9)", border: "1px solid #d4a017", borderRadius: 12, padding: 14, marginBottom: 16 }}>
-                  <div style={{ fontSize: 10, color: "#C4820A", fontWeight: 700, marginBottom: 6 }}>{"⭐"} FARMLINK PREMIUM — USD 5/month</div>
+                <div style={{ background: "linear-gradient(135deg, #1a3d24, #152218)", border: "1px solid #d4a017", borderRadius: 12, padding: 14, marginBottom: 16 }}>
+                  <div style={{ fontSize: 10, color: "#d4a017", fontWeight: 700, marginBottom: 6 }}>{"⭐"} FARMLINK PREMIUM — USD 5/month</div>
                   {["Verified badge on all listings", "Unlimited listings (free: 2)", "Priority marketplace placement"].map((b, i) => (
-                    <div key={i} style={{ fontSize: 12, color: "#7A5A3A", marginBottom: 3 }}>{"✓"} {b}</div>
+                    <div key={i} style={{ fontSize: 12, color: "#8aaa94", marginBottom: 3 }}>{"✓"} {b}</div>
                   ))}
-                  <button style={{ width: "100%", background: "linear-gradient(135deg, #C4820A, #8B5E0A)", border: "none", borderRadius: 8, padding: "10px", color: "#FFFEF9", fontSize: 12, cursor: "pointer", fontWeight: 600, marginTop: 10 }}>Upgrade to Premium {"→"}</button>
+                  <button style={{ width: "100%", background: "linear-gradient(135deg, #b8860b, #8b6914)", border: "none", borderRadius: 8, padding: "10px", color: "#152218", fontSize: 12, cursor: "pointer", fontWeight: 600, marginTop: 10 }}>Upgrade to Premium {"→"}</button>
                 </div>
 
-                <button onClick={onLogout} style={{ width: "100%", background: "rgba(184,90,56,0.1)", border: "1px solid #e07060", borderRadius: 8, padding: "12px", color: "#B85A38", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>{"🚪"} Sign Out</button>
+                <button onClick={onLogout} style={{ width: "100%", background: "rgba(224,112,96,0.1)", border: "1px solid #e07060", borderRadius: 8, padding: "12px", color: "#e07060", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>{"🚪"} Sign Out</button>
               </div>
             )}
 
@@ -2764,24 +2764,24 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
             {profileTab === "listings" && (
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#2C1A0E" }}>My Listings</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#e8dfc8" }}>My Listings</div>
                 </div>
                 {loadingData ? (
-                  <div style={{ textAlign: "center", padding: 32, color: "#7A5A3A" }}>Loading...</div>
+                  <div style={{ textAlign: "center", padding: 32, color: "#8aaa94" }}>Loading...</div>
                 ) : myListings.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "32px 20px" }}>
                     <div style={{ fontSize: 36, marginBottom: 8 }}>🛒</div>
-                    <div style={{ fontSize: 13, color: "#5A8A62", marginBottom: 12 }}>No listings yet</div>
+                    <div style={{ fontSize: 13, color: "#3a9962", marginBottom: 12 }}>No listings yet</div>
                     <button onClick={onClose} className="btn-primary" style={{ width: "auto", padding: "8px 20px" }}>Go to Marketplace</button>
                   </div>
                 ) : myListings.map((l, i) => (
-                  <div key={i} style={{ background: "#F2EDE4", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", marginBottom: 8 }}>
+                  <div key={i} style={{ background: "#0f2218", border: "1px solid #1f3525", borderRadius: 12, padding: "12px 14px", marginBottom: 8 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#2C1A0E" }}>{l.crop}</div>
-                      {l.is_featured && <span style={{ fontSize: 9, background: "rgba(196,130,10,0.15)", color: "#C4820A", padding: "2px 7px", borderRadius: 8 }}>{"⭐"} FEATURED</span>}
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#e8dfc8" }}>{l.crop}</div>
+                      {l.is_featured && <span style={{ fontSize: 9, background: "rgba(212,160,23,0.2)", color: "#d4a017", padding: "2px 7px", borderRadius: 8 }}>{"⭐"} FEATURED</span>}
                     </div>
-                    <div style={{ fontSize: 11, color: "#5A8A62", marginBottom: 2 }}>{"📍"} {l.location}</div>
-                    <div style={{ fontSize: 12, color: "#3D6B45", fontWeight: 600 }}>{l.price} · {l.quantity}</div>
+                    <div style={{ fontSize: 11, color: "#3a9962", marginBottom: 2 }}>{"📍"} {l.location}</div>
+                    <div style={{ fontSize: 12, color: "#2d7a4f", fontWeight: 600 }}>{l.price} · {l.quantity}</div>
                   </div>
                 ))}
               </div>
@@ -2791,15 +2791,15 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
             {profileTab === "diary" && (
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#2C1A0E" }}>Farm Diary</div>
-                  <button onClick={onClose} style={{ background: "#FFFEF9", border: "1px solid #2d7a4f", borderRadius: 8, padding: "6px 12px", color: "#3D6B45", fontSize: 11, cursor: "pointer" }}>{"+"} Log Activity</button>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#e8dfc8" }}>Farm Diary</div>
+                  <button onClick={onClose} style={{ background: "#152218", border: "1px solid #2d7a4f", borderRadius: 8, padding: "6px 12px", color: "#2d7a4f", fontSize: 11, cursor: "pointer" }}>{"+"} Log Activity</button>
                 </div>
                 {loadingData ? (
-                  <div style={{ textAlign: "center", padding: 32, color: "#7A5A3A" }}>Loading...</div>
+                  <div style={{ textAlign: "center", padding: 32, color: "#8aaa94" }}>Loading...</div>
                 ) : myDiary.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "32px 20px" }}>
                     <div style={{ fontSize: 36, marginBottom: 8 }}>📓</div>
-                    <div style={{ fontSize: 13, color: "#5A8A62", marginBottom: 12 }}>No diary entries yet</div>
+                    <div style={{ fontSize: 13, color: "#3a9962", marginBottom: 12 }}>No diary entries yet</div>
                     <button onClick={onClose} className="btn-primary" style={{ width: "auto", padding: "8px 20px" }}>Start Your Farm Diary</button>
                   </div>
                 ) : myDiary.map((e, i) => {
@@ -2808,10 +2808,10 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
                     <div key={i} style={{ display: "flex", gap: 10, padding: "10px 0", borderBottom: i < myDiary.length - 1 ? "1px solid #E8E0D4" : "none" }}>
                       <div style={{ width: 34, height: 34, background: type.color + "20", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{type.icon}</div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: "#2C1A0E" }}>{type.label}{e.crop_name ? " — " + e.crop_name : ""}</div>
-                        <div style={{ fontSize: 11, color: "#5A8A62" }}>{new Date(e.activity_date + "T00:00:00").toLocaleDateString("en-ZW", { day: "numeric", month: "short", year: "numeric" })}</div>
-                        {e.notes && <div style={{ fontSize: 11, color: "#7A5A3A", marginTop: 2 }}>{e.notes.slice(0, 80)}{e.notes.length > 80 ? "..." : ""}</div>}
-                        {e.cost_usd && <div style={{ fontSize: 11, color: "#C4820A", marginTop: 2 }}>Cost: USD {e.cost_usd}</div>}
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "#e8dfc8" }}>{type.label}{e.crop_name ? " — " + e.crop_name : ""}</div>
+                        <div style={{ fontSize: 11, color: "#3a9962" }}>{new Date(e.activity_date + "T00:00:00").toLocaleDateString("en-ZW", { day: "numeric", month: "short", year: "numeric" })}</div>
+                        {e.notes && <div style={{ fontSize: 11, color: "#8aaa94", marginTop: 2 }}>{e.notes.slice(0, 80)}{e.notes.length > 80 ? "..." : ""}</div>}
+                        {e.cost_usd && <div style={{ fontSize: 11, color: "#d4a017", marginTop: 2 }}>Cost: USD {e.cost_usd}</div>}
                       </div>
                     </div>
                   );
@@ -2822,15 +2822,15 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
             {/* FARM */}
             {profileTab === "farm" && (
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#2C1A0E", marginBottom: 16 }}>Farm Details</div>
-                <div style={{ background: "#F2EDE4", borderRadius: 12, padding: 16, marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, color: "#7A5A3A", marginBottom: 8, fontWeight: 600 }}>UPDATE FARM REGISTRATION</div>
-                  <div style={{ fontSize: 13, color: "#7A5A3A", lineHeight: 1.6, marginBottom: 12 }}>Update your province, district, crops and livestock through the Register Farm tab.</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#e8dfc8", marginBottom: 16 }}>Farm Details</div>
+                <div style={{ background: "#0f2218", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, color: "#8aaa94", marginBottom: 8, fontWeight: 600 }}>UPDATE FARM REGISTRATION</div>
+                  <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update your province, district, crops and livestock through the Register Farm tab.</div>
                   <button onClick={onClose} className="btn-primary">Go to Register Farm {"→"}</button>
                 </div>
-                <div style={{ background: "#F2EDE4", borderRadius: 12, padding: 16 }}>
-                  <div style={{ fontSize: 11, color: "#7A5A3A", marginBottom: 8, fontWeight: 600 }}>CROP AND LIVESTOCK TRACKING</div>
-                  <div style={{ fontSize: 13, color: "#7A5A3A", lineHeight: 1.6, marginBottom: 12 }}>Update hectares, headcount and crop stage on the interactive farmer map.</div>
+                <div style={{ background: "#0f2218", borderRadius: 12, padding: 16 }}>
+                  <div style={{ fontSize: 11, color: "#8aaa94", marginBottom: 8, fontWeight: 600 }}>CROP AND LIVESTOCK TRACKING</div>
+                  <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.6, marginBottom: 12 }}>Update hectares, headcount and crop stage on the interactive farmer map.</div>
                   <button onClick={onClose} className="btn-secondary" style={{ width: "100%" }}>Open Farmer Map {"→"}</button>
                 </div>
               </div>
@@ -2847,25 +2847,25 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#2C1A0E" }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>
               {step === "input" ? "Sign In / Register" : "Enter Your Code"}
             </div>
-            <div style={{ fontSize: 11, color: "#7A5A3A", marginTop: 3 }}>
+            <div style={{ fontSize: 11, color: "#8aaa94", marginTop: 3 }}>
               {step === "input" ? "Enter your email or phone number" : "Code sent to " + sentTo}
             </div>
           </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: "#7A5A3A", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#8aaa94", fontSize: 22, cursor: "pointer" }}>{"✕"}</button>
         </div>
 
         {step === "input" && (
           <>
             <input className="input-field" value={identifier} onChange={e => setIdentifier(e.target.value)}
               placeholder="Email or phone number" onKeyDown={e => e.key === "Enter" && handleSendOtp()} />
-            {error && <div style={{ color: "#B85A38", fontSize: 12, margin: "8px 0" }}>{error}</div>}
+            {error && <div style={{ color: "#e07060", fontSize: 12, margin: "8px 0" }}>{error}</div>}
             <button className="btn-primary" onClick={handleSendOtp} disabled={loading} style={{ marginTop: 12 }}>
               {loading ? "Sending..." : "Send Code →"}
             </button>
-            <div style={{ fontSize: 11, color: "#A08060", textAlign: "center", marginTop: 12 }}>
+            <div style={{ fontSize: 11, color: "#5c8f6b", textAlign: "center", marginTop: 12 }}>
               {"We'll send a one-time code to verify your identity"}
             </div>
           </>
@@ -2875,7 +2875,7 @@ function AuthModal({ onClose, authUser, onAuth, onLogout }) {
           <>
             <input className="input-field" value={otp} onChange={e => setOtp(e.target.value)}
               placeholder="Enter your code" maxLength={8} onKeyDown={e => e.key === "Enter" && handleVerify()} />
-            {error && <div style={{ color: "#B85A38", fontSize: 12, margin: "8px 0" }}>{error}</div>}
+            {error && <div style={{ color: "#e07060", fontSize: 12, margin: "8px 0" }}>{error}</div>}
             <button className="btn-primary" onClick={handleVerify} disabled={loading} style={{ marginTop: 12 }}>
               {loading ? "Verifying..." : "Verify Code →"}
             </button>
@@ -2937,13 +2937,13 @@ function InsightsTab() {
   const totalCropHa = cropData.reduce((s, d) => s + d.total, 0);
   const totalLiveHead = livestockData.reduce((s, d) => s + d.total, 0);
 
-  const CROP_COLORS = ["#3D6B45", "#5A8A62", "#3D6B45", "#3D6B45", "#5A8A62", "#2C5235", "#27803d", "#60c070"];
+  const CROP_COLORS = ["#2d7a4f", "#3a9962", "#2d7a4f", "#2d7a4f", "#3a9962", "#1f5a39", "#27803d", "#60c070"];
   const LIVE_COLORS = ["#5a9fd4", "#3a7ab5", "#7abde8", "#2d6fa0", "#4a8fc4"];
 
   return (
     <div className="fade-in single-col">
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#2C1A0E", marginBottom: 4 }}>Market Insights</div>
-      <div style={{ fontSize: 12, color: "#7A5A3A", marginBottom: 20 }}>AI-powered yield & price intelligence</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#e8dfc8", marginBottom: 4 }}>Market Insights</div>
+      <div style={{ fontSize: 12, color: "#8aaa94", marginBottom: 20 }}>AI-powered yield & price intelligence</div>
 
       {/* ── CROP COVERAGE CHARTS ── */}
       {loading ? (
@@ -2952,15 +2952,15 @@ function InsightsTab() {
         <>
           {/* Summary cards */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-            <div style={{ background: "linear-gradient(135deg, #F2EDE4, #FAF7F2)", border: "1px solid #2d5a36", borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#5A8A62", marginBottom: 6 }}>TOTAL CROP AREA</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#3D6B45" }}>{totalCropHa.toFixed(1)}</div>
-              <div style={{ fontSize: 11, color: "#7A5A3A", fontFamily: "'DM Mono', monospace" }}>HECTARES · {cropData.length} CROPS</div>
+            <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #2d5a36", borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#3a9962", marginBottom: 6 }}>TOTAL CROP AREA</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "#2d7a4f" }}>{totalCropHa.toFixed(1)}</div>
+              <div style={{ fontSize: 11, color: "#8aaa94", fontFamily: "'Space Mono', monospace" }}>HECTARES · {cropData.length} CROPS</div>
             </div>
-            <div style={{ background: "linear-gradient(135deg, #FFFEF9, #F2EDE4)", border: "1px solid #2d4a6a", borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#4a6a8f", marginBottom: 6 }}>TOTAL LIVESTOCK AREA</div>
+            <div style={{ background: "linear-gradient(135deg, #152218, #0f2218)", border: "1px solid #2d4a6a", borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#4a6a8f", marginBottom: 6 }}>TOTAL LIVESTOCK AREA</div>
               <div style={{ fontSize: 28, fontWeight: 700, color: "#5a9fd4" }}>{totalLiveHead.toLocaleString()}</div>
-              <div style={{ fontSize: 11, color: "#4a6a8f", fontFamily: "'DM Mono', monospace" }}>HEAD · {livestockData.length} TYPES</div>
+              <div style={{ fontSize: 11, color: "#4a6a8f", fontFamily: "'Space Mono', monospace" }}>HEAD · {livestockData.length} TYPES</div>
             </div>
           </div>
 
@@ -2969,7 +2969,7 @@ function InsightsTab() {
             <div className="card" style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                 <div className="section-title" style={{ margin: 0 }}>🌾 Crops by Hectares</div>
-                <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#7A5A3A" }}>LIVE · ALL FARMERS</div>
+                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#8aaa94" }}>LIVE · ALL FARMERS</div>
               </div>
               <svg viewBox={`0 0 400 ${Math.max(cropData.length * 44 + 20, 80)}`} style={{ width: "100%", height: "auto" }}>
                 {cropData.map((d, i) => {
@@ -2980,17 +2980,17 @@ function InsightsTab() {
                   return (
                     <g key={i}>
                       {/* Label */}
-                      <text x="0" y={y + 12} fill="#2C1A0E" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
-                      <text x="0" y={y + 24} fill="#7A5A3A" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
+                      <text x="0" y={y + 12} fill="#e8dfc8" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
+                      <text x="0" y={y + 24} fill="#8aaa94" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
                       {/* Background track */}
-                      <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#F2EDE4" />
+                      <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#0f2218" />
                       {/* Bar */}
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
                       {/* Value - inside bar if wide, outside if narrow */}
                       {barW > 180
-                        ? <text x={110 + barW - 6} y={y + 16} fill="#FAF7F2" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="end">{d.total.toFixed(1)} ha  {pct}%</text>
+                        ? <text x={110 + barW - 6} y={y + 16} fill="#0d1a0f" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="end">{d.total.toFixed(1)} ha  {pct}%</text>
                         : <g><text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{d.total.toFixed(1)} ha</text>
-                          <text x="388" y={y + 16} fill="#5A8A62" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text></g>
+                          <text x="388" y={y + 16} fill="#3a9962" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text></g>
                       }
                     </g>
                   );
@@ -3020,14 +3020,14 @@ function InsightsTab() {
                         return seg;
                       });
                     })()}
-                    <text x="50" y="47" textAnchor="middle" fill="#2C1A0E" fontSize="10" fontFamily="monospace" fontWeight="bold">{totalCropHa.toFixed(0)}</text>
-                    <text x="50" y="58" textAnchor="middle" fill="#7A5A3A" fontSize="7" fontFamily="monospace">ha total</text>
+                    <text x="50" y="47" textAnchor="middle" fill="#e8dfc8" fontSize="10" fontFamily="monospace" fontWeight="bold">{totalCropHa.toFixed(0)}</text>
+                    <text x="50" y="58" textAnchor="middle" fill="#8aaa94" fontSize="7" fontFamily="monospace">ha total</text>
                   </svg>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {cropData.map((d, i) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                         <div style={{ width: 8, height: 8, borderRadius: 2, background: CROP_COLORS[i % CROP_COLORS.length], flexShrink: 0 }} />
-                        <span style={{ fontSize: 10, color: "#7A5A3A", fontFamily: "'DM Mono', monospace" }}>{d.crop_name}</span>
+                        <span style={{ fontSize: 10, color: "#8aaa94", fontFamily: "'Space Mono', monospace" }}>{d.crop_name}</span>
                       </div>
                     ))}
                   </div>
@@ -3041,7 +3041,7 @@ function InsightsTab() {
             <div className="card" style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                 <div className="section-title" style={{ margin: 0 }}>🐄 Livestock by Head Count</div>
-                <div style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#7A5A3A" }}>LIVE · ALL FARMERS</div>
+                <div style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#8aaa94" }}>LIVE · ALL FARMERS</div>
               </div>
               <svg viewBox={`0 0 400 ${Math.max(livestockData.length * 44 + 20, 80)}`} style={{ width: "100%", height: "auto" }}>
                 {livestockData.map((d, i) => {
@@ -3051,12 +3051,12 @@ function InsightsTab() {
                   const pct = ((d.total / totalLiveHead) * 100).toFixed(1);
                   return (
                     <g key={i}>
-                      <text x="0" y={y + 12} fill="#2C1A0E" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
-                      <text x="0" y={y + 24} fill="#7A5A3A" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
+                      <text x="0" y={y + 12} fill="#e8dfc8" fontSize="11" fontFamily="monospace">{d.crop_name}</text>
+                      <text x="0" y={y + 24} fill="#8aaa94" fontSize="9" fontFamily="monospace">{d.farmer_count} farmer{d.farmer_count > 1 ? "s" : ""}</text>
                       <rect x="110" y={y + 4} width="280" height="18" rx="4" fill="#1a2218" />
                       <rect x="110" y={y + 4} width={barW} height="18" rx="4" fill={color} opacity="0.9" />
                       {barW > 180
-                        ? <text x={110 + barW - 6} y={y + 16} fill="#FAF7F2" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="end">{Math.round(d.total)} head  {pct}%</text>
+                        ? <text x={110 + barW - 6} y={y + 16} fill="#0d1a0f" fontSize="10" fontFamily="monospace" fontWeight="bold" textAnchor="end">{Math.round(d.total)} head  {pct}%</text>
                         : <g><text x={110 + barW + 6} y={y + 16} fill={color} fontSize="10" fontFamily="monospace" fontWeight="bold">{Math.round(d.total)} head</text>
                           <text x="388" y={y + 16} fill="#4a6a8f" fontSize="9" fontFamily="monospace" textAnchor="end">{pct}%</text></g>
                       }
@@ -3070,21 +3070,21 @@ function InsightsTab() {
           {cropData.length === 0 && livestockData.length === 0 && (
             <div className="card" style={{ textAlign: "center", padding: "32px 20px", marginBottom: 16 }}>
               <div style={{ fontSize: 36, marginBottom: 12 }}>📊</div>
-              <div style={{ fontSize: 13, color: "#5A8A62", fontFamily: "'DM Mono', monospace", marginBottom: 8 }}>NO DATA YET</div>
-              <div style={{ fontSize: 12, color: "#7A5A3A" }}>Open the Farmer Map and tap Edit on any crop or livestock to add data.</div>
+              <div style={{ fontSize: 13, color: "#3a9962", fontFamily: "'Space Mono', monospace", marginBottom: 8 }}>NO DATA YET</div>
+              <div style={{ fontSize: 12, color: "#8aaa94" }}>Open the Farmer Map and tap Edit on any crop or livestock to add data.</div>
             </div>
           )}
         </>
       )}
 
       {/* AI forecast */}
-      <div style={{ background: "linear-gradient(135deg, #F2EDE4, #FAF7F2)", border: "1px solid #D4C8A0", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
+      <div style={{ background: "linear-gradient(135deg, #0f2218, #1a3d24)", border: "1px solid #D4C8A0", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
         <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
           <div style={{ fontSize: 28 }}>🛰️</div>
           <div>
-            <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#3D6B45", marginBottom: 6 }}>AI SATELLITE FORECAST · 2025/26 SEASON</div>
-            <div style={{ fontSize: 15, color: "#2C1A0E", lineHeight: 1.6, marginBottom: 10 }}>
-              <strong style={{ color: "#3D6B45" }}>Above-average yields forecast</strong> nationally. La Niña conditions are driving above-normal rainfall across Mashonaland, Manicaland and Midlands. NASA soil moisture data shows above-normal root zone moisture across central Zimbabwe.
+            <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#2d7a4f", marginBottom: 6 }}>AI SATELLITE FORECAST · 2025/26 SEASON</div>
+            <div style={{ fontSize: 15, color: "#e8dfc8", lineHeight: 1.6, marginBottom: 10 }}>
+              <strong style={{ color: "#2d7a4f" }}>Above-average yields forecast</strong> nationally. La Niña conditions are driving above-normal rainfall across Mashonaland, Manicaland and Midlands. NASA soil moisture data shows above-normal root zone moisture across central Zimbabwe.
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               {[
@@ -3093,17 +3093,17 @@ function InsightsTab() {
                 { icon: "💧", label: "Soil Moisture", value: "Above normal", status: "positive", note: "NASA FLDAS data" },
                 { icon: "🌊", label: "La Niña", value: "Active", status: "positive", note: "Through mid-2026" },
               ].map((item, i) => (
-                <div key={i} style={{ background: "#FFFEF9", borderRadius: 8, padding: "8px 10px", border: "1px solid #E8E0D4" }}>
+                <div key={i} style={{ background: "#152218", borderRadius: 8, padding: "8px 10px", border: "1px solid #E8E0D4" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
                     <span style={{ fontSize: 14 }}>{item.icon}</span>
-                    <span style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#A08060" }}>{item.label.toUpperCase()}</span>
+                    <span style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", color: "#5c8f6b" }}>{item.label.toUpperCase()}</span>
                   </div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: item.status === "positive" ? "#3D6B45" : item.status === "negative" ? "#B85A38" : "#2C1A0E" }}>{item.value}</div>
-                  <div style={{ fontSize: 10, color: "#A08060" }}>{item.note}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: item.status === "positive" ? "#2d7a4f" : item.status === "negative" ? "#e07060" : "#e8dfc8" }}>{item.value}</div>
+                  <div style={{ fontSize: 10, color: "#5c8f6b" }}>{item.note}</div>
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 10, color: "#A08060", marginTop: 10, fontFamily: "'DM Mono', monospace" }}>
+            <div style={{ fontSize: 10, color: "#5c8f6b", marginTop: 10, fontFamily: "'Space Mono', monospace" }}>
               SOURCES: FEWS NET · NASA FLDAS · GEOGLAM Crop Monitor · Zimbabwe MSD · NOAA/NCEP · Updated March 2026
             </div>
           </div>
@@ -3113,45 +3113,45 @@ function InsightsTab() {
       {/* Yield table */}
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="section-title">2025/26 Regional Yield Forecast</div>
-        <div style={{ fontSize: 11, color: "#A08060", fontFamily: "'DM Mono', monospace", marginBottom: 12 }}>SOURCE: GEOGLAM · FEWS NET · NASA FLDAS · La Niña analog years</div>
+        <div style={{ fontSize: 11, color: "#5c8f6b", fontFamily: "'Space Mono', monospace", marginBottom: 12 }}>SOURCE: GEOGLAM · FEWS NET · NASA FLDAS · La Niña analog years</div>
         {yieldData.map((d, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", padding: "10px 0", borderBottom: i < yieldData.length - 1 ? "1px solid #E8E0D4" : "none" }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "#2C1A0E" }}>{d.region}</div>
-                <span style={{ fontSize: 9, fontFamily: "'DM Mono', monospace", background: "#F2EDE4", color: "#7A5A3A", padding: "1px 6px", borderRadius: 4 }}>{d.crop}</span>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "#e8dfc8" }}>{d.region}</div>
+                <span style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", background: "#0f2218", color: "#8aaa94", padding: "1px 6px", borderRadius: 4 }}>{d.crop}</span>
               </div>
-              <div style={{ fontSize: 10, color: "#A08060" }}>{d.note}</div>
+              <div style={{ fontSize: 10, color: "#5c8f6b" }}>{d.note}</div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#7A5A3A" }}>{d.yield} → {d.forecast} {d.crop === "Cattle" ? "kg/hd" : "t/ha"}</div>
-              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 600, color: d.change > 0 ? "#3D6B45" : "#B85A38" }}>{d.change > 0 ? "▲" : "▼"} {Math.abs(d.change)}%</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: "#8aaa94" }}>{d.yield} → {d.forecast} {d.crop === "Cattle" ? "kg/hd" : "t/ha"}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 600, color: d.change > 0 ? "#2d7a4f" : "#e07060" }}>{d.change > 0 ? "▲" : "▼"} {Math.abs(d.change)}%</div>
             </div>
           </div>
         ))}
-        <div style={{ marginTop: 12, padding: "8px 10px", background: "#EBF4EC", borderRadius: 8, fontSize: 11, color: "#3D6B45" }}>
+        <div style={{ marginTop: 12, padding: "8px 10px", background: "#1a3d24", borderRadius: 8, fontSize: 11, color: "#2d7a4f" }}>
           📡 Overall national maize yield forecast: <strong>above average</strong> — driven by La Niña rainfall and improved soil moisture across all main growing provinces.
         </div>
       </div>
 
       {/* Premium upsell */}
-      <div style={{ background: "linear-gradient(135deg, #EBF4EC, #FFFEF9)", border: "1px solid #d4a017", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: "#C4820A", marginBottom: 8 }}>PREMIUM INSIGHTS</div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#2C1A0E", marginBottom: 6 }}>Unlock Full Market Intelligence</div>
-        <div style={{ fontSize: 13, color: "#7A5A3A", lineHeight: 1.5, marginBottom: 14 }}>Daily price predictions, GMB tender alerts, buyer demand signals, and export market data.</div>
-        <button className="btn-primary" style={{ background: "linear-gradient(135deg, #C4820A, #8B5E0A)" }}>Subscribe — USD 12/month</button>
+      <div style={{ background: "linear-gradient(135deg, #1a3d24, #152218)", border: "1px solid #d4a017", borderRadius: 14, padding: "16px", marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#d4a017", marginBottom: 8 }}>PREMIUM INSIGHTS</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#e8dfc8", marginBottom: 6 }}>Unlock Full Market Intelligence</div>
+        <div style={{ fontSize: 13, color: "#8aaa94", lineHeight: 1.5, marginBottom: 14 }}>Daily price predictions, GMB tender alerts, buyer demand signals, and export market data.</div>
+        <button className="btn-primary" style={{ background: "linear-gradient(135deg, #b8860b, #8b6914)" }}>Subscribe — USD 12/month</button>
       </div>
 
       {/* Pest alerts */}
       <div className="section-title">🚨 Current Pest & Disease Alerts</div>
       {[{ name: "Fall Armyworm", risk: "High", regions: "Mash West, Mash Central", action: "Apply chlorpyrifos immediately" }, { name: "Stalk Borer", risk: "Medium", regions: "Midlands, Masvingo", action: "Monitor trap counts weekly" }, { name: "Tick Season", risk: "High", regions: "Matabeleland", action: "Dip cattle weekly with Triatix" }].map((p, i) => (
-        <div key={i} style={{ background: "#FFFEF9", border: `1px solid ${p.risk === "High" ? "#D4C8A0" : "#3a4a20"}`, borderRadius: 10, padding: "12px", marginBottom: 8 }}>
+        <div key={i} style={{ background: "#152218", border: `1px solid ${p.risk === "High" ? "#2d5a36" : "#3a4a20"}`, borderRadius: 10, padding: "12px", marginBottom: 8 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#2C1A0E" }}>{p.name}</div>
-            <span style={{ fontSize: 10, fontFamily: "'DM Mono', monospace", background: p.risk === "High" ? "rgba(224,112,96,0.2)" : "rgba(200,180,60,0.2)", color: p.risk === "High" ? "#B85A38" : "#C4820A", padding: "2px 8px", borderRadius: 8 }}>{p.risk} Risk</span>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#e8dfc8" }}>{p.name}</div>
+            <span style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", background: p.risk === "High" ? "rgba(224,112,96,0.2)" : "rgba(200,180,60,0.2)", color: p.risk === "High" ? "#e07060" : "#d4a017", padding: "2px 8px", borderRadius: 8 }}>{p.risk} Risk</span>
           </div>
-          <div style={{ fontSize: 11, color: "#5A8A62", marginBottom: 4 }}>📍 {p.regions}</div>
-          <div style={{ fontSize: 12, color: "#7A5A3A" }}>💊 {p.action}</div>
+          <div style={{ fontSize: 11, color: "#3a9962", marginBottom: 4 }}>📍 {p.regions}</div>
+          <div style={{ fontSize: 12, color: "#8aaa94" }}>💊 {p.action}</div>
         </div>
       ))}
     </div>
