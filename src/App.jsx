@@ -186,7 +186,7 @@ export default function FarmLinkZim() {
 
   const getWeatherIcon = (code) => {
     if (code === 0) return "☀️";
-    if (code <= 2) return "⛅";
+    if (code <= 2) return "⛅️";
     if (code <= 48) return "🌫️";
     if (code <= 67) return "🌧️";
     if (code <= 77) return "🌨️";
