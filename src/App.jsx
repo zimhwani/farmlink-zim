@@ -196,8 +196,6 @@ export default function FarmLinkZim() {
     if (code <= 99) return "⛈";
     return "🌡";
   };
-    return icons[type] || icons.sunny;
-  };
 
   const loadListings = async () => {
     setLoadingListings(true);
