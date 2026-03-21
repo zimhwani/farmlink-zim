@@ -714,26 +714,19 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
         <div style={{ background: "#080f09", borderRadius: 12, border: "1px solid #1f3525", overflow: "hidden", marginBottom: 14 }}>
           <svg viewBox="0 0 1000 918" style={{ width: "100%", height: "auto", display: "block" }}
             xmlns="http://www.w3.org/2000/svg">
-            <style>{`
-              .zw-prov { fill: #0f2218; stroke: #3a7a50; stroke-width: 0.8; transition: fill 0.2s; cursor: pointer; }
-              .zw-prov:hover { fill: #1a3528; }
-              .zw-active { fill: #122a1c; }
-              .prov-label { font-family: monospace; font-size: 20px; fill: #3a6b48; text-anchor: middle; pointer-events: none; }
-              .city-dot { fill: #5c8f6b; }
-              .city-label { font-family: monospace; font-size: 14px; fill: #5c8f6b; }
-            `}</style>
+
 
             {/* All 10 province paths from simplemaps */}
-            <path className={`zw-prov${activeProv.has("ZWMN") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWMN} id="ZWMN"/>
-            <path className={`zw-prov${activeProv.has("ZWMS") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWMS} id="ZWMS"/>
-            <path className={`zw-prov${activeProv.has("ZWMV") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWMV} id="ZWMV"/>
-            <path className={`zw-prov${activeProv.has("ZWMW") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWMW} id="ZWMW"/>
-            <path className={`zw-prov${activeProv.has("ZWMC") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWMC} id="ZWMC"/>
-            <path className={`zw-prov${activeProv.has("ZWME") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWME} id="ZWME"/>
-            <path className={`zw-prov${activeProv.has("ZWMA") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWMA} id="ZWMA"/>
-            <path className={`zw-prov${activeProv.has("ZWMI") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWMI} id="ZWMI"/>
-            <path className={`zw-prov${activeProv.has("ZWHA") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWHA} id="ZWHA"/>
-            <path className={`zw-prov${activeProv.has("ZWBU") ? " zw-active" : ""}`} d={ZW_PROVINCES.ZWBU} id="ZWBU"/>
+            <path fill={activeProv.has("ZWMN") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWMN} id="ZWMN"/>
+            <path fill={activeProv.has("ZWMS") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWMS} id="ZWMS"/>
+            <path fill={activeProv.has("ZWMV") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWMV} id="ZWMV"/>
+            <path fill={activeProv.has("ZWMW") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWMW} id="ZWMW"/>
+            <path fill={activeProv.has("ZWMC") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWMC} id="ZWMC"/>
+            <path fill={activeProv.has("ZWME") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWME} id="ZWME"/>
+            <path fill={activeProv.has("ZWMA") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWMA} id="ZWMA"/>
+            <path fill={activeProv.has("ZWMI") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWMI} id="ZWMI"/>
+            <path fill={activeProv.has("ZWHA") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWHA} id="ZWHA"/>
+            <path fill={activeProv.has("ZWBU") ? "#1a3d24" : "#0f2218"} stroke="#3a7a50" strokeWidth="0.8" style={{cursor:"pointer",transition:"fill 0.2s"}} d={ZW_PROVINCES.ZWBU} id="ZWBU"/>
 
             {/* Province labels (from simplemaps label_points centroids) */}
             <text className="prov-label" x="275.7" y="437.2">Mat North</text>
