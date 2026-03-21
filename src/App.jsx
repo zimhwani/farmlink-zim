@@ -328,7 +328,7 @@ export default function FarmLinkZim() {
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>Farming<span style={{ color: "#2d7a4f" }}>Zim</span></div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>Farming<span style={{ color: "#7ec99a" }}>Link</span></div>
                 <div style={{ fontSize: 8, fontFamily: "'Space Mono', monospace", color: "#8aaa94", letterSpacing: "0.1em" }}>GROW · SELL · THRIVE</div>
               </div>
             </div>
