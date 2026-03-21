@@ -373,7 +373,7 @@ export default function FarmLinkZim() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }} className="mobile-logo">
                 <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #2d7a4f, #1f5a39)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🌿</div>
                 <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#0d1a0f" }}>FarmLink <span style={{ color: "#7ec99a" }}>Zim</span></div>
+                  <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", color: "#c8e8d4" }}>Farming<span style={{ color: "#7ec99a" }}>Link</span></div>
                   <div style={{ fontSize: 9, fontFamily: "'Space Mono', monospace", color: "#8aaa94", letterSpacing: "0.1em" }}>AGRICULTURAL MARKETPLACE</div>
                 </div>
               </div>
