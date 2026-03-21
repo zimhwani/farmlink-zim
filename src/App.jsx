@@ -2089,6 +2089,42 @@ function FarmDiaryTab({ authUser, setActiveTab }) {
   const [showAdd, setShowAdd] = useState(false);
   const [filter, setFilter] = useState("all");
 
+  // Auth gate — show login prompt if not signed in
+  if (!authUser) {
+    return (
+      <div className="single-col fade-in" style={{ textAlign: "center", padding: "60px 24px" }}>
+        <div style={{ fontSize: 56, marginBottom: 20 }}>📓</div>
+        <div style={{ fontSize: 22, fontWeight: 700, color: "#c8e8d4", marginBottom: 10 }}>Your Farm Diary</div>
+        <div style={{ fontSize: 14, color: "#8aaa94", lineHeight: 1.7, marginBottom: 32, maxWidth: 320, margin: "0 auto 32px" }}>
+          Log daily activities, track costs and build a farming record — but you need an account first.
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 280, margin: "0 auto" }}>
+          <button
+            className="btn-primary"
+            onClick={() => setActiveTab("register")}
+            style={{ background: "linear-gradient(135deg, #2d7a4f, #1f5a39)" }}>
+            📍 Register Your Farm
+          </button>
+          <div style={{ fontSize: 12, color: "#4a7a5a" }}>Already registered?</div>
+          <button
+            className="btn-secondary"
+            onClick={() => document.querySelector("[data-auth-trigger]")?.click()}>
+            🔑 Sign In
+          </button>
+        </div>
+        <div style={{ marginTop: 40, padding: "16px", background: "#152218", borderRadius: 12, border: "1px solid #1f3525", maxWidth: 320, margin: "40px auto 0" }}>
+          <div style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "#5c8f6b", marginBottom: 8 }}>WHY CREATE AN ACCOUNT?</div>
+          {["Log planting, spraying and harvest activities", "Track costs and yields per crop", "Build a farm record for loan applications", "Access your diary from any device"].map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderTop: i > 0 ? "1px solid #1f3525" : "none" }}>
+              <span style={{ color: "#2d7a4f", fontSize: 14 }}>✓</span>
+              <span style={{ fontSize: 12, color: "#8aaa94" }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const loadEntries = async () => {
     setLoading(true);
     const query = authUser ? `?auth_user_id=eq.${authUser.id}&order=activity_date.desc&limit=50` : "?order=activity_date.desc&limit=0";
