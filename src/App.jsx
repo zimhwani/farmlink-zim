@@ -702,7 +702,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" style={{ borderRadius: "20px 20px 0 0", maxHeight: "92vh" }} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={{ borderRadius: "20px 20px 0 0", maxHeight: "92vh", maxWidth: "680px", width: "100%" }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#e8dfc8" }}>Farmer Distribution Map</div>
