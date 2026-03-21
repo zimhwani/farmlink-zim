@@ -689,7 +689,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
   farmersWithCoords.forEach(f => {
     if (!seen.has(f.district)) {
       seen.add(f.district);
-      const pos = latLngToMapXY(f.latitude, f.longitude);
+      const pos = latLngToMapXY(parseFloat(f.latitude), parseFloat(f.longitude));
       districtDots.push({ district: f.district, province: f.province, count: districtCounts[f.district] || 1, ...pos, farmers: farmersWithCoords.filter(x => x.district === f.district) });
     }
   });
