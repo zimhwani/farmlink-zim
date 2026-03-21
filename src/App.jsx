@@ -715,7 +715,7 @@ function FarmerMapModal({ farmers, onClose, loadFarmers }) {
           <svg viewBox="0 0 1000 918" style={{ width: "100%", height: "auto", display: "block" }}
             xmlns="http://www.w3.org/2000/svg">
             <style>{`
-              .zw-prov { fill: #EBF4EC; stroke: #8ABB92; stroke-width: 0.8; transition: fill 0.2s; cursor: pointer; }
+              .zw-prov { fill: #0f2218; stroke: #3a7a50; stroke-width: 0.8; transition: fill 0.2s; cursor: pointer; }
               .zw-prov:hover { fill: #1a3528; }
               .zw-active { fill: #122a1c; }
               .prov-label { font-family: monospace; font-size: 20px; fill: #3a6b48; text-anchor: middle; pointer-events: none; }
